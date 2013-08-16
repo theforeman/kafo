@@ -1,0 +1,93 @@
+require 'kafo/param'
+require 'kafo/param_builder'
+require 'kafo/puppet_module_parser'
+require 'kafo/validator'
+
+class PuppetModule
+  attr_reader :name, :params, :dir_name, :class_name, :manifest_name, :manifest_path
+
+  def initialize(name, parser = PuppetModuleParser)
+    @name          = name
+    @dir_name      = get_dir_name
+    @manifest_name = get_manifest_name
+    @class_name    = get_class_name
+    @params        = []
+    @manifest_path = File.join(KafoConfigure.root_dir, '/modules/', module_manifest_path)
+    @parser        = parser
+    @validations   = []
+    @logger        = Logging.logger.root
+  end
+
+  def enabled?
+    @enabled.nil? ? @enabled = KafoConfigure.config.module_enabled?(self) : @enabled
+  end
+
+  def disable
+    @enabled = false
+  end
+
+  def enable
+    @enabled = true
+  end
+
+  def parse(builder_klass = ParamBuilder)
+    @params      = []
+    raw_data     = @parser.parse(manifest_path)
+    builder      = builder_klass.new(self, raw_data)
+    @validations = raw_data['validations']
+
+    builder.validate
+    @params      = builder.build_params
+
+    self
+  rescue ConfigurationException => e
+    puts "Unable to continue because of:"
+    puts e.message
+    exit(22)
+  end
+
+  def validations(param = nil)
+    if param.nil?
+      @validations
+    else
+      @validations.select do |validation|
+        validation.arguments.map(&:to_s).include?("$#{param.name}")
+      end
+    end
+  end
+
+  def params_hash
+    Hash[params.map { |param| [param.name, param.value] }]
+  end
+
+  private
+
+  # customer module directory name
+  def get_dir_name
+    case name
+      when 'puppetmaster'
+        'puppet'
+      else
+        name
+    end
+  end
+
+  # custom manifest filename without .pp extension
+  def get_manifest_name
+    case name
+      when 'puppetmaster'
+        'server'
+      else
+        'init'
+    end
+  end
+
+  def get_class_name
+    manifest_name == 'init' ? name : "#{dir_name}::#{manifest_name}"
+  end
+
+  def module_manifest_path
+    "#{dir_name}/manifests/#{manifest_name}.pp"
+  end
+
+end

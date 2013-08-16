@@ -1,0 +1,11 @@
+# kafo main configuration file example
+# you can rename it to kafo.yaml so it overwrite default kafo settings
+# useful for development, e.g. when you want to move log files to local directory
+
+# :log_dir: '/var/log/kafo'
+# :log_level: :info
+
+# Advanced configuration - if not set it's ignored
+# :log_owner: root
+# :log_group: root
+
