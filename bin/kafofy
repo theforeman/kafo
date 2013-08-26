@@ -1,0 +1,36 @@
+#!/usr/bin/env ruby
+
+require 'fileutils'
+
+# Create directory structure
+%w(bin config modules).each do |dir|
+  FileUtils.mkdir_p dir
+end
+
+# Copy config files
+src = File.expand_path(File.join(File.dirname(__FILE__), '..'))
+%w(config_header.txt kafo.yaml.example).each do |file|
+  FileUtils.cp src + "/config/#{file}", 'config/'
+end
+
+script_name = "kafo-configure"
+# Optional configure script
+if ARGV.size > 0
+  name = ARGV[0]
+  script_name = "bin/#{name}"
+  puts "... creating #{script_name}"
+  content = <<EOS
+#!/usr/bin/env ruby
+require 'kafo'
+KafoConfigure.run
+EOS
+  File.write script_name, content
+  FileUtils.chmod 0755, script_name
+end
+
+puts "Your directory was kafofied"
+
+puts "Now you should:"
+puts "  1. upload your puppet modules to modules directory"
+puts "  2. create default config/answers.yaml"
+puts "  3. run #{script_name}"
