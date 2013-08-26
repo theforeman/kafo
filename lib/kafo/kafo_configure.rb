@@ -79,6 +79,7 @@ class KafoConfigure < Clamp::Command
   def set_options
     self.class.option ['-i', '--interactive'], :flag, 'Run in interactive mode?'
     self.class.option ['-v', '--verbose'], :flag, 'Display log on STDOUT instead of progressbar?'
+    self.class.option ['-n', '--noop'], :flag, 'Run puppet in noop mode?', :default => false
 
     config.modules.each do |mod|
       self.class.option d("--[no-]enable-#{mod.name}"),
@@ -123,7 +124,6 @@ class KafoConfigure < Clamp::Command
   end
 
   def run_installation
-    # TODO remove noop when ready
     exit_code = 0
     modules_path = "modules:#{File.join(File.dirname(__FILE__), '../../modules')}"
     options = [
@@ -133,8 +133,8 @@ class KafoConfigure < Clamp::Command
         '--color=false',
         '--show_diff',
         '--detailed-exitcodes',
-        '--noop'
     ]
+    options.push '--noop' if noop?
     begin
       PTY.spawn("echo include kafo_configure | puppet apply #{options.join(' ')}") do |stdin, stdout, pid|
         begin

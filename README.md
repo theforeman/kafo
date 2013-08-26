@@ -102,7 +102,7 @@ arguments like this
 bin/foreman-installer --foreman-enc=false --foreman-db-type=sqlite
 ```
 
-or you can run (very early proof of concept) interactive mode
+or you can run interactive mode
 
 ```bash
 bin/foreman-installer --interactive
@@ -119,6 +119,12 @@ the lower the item is the higher precedence it has:
   * interactive mode arguments
 
 # Advanced topics
+
+## Testing aka noop
+
+You'll probably want to tweak your installer before so you may find --noop
+argument handy. This will run puppet in noop so no change will be done to your
+system. Default value is false!
 
 ## Documentation
 
