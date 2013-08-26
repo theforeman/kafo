@@ -38,7 +38,7 @@ class Configuration
     @params_default_values ||= begin
       @logger.info "Parsing default values from puppet modules..."
       # TODO not dry, kafo_configure.rb does similar thing
-      modules_path = "modules:#{File.join(gem_root_path, '../../modules')}"
+      modules_path = "modules:#{File.join(gem_root_path, 'modules')}"
       @logger.debug `echo '#{includes} dump_values(#{params})' | puppet apply --modulepath #{modules_path} 2>&1`
       unless $?.exitstatus == 0
         @logger.error "Could not get default values, cannot continue"
