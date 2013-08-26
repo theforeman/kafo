@@ -12,7 +12,7 @@ Gem::Specification.new do |spec|
   spec.email         = ["ares@igloonet.cz"]
   spec.description   = %q{A gem for making installations based on puppet user friendly}
   spec.summary       = %q{If you write puppet modules for installing your software, you can use kafo to create powerful installer}
-  spec.homepage      = "https://github.com/theforeman/kafo-configure"
+  spec.homepage      = "https://github.com/theforeman/kafo"
   spec.license       = "GPLv3+"
 
   spec.files         = `git ls-files`.split($/)
