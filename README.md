@@ -1,8 +1,8 @@
 # Kafo
 
 A puppet based installer and configurer (not-only) for Foreman and Katello
-projects. Kafo-configure is a ruby script that adds fancy user interfaces for
-puppet modules. It's some kind of a frontend to a
+projects. Kafo is a ruby gem that allows you to create fancy user interfaces for
+puppet modules. It's some kind of a nice frontend to a
 
 ```bash
 echo "include some_modules" | puppet apply
@@ -20,39 +20,63 @@ With kafo you can reuse your puppet modules for creating an installer. Even
 better after the installation you can easily modify you configuration. All
 using the very same puppet modules.
 
-## What it does
+## What it does, how does it work?
 
 Kafo reads a config file to find out which modules should it use. Then it
 loads parameters from puppet manifests and gives you a way to customize them.
 
-There are three ways how you can set parameters. You can predefine them in
-configuration file, or you can specify them as CLI arguments or you can use
-interactive mode which will ask you for all required parameters.
+There are three ways how you can set parameters. You can
+ * predefine them in configuration file
+ * specify them as CLI arguments
+ * you can use interactive mode which will ask you for all required parameters
 
 Note that your answers (gathered from any mode) are saved for the next run
 so you don't have to specify them again. Kafo also support default values of
-parameters so you can set only those you want to change. In combination you
-can create a an answer file with default values easily and then use it for
-unattended installs.
+parameters so you can set only those you want to change. Also you can combine
+akk modes so you can create an answer file with default values easily
+and then use it for unattended installs.
 
 ## How do I use it?
 
-First make a clone of a repo and install dependencies.
-(in future there will be a better way)
+First install kafo gem.
+
+Using bundler - add kafo gem to your Gemfile and run
 ```bash
-git clone https://github.com/ares/kafo-configure
 bundle install
 ```
-When you download kafo you must add modules you want to install. Put all
-modules into modules directory. Note that there is already one called
-kafo_configure. This holds some puppet related logic for parsing modules.
+
+or without bundler
+```bash
+gem install kafo
+```
+
+Create a directory for your installer. Let's say we want to create
+foreman-installer.
+
+```bash
+mkdir foreman-installer
+cd foreman-installer
+```
+
+Now we run +kafofy+ script which will prepare directory structure and
+optionally create a bin script according to first parameter.
+
+```bash
+kafofy foreman-installer
+```
+
+You can see that it created modules directory where your puppet modules
+should live. It also created config and bin directories. If you specified
+argument (foreman-installer in this case) a script in bin was created.
+It's the script you can use to run installer. If you did not specify any
+you can run your installer by +kafo-configure+ which is provided by the gem.
+All configuration related files are to be found in config directory.
 
 So for example to install foreman you want to
 ```bash
-cd kafo-configure/modules
+cd foreman-installer/modules
 git clone https://github.com/theforeman/puppet-foreman/ foreman
 ```
-
 Currently you must also download any dependant modules.
 Then you need to tell kafo it's going to use foreman module.
 ```bash
@@ -61,7 +85,7 @@ echo "foreman: true" > config/answers.yaml
 ```
 Fire it with -h
 ```bash
-bundle exec bin/kafo-configure -h
+bin/foreman-installer -h
 ```
 
 You will see all arguments that you can pass to kafo. Note that underscored
@@ -75,13 +99,13 @@ was populated with default values. To change those options you can use
 arguments like this
 
 ```bash
-bundle exec bin/kafo-configure --foreman-enc=false --foreman-db-type=sqlite
+bin/foreman-installer --foreman-enc=false --foreman-db-type=sqlite
 ```
 
 or you can run (very early proof of concept) interactive mode
 
 ```bash
-bundle exec bin/kafo-configure --interactive
+bin/foreman-installer --interactive
 ```
 
 Also every change made to config/answers.yaml persists and becomes new default
@@ -146,7 +170,7 @@ set them UNDEF (see below) are translated to ```undef``` in puppet.
 Some arguments may be Arrays. If you want to specify array values you can
 specify CLI argument multiple times e.g.
 ```bash
-bundle exec bin/kafo-configure --puppetmaster-environments=development --puppetmaster-environments=production
+bin/foreman-installer --puppetmaster-environments=development --puppetmaster-environments=production
 ```
 
 In interactive mode you'll be prompted for another value until you specify
@@ -164,7 +188,7 @@ you must follow few rules however:
 ## Enabling or disabling module
 
 You can enable or disable module specified in answers.yaml file. Every module
-automatically adds two options to kafo-configure script. For module foreman
+automatically adds two options to foreman-installer script. For module foreman
 you have two flag options ```--enable-foreman``` and ```--no-enable-foreman```.
 
 When you disable a module all its answers will be removed and module will be
@@ -176,7 +200,7 @@ Sometimes you may want to enforce ```undef``` value for a particular parameter.
 You can set this value by specifying UNDEF string e.g.
 
 ```bash
-bundle exec bin/kafo-configure --foreman-db-password=UNDEF
+bin/foreman-installer --foreman-db-password=UNDEF
 ```
 
 It also works in interactive mode.
