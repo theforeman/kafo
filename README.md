@@ -58,7 +58,7 @@ mkdir foreman-installer
 cd foreman-installer
 ```
 
-Now we run +kafofy+ script which will prepare directory structure and
+Now we run ```kafofy``` script which will prepare directory structure and
 optionally create a bin script according to first parameter.
 
 ```bash
@@ -69,7 +69,7 @@ You can see that it created modules directory where your puppet modules
 should live. It also created config and bin directories. If you specified
 argument (foreman-installer in this case) a script in bin was created.
 It's the script you can use to run installer. If you did not specify any
-you can run your installer by +kafo-configure+ which is provided by the gem.
+you can run your installer by ```kafo-configure``` which is provided by the gem.
 All configuration related files are to be found in config directory.
 
 So for example to install foreman you want to
@@ -178,10 +178,51 @@ in puppet manifest documentation like this
                   type:boolean
 ```
 
-Supported types are: string, boolean, integer, array
+Supported types are: string, boolean, integer, array, password
 
 Note that all arguments that are nil (have no value in answers.yaml or you
 set them UNDEF (see below) are translated to ```undef``` in puppet.
+
+## Password arguments
+
+Kafo support password arguments. It's adding some level of protection for you
+passwords. Usually people generate random strings for passwords. However all
+values are stored in config/answers.yaml which introduce some security risk.
+
+If this is something to concern for you, you can use password type. It will
+generate a secure (random) password of decent length (32 chars) and encrypts
+it using AES 256 in CBC mode. It uses a passphrase that is stored in
+config/kafo.yaml so if anyone gets an access to this file, he can read all
+other passwords from answers.yaml. A random password is generated and stored
+if there is none in kafo.yaml yet.
+
+When Kafo runs puppet, puppet will read this password from config/kafo.yaml.
+It runs under the same user so it should have read access by default. Kafo
+puppet module also provides a function that you can use to decrypt such
+parameters. You can use it like this
+
+```puppet
+password: <%= scope.function_decrypt([scope.lookupvar("::foreman::db_password"))]) -%>
+```
+
+Also you can take advantage of already encrypted password and store as it is
+(encrypted). Your application can decrypt it as long as it knows the
+passphrase. Passphrase can be obtained as $kafo_configure::password.
+
+Note that we use a bit extraordinary form of encrypted passwords. All our
+encrypted passwords looks like "$1$base64encodeddata". As you can see we
+use $1$ prefix by which we can detect that its encrypted password by us.
+The form has nothing common with Modular Crypt Format. Also our AES output
+is base64 encoded. To get a password from this format you can do something
+like this in your application
+
+```ruby
+require 'base64'
+encrypted = "$1$base64encodeddata"
+encrypted = encrypted[3..-1]           # strip $1$ prefix
+encrypted = Base64.decode64(encrypted) # decode base64 string
+result    = aes_decrypt(encrypted)     # for example how to implement aes_decrypt see lib/kafo/password_manager.rb
+```
 
 ## Array arguments
 
@@ -200,9 +241,9 @@ By default Kafo expects a common module structure. For example if you add
 ```yaml
 foreman: true
 ```
-to you answer file, Kafo expects a +foreman+ subdirectory in +modules/+. Also
+to you answer file, Kafo expects a ```foreman``` subdirectory in ```modules/```. Also
 it expects that there will be init.pp which it will instantiate. If you need
-to change this behavior you can via +mapping+ option in +config/kafo.yaml+.
+to change this behavior you can via ```mapping``` option in ```config/kafo.yaml```.
 
 Suppose we have puppet module and we want to use puppet/server.pp as our init
 file. Also we want to name our module as puppetmaster. We add following mapping
