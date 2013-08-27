@@ -194,6 +194,30 @@ bin/foreman-installer --puppetmaster-environments=development --puppetmaster-env
 In interactive mode you'll be prompted for another value until you specify
 blank line.
 
+## Custom modules and manifest names
+
+By default Kafo expects a common module structure. For example if you add
+```yaml
+foreman: true
+```
+to you answer file, Kafo expects a +foreman+ subdirectory in +modules/+. Also
+it expects that there will be init.pp which it will instantiate. If you need
+to change this behavior you can via +mapping+ option in +config/kafo.yaml+.
+
+Suppose we have puppet module and we want to use puppet/server.pp as our init
+file. Also we want to name our module as puppetmaster. We add following mapping
+to kafo.yaml
+
+```yaml
+:mapping
+  :puppetmaster:                # a module name, so we'll have puppetmaster: true in answer file
+    :dir_name: 'puppet'         # the subdirectory in modules/
+    :manifest_name: 'server'    # manifest filename without .pp extension
+```
+
+Note that if you add mapping you must enter both dir_name and manifest_name even
+if one of them is default.
+
 ## Validations
 
 If you specify validations of parameters in you init.pp manifest they

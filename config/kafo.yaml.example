@@ -8,6 +8,7 @@
 
 ## Kafo tuning, customization of core functionality
 # :no_prefix: false
+# :mapping: {}
 
 ## Advanced configuration - if not set it's ignored
 # :log_owner: root

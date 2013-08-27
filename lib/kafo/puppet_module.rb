@@ -62,24 +62,19 @@ class PuppetModule
 
   private
 
-  # customer module directory name
+  # mapping from configuration with stringified keys
+  def mapping
+    @mapping ||= Hash[Configuration::KAFO[:mapping].map { |k, v| [k.to_s, v] }]
+  end
+
+  # custom module directory name
   def get_dir_name
-    case name
-      when 'puppetmaster'
-        'puppet'
-      else
-        name
-    end
+    mapping[name].nil? ? name : mapping[name][:dir_name]
   end
 
   # custom manifest filename without .pp extension
   def get_manifest_name
-    case name
-      when 'puppetmaster'
-        'server'
-      else
-        'init'
-    end
+    mapping[name].nil? ? 'init' : mapping[name][:manifest_name]
   end
 
   def get_class_name
