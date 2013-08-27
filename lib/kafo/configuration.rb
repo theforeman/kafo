@@ -13,6 +13,7 @@ class Configuration
   KAFO = {
       :log_dir   => '/var/log/kafo',
       :log_level => :info,
+      :no_prefix => false
   }.merge(default_hash || {})
 
   def initialize(file)

@@ -10,7 +10,8 @@ module StringHelper
   alias :u :underscore
 
   def with_prefix(param)
-    "#{d(param.module_name)}-#{d(param.name)}"
+    prefix = Configuration::KAFO[:no_prefix] ? '' : "#{d(param.module_name)}-"
+    "#{prefix}#{d(param.name)}"
   end
 
   def parametrize(param)

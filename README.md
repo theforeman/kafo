@@ -120,11 +120,20 @@ the lower the item is the higher precedence it has:
 
 # Advanced topics
 
-## Testing aka noop
+## Testing aka noop etc
 
 You'll probably want to tweak your installer before so you may find --noop
 argument handy. This will run puppet in noop so no change will be done to your
 system. Default value is false!
+
+## Parameters prefixes
+
+You probably noticed that every module parameter is prefixed by module name
+by default. If you use just one module it's probably unnecessary and you
+can disable this behavior in config/kafo.yaml. Just set option like this
+```yaml
+:no_prefix: true
+```
 
 ## Documentation
 
