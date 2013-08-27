@@ -126,6 +126,9 @@ You'll probably want to tweak your installer before so you may find --noop
 argument handy. This will run puppet in noop so no change will be done to your
 system. Default value is false!
 
+Sometimes you may want kafo not to store answers from current run. You can
+disable saving by passing a --dont-save-answers argument (or -d for short).
+
 ## Parameters prefixes
 
 You probably noticed that every module parameter is prefixed by module name

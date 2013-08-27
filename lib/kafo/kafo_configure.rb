@@ -54,7 +54,7 @@ class KafoConfigure < Clamp::Command
       end
     end
 
-    store_params
+    store_params unless dont_save_answers?
     run_installation
   end
 
@@ -77,9 +77,11 @@ class KafoConfigure < Clamp::Command
   end
 
   def set_options
-    self.class.option ['-i', '--interactive'], :flag, 'Run in interactive mode?'
-    self.class.option ['-v', '--verbose'], :flag, 'Display log on STDOUT instead of progressbar?'
+    self.class.option ['-i', '--interactive'], :flag, 'Run in interactive mode'
+    self.class.option ['-v', '--verbose'], :flag, 'Display log on STDOUT instead of progressbar'
     self.class.option ['-n', '--noop'], :flag, 'Run puppet in noop mode?', :default => false
+    self.class.option ['-d', '--dont-save-answers'], :flag, 'Skip saving answers to answers.yaml?',
+                      :default => false
 
     config.modules.each do |mod|
       self.class.option d("--[no-]enable-#{mod.name}"),
