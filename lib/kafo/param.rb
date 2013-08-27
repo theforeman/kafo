@@ -61,5 +61,6 @@ end
 
 require 'kafo/params/boolean'
 require 'kafo/params/string'
+require 'kafo/params/password'
 require 'kafo/params/array'
 require 'kafo/params/integer'

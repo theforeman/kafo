@@ -1,28 +1,47 @@
 require 'yaml'
 require 'kafo/puppet_module'
+require 'kafo/password_manager'
 
 class Configuration
   attr_reader :config_file
 
-
-  begin
-    default_hash = YAML.load_file(File.join(Dir.pwd, 'config/kafo.yaml'))
-  rescue => e
-    default_hash = {}
+  def self.application_config_file
+    File.join(Dir.pwd, 'config/kafo.yaml')
   end
-  KAFO = {
+
+  def self.save_configuration(configuration)
+    File.write(application_config_file, YAML.dump(configuration))
+  end
+
+  def self.configure_application
+    begin
+      configuration = YAML.load_file(application_config_file)
+    rescue => e
+      configuration = {}
+    end
+
+    default           = {
       :log_dir   => '/var/log/kafo',
       :log_level => :info,
       :no_prefix => false,
       :mapping   => {}
-  }.merge(default_hash || {})
+    }
+    
+    result            = default.merge(configuration || {})
+    result[:password] ||= PasswordManager.new.password
+    save_configuration(result)
+
+    result
+  end
+
+  KAFO = configure_application
 
   def initialize(file)
     @logger = Logging.logger.root
     @logger.info "Loading config file #{file}"
 
     begin
-      @data        = YAML.load_file file
+      @data        = YAML.load_file(file)
     rescue Errno::ENOENT => e
       puts "No answers file at #{file} found, can not continue"
       exit(23)

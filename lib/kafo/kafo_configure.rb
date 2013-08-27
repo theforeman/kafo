@@ -138,7 +138,7 @@ class KafoConfigure < Clamp::Command
     ]
     options.push '--noop' if noop?
     begin
-      PTY.spawn("echo include kafo_configure | puppet apply #{options.join(' ')}") do |stdin, stdout, pid|
+      PTY.spawn("echo 'include kafo_configure' | puppet apply #{options.join(' ')}") do |stdin, stdout, pid|
         begin
           stdin.each { |line| puppet_log(line) }
         rescue Errno::EIO
