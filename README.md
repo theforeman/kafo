@@ -122,12 +122,13 @@ the lower the item is the higher precedence it has:
 
 ## Testing aka noop etc
 
-You'll probably want to tweak your installer before so you may find --noop
-argument handy. This will run puppet in noop so no change will be done to your
-system. Default value is false!
+You'll probably want to tweak your installer before so you may find
+```--noop``` argument handy (-n for short). This will run puppet in
+noop so no change will be done to your system. Default value is
+false!
 
 Sometimes you may want kafo not to store answers from current run. You can
-disable saving by passing a --dont-save-answers argument (or -d for short).
+disable saving by passing a ```--dont-save-answers``` argument (or -d for short).
 
 ## Parameters prefixes
 
@@ -201,7 +202,7 @@ It runs under the same user so it should have read access by default. Kafo
 puppet module also provides a function that you can use to decrypt such
 parameters. You can use it like this
 
-```puppet
+```erb
 password: <%= scope.function_decrypt([scope.lookupvar("::foreman::db_password"))]) -%>
 ```
 
