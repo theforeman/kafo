@@ -1,0 +1,14 @@
+[globalconfig]
+default_builder = tito.builder.GemBuilder
+default_tagger = tito.tagger.VersionTagger
+changelog_do_not_remove_cherrypick = 0
+changelog_format = %s (%ae)
+
+[katello-nightly-rhel6]
+disttag = .el6
+
+[katello-nightly-fedora18]
+disttag = .fc18
+
+[requirements]
+tito=0.4.12
