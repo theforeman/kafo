@@ -142,10 +142,16 @@ class KafoConfigure < Clamp::Command
         begin
           stdin.each { |line| puppet_log(line) }
         rescue Errno::EIO
-          exit_code = PTY.check(pid).exitstatus
+          if PTY.respond_to?(:check) # ruby >= 1.9.2
+            exit_code = PTY.check(pid).exitstatus
+          else # ruby < 1.9.2
+            Process.wait(pid)
+            exit_code = $?.exitstatus
+          end
         end
       end
-    rescue PTY::ChildExited
+    rescue PTY::ChildExited => e
+      exit_code = e.status.exitstatus
     end
     logger.info "Puppet has finished, bye!"
     exit(exit_code)

@@ -10,7 +10,7 @@ class Configuration
   end
 
   def self.save_configuration(configuration)
-    File.write(application_config_file, YAML.dump(configuration))
+    File.open(application_config_file, 'w') { |file| file.write(YAML.dump(configuration)) }
   end
 
   def self.configure_application
@@ -91,7 +91,7 @@ class Configuration
   end
 
   def store(data)
-    File.write(config_file, config_header + YAML.dump(data))
+    File.open(config_file, 'w') { |file| file.write(config_header + YAML.dump(data)) }
   end
 
   private
