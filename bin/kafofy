@@ -21,10 +21,11 @@ if ARGV.size > 0
   puts "... creating #{script_name}"
   content = <<EOS
 #!/usr/bin/env ruby
+require 'rubygems'
 require 'kafo'
 KafoConfigure.run
 EOS
-  File.write script_name, content
+  File.open(script_name, 'w') { |file| file.write(content) }
   FileUtils.chmod 0755, script_name
 end
 

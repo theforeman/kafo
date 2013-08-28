@@ -3,7 +3,7 @@
 module Puppet::Parser::Functions
   newfunction(:dump_values) do |args|
     data = Hash[args.map { |arg| [arg, lookupvar(arg)] }]
-    File.write('config/default_values.yaml', YAML.dump(data))
+    File.open('config/default_values.yaml', 'w') { |file| file.write(YAML.dump(data)) }
   end
 end
 

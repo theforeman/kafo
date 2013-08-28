@@ -42,7 +42,7 @@ class ParamBuilder
 
   def get_type(docs)
     type = (get_attributes(docs)[:type] || '').capitalize
-    type.empty? || !Params.const_defined?(type) ? Params::String : Params.const_get(type, false)
+    type.empty? || !Params.const_defined?(type) ? Params::String : Params.const_get(type)
   end
 
   def get_attributes(docs)
