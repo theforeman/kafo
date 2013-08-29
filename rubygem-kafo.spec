@@ -34,7 +34,10 @@ BuildRequires: %{?scl_prefix}rubygems-devel
 %global gem_instdir %{gem_dir}/gems/%{gem_name}-%{version}
 %global gem_libdir %{gem_dir}/gems/%{gem_name}-%{version}/lib
 %endif
+
+%if 0%{?rhel} == 6 || 0%{?fedora} < 19
 BuildRequires: %{?scl_prefix}ruby(abi) >= %{rubyabi}
+%endif
 BuildRequires: %{?scl_prefix}rubygems
 BuildArch: noarch
 Provides: %{?scl_prefix}rubygem(%{gem_name}) = %{version}
