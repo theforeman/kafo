@@ -3,24 +3,35 @@
 
 %global gem_name kafo
 
-%define rubyabi 1.9.1
+
+%define rubyabi 1.8
 
 Summary: A gem for making installations based on puppet user friendly
 Name: %{?scl_prefix}rubygem-%{gem_name}
-Version: 0.0.5
+Version: 0.0.6
 Release: 1%{?dist}
 Group: Development/Libraries
 License: GPLv3+
 URL: https://github.com/theforeman/kafo
 Source0: http://rubygems.org/downloads/%{gem_name}-%{version}.gem
 Requires: %{?scl_prefix}ruby(abi) >= %{rubyabi}
-Requires: %{?scl_prefix}rubygem(puppet)
+Requires: %{?scl_prefix}puppet
 Requires: %{?scl_prefix}rubygem(logging)
 Requires: %{?scl_prefix}rubygem(clamp)
 Requires: %{?scl_prefix}rubygem(highline)
 Requires: %{?scl_prefix}rubygem(rdoc)
 Requires: %{?scl_prefix}rubygems
+
+%if 0%{?rhel} == 6 && 0%{?scl_prefix:0} || 0%{?fedora} > 17
 BuildRequires: %{?scl_prefix}rubygems-devel
+%else
+%global gem_dir %(ruby -rubygems -e 'puts Gem::dir' 2>/dev/null)
+%global gem_docdir %{gem_dir}/doc/%{gem_name}-%{version}
+%global gem_cache %{gem_dir}/cache/%{gem_name}-%{version}.gem
+%global gem_spec %{gem_dir}/specifications/%{gem_name}-%{version}.gemspec
+%global gem_instdir %{gem_dir}/gems/%{gem_name}-%{version}
+%global gem_libdir %{gem_dir}/gems/%{gem_name}-%{version}/lib
+%endif
 BuildRequires: %{?scl_prefix}ruby(abi) >= %{rubyabi}
 BuildRequires: %{?scl_prefix}rubygems
 BuildArch: noarch
@@ -46,6 +57,8 @@ gem install --local --install-dir .%{gem_dir} \
 %{?scl:"}
 
 %build
+sed -i "/add_runtime_dependency.*puppet/d" ./%{gem_spec}
+sed -i "/add_dependency.*puppet/d" ./%{gem_spec}
 
 %install
 mkdir -p %{buildroot}%{gem_dir}
@@ -68,11 +81,12 @@ cp -a .%{gem_dir}/* \
 %exclude %{gem_instdir}/Rakefile
 # add once tests are added (maybe spec dir instead)
 #%exclude %{gem_instdir}/test
-%exclude %{gem_dir}/cache/%{gem_name}-%{version}.gem
+%{gem_cache}
+%{gem_spec}
 
 %files doc
 %doc %{gem_instdir}/LICENSE.txt
 %doc %{gem_instdir}/README.md
-%{gem_spec}
 
 %changelog
+
