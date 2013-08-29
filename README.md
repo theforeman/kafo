@@ -289,6 +289,22 @@ bin/foreman-installer --foreman-db-password=UNDEF
 
 It also works in interactive mode.
 
+## Order of puppet modules execution
+
+When you have more than one module you may end up in situation where you need
+specific order of execution. It seems as a puppet antipattern to me however
+there may be cases where it's needed. You can set order in config/kafo.yaml
+like this
+
+```yaml
+order:
+  - foreman
+  - foreman_proxy
+```
+
+If you have other modules in your answer file they will be executed after
+those that have explicit order. Their order is not be specified.
+
 ## Changing of log directory and user/group
 
 By default kafo logs every run to a separate file in /var/log/kafo.

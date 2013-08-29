@@ -12,7 +12,7 @@ class kafo_configure(
   $params   = loadanyyaml($answers,
                       "/etc/kafo-configure/answers.yaml",
                       "config/answers.yaml")
-  $keys     = hash_keys($params)
+  $keys     = kafo_ordered(hash_keys($params))
 
   kafo_configure::yaml_to_class { $keys: }
 }
