@@ -9,12 +9,14 @@
 Summary: A gem for making installations based on puppet user friendly
 Name: %{?scl_prefix}rubygem-%{gem_name}
 Version: 0.0.6
-Release: 1%{?dist}
+Release: 2%{?dist}
 Group: Development/Libraries
 License: GPLv3+
 URL: https://github.com/theforeman/kafo
 Source0: http://rubygems.org/downloads/%{gem_name}-%{version}.gem
+%if 0%{?rhel} == 6 || 0%{?fedora} < 19
 Requires: %{?scl_prefix}ruby(abi) >= %{rubyabi}
+%endif
 Requires: %{?scl_prefix}puppet
 Requires: %{?scl_prefix}rubygem(logging)
 Requires: %{?scl_prefix}rubygem(clamp)
