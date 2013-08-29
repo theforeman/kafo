@@ -91,6 +91,10 @@ cp -a .%{gem_dir}/* \
 %doc %{gem_instdir}/README.md
 
 %changelog
+* Thu Aug 29 2013 Marek Hulan <mhulan@redhat.com> 0.0.6-2
+- Adds Fedora 19 support to rpm spec (mhulan@redhat.com)
+- Use foreman tags for tito (mhulan@redhat.com)
+
 * Thu Aug 29 2013 Marek Hulan <mhulan@redhat.com> 0.0.6-1
 - new package built with tito
 
