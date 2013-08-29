@@ -9,7 +9,7 @@
 Summary: A gem for making installations based on puppet user friendly
 Name: %{?scl_prefix}rubygem-%{gem_name}
 Version: 0.0.6
-Release: 2%{?dist}
+Release: 3%{?dist}
 Group: Development/Libraries
 License: GPLv3+
 URL: https://github.com/theforeman/kafo
@@ -94,6 +94,9 @@ cp -a .%{gem_dir}/* \
 %doc %{gem_instdir}/README.md
 
 %changelog
+* Thu Aug 29 2013 Marek Hulan <mhulan@redhat.com> 0.0.6-3
+- Ruby-abi is not build requirement either (mhulan@redhat.com)
+
 * Thu Aug 29 2013 Marek Hulan <mhulan@redhat.com> 0.0.6-2
 - Adds Fedora 19 support to rpm spec (mhulan@redhat.com)
 - Use foreman tags for tito (mhulan@redhat.com)
