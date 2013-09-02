@@ -35,43 +35,85 @@ class KafoConfigure < Clamp::Command
   end
 
   def execute
-    parse_cli_arguments
+    catch :exit do
+      parse_cli_arguments
 
-    if verbose?
-      logger.appenders = logger.appenders << ::Logging.appenders.stdout(:layout => Logger::COLOR_LAYOUT)
-    end
-
-    unless SystemChecker.check
-      puts "Your system does not meet configuration criteria"
-      exit(20)
-    end
-
-    if interactive?
-      wizard = Wizard.new
-      wizard.run
-    else
-      unless validate_all
-        puts "Error during configuration, exiting"
-        exit(21)
+      if verbose?
+        logger.appenders = logger.appenders << ::Logging.appenders.stdout(:layout => Logger::COLOR_LAYOUT)
       end
-    end
 
-    if dont_save_answers?
-      self.class.temp_config_file = temp_config_file
-      store_params(temp_config_file)
-    else
-      store_params
+      unless SystemChecker.check
+        puts "Your system does not meet configuration criteria"
+        exit(:invalid_system)
+      end
+
+      if interactive?
+        wizard = Wizard.new
+        wizard.run
+      else
+        unless validate_all
+          puts "Error during configuration, exiting"
+          exit(:invalid_values)
+        end
+      end
+
+      if dont_save_answers?
+        self.class.temp_config_file = temp_config_file
+        store_params(temp_config_file)
+      else
+        store_params
+      end
+      run_installation
     end
-    run_installation
+    return self
+  end
+
+  def self.run
+    catch :exit do
+      return super
+    end
+    Kernel.exit(self.exit_code) # fail in initialize
+  end
+
+  def exit_code
+    self.class.exit_code
+  end
+
+  def self.exit(code)
+    @exit_code = translate_exit_code(code)
+    throw :exit
+  end
+
+  def self.exit_code
+    @exit_code ||= 0
+  end
+
+  def self.translate_exit_code(code)
+    return code if code.is_a? Fixnum
+    error_codes = { :invalid_system => 20,
+                    :invalid_values => 21,
+                    :manifest_error => 22,
+                    :no_answer_file => 23,
+                    :unknown_module => 24,
+                    :defaults_error => 25 }
+    if error_codes.has_key? code
+      return error_codes[code]
+    else
+      raise "Unknown code #{code}"
+    end
   end
 
   private
+
+  def exit(code)
+    self.class.exit(code)
+  end
 
   def params
     @params ||= config.modules.map(&:params).flatten
   rescue ModuleName => e
     puts e
-    exit(24)
+    exit(:unknown_module)
   end
 
   def set_parameters
