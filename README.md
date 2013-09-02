@@ -251,7 +251,7 @@ file. Also we want to name our module as puppetmaster. We add following mapping
 to kafo.yaml
 
 ```yaml
-:mapping
+:mapping:
   :puppetmaster:                # a module name, so we'll have puppetmaster: true in answer file
     :dir_name: 'puppet'         # the subdirectory in modules/
     :manifest_name: 'server'    # manifest filename without .pp extension
