@@ -62,9 +62,8 @@ class Configuration
   def params_default_values
     @params_default_values ||= begin
       @logger.info "Parsing default values from puppet modules..."
-      # TODO not dry, kafo_configure.rb does similar thing
-      modules_path = "modules:#{File.join(gem_root_path, 'modules')}"
-      @logger.debug `echo '$kafo_config_file="#{@config_file}" #{includes} dump_values(#{params})' | puppet apply --modulepath #{modules_path} 2>&1`
+      command = PuppetCommand.new("#{includes} dump_values(#{params})").append('2>&1').command
+      @logger.debug `#{command}`
       unless $?.exitstatus == 0
         @logger.error "Could not get default values, cannot continue"
         exit(25)
@@ -86,6 +85,7 @@ class Configuration
     !!value || value.is_a?(Hash)
   end
 
+  # TODO make configurable by default empty
   def config_header
     @config_header ||= File.read(File.join(gem_root_path, '/config/config_header.txt'))
   end

@@ -6,21 +6,23 @@ require 'kafo/logger'
 require 'kafo/string_helper'
 require 'kafo/wizard'
 require 'kafo/system_checker'
+require 'kafo/puppet_command'
 
 class KafoConfigure < Clamp::Command
   include StringHelper
   attr_reader :logger
 
   class << self
-    attr_accessor :config, :root_dir
+    attr_accessor :config, :root_dir, :config_file
   end
 
   def initialize(*args)
-    root_dir            = Dir.pwd
-    self.class.root_dir = root_dir
-    self.class.config   = Configuration.new(config_file)
+    root_dir               = Dir.pwd
+    self.class.root_dir    = root_dir
+    self.class.config_file = config_file
+    self.class.config      = Configuration.new(self.class.config_file)
     Logger.setup
-    @logger             = Logging.logger.root
+    @logger                = Logging.logger.root
     set_env
     super
     set_parameters
@@ -126,9 +128,7 @@ class KafoConfigure < Clamp::Command
 
   def run_installation
     exit_code = 0
-    modules_path = "#{config.app[:puppet_modules_dir]}:#{File.join(File.dirname(__FILE__), '../../modules')}"
     options = [
-        "--modulepath #{modules_path}",
         '--verbose',
         '--debug',
         '--color=false',
@@ -137,7 +137,8 @@ class KafoConfigure < Clamp::Command
     ]
     options.push '--noop' if noop?
     begin
-      PTY.spawn("echo '$kafo_config_file=\"#{config_file}\" include kafo_configure' | puppet apply #{options.join(' ')}") do |stdin, stdout, pid|
+      command = PuppetCommand.new('include kafo_configure', options).command
+      PTY.spawn(command) do |stdin, stdout, pid|
         begin
           stdin.each { |line| puppet_log(line) }
         rescue Errno::EIO
