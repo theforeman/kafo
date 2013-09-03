@@ -13,17 +13,17 @@ class KafoConfigure < Clamp::Command
   attr_reader :logger
 
   class << self
-    attr_accessor :config, :root_dir, :config_file, :gem_root
+    attr_accessor :config, :root_dir, :config_file, :gem_root, :temp_config_file
   end
 
   def initialize(*args)
     root_dir               = Dir.pwd
     self.class.root_dir    = root_dir
     self.class.config_file = config_file
-    self.class.config      = Configuration.new(self.class.config_file)
-    self.class.gem_root    = File.join(File.dirname(__FILE__), '../../')
+    self.class.config = Configuration.new(self.class.config_file)
+    self.class.gem_root = File.join(File.dirname(__FILE__), '../../')
     Logger.setup
-    @logger                = Logging.logger.root
+    @logger = Logging.logger.root
     set_env
     super
     set_parameters
@@ -56,7 +56,12 @@ class KafoConfigure < Clamp::Command
       end
     end
 
-    store_params unless dont_save_answers?
+    if dont_save_answers?
+      self.class.temp_config_file = temp_config_file
+      store_params(temp_config_file)
+    else
+      store_params
+    end
     run_installation
   end
 
@@ -83,7 +88,7 @@ class KafoConfigure < Clamp::Command
     self.class.option ['-v', '--verbose'], :flag, 'Display log on STDOUT instead of progressbar'
     self.class.option ['-n', '--noop'], :flag, 'Run puppet in noop mode?', :default => false
     self.class.option ['-d', '--dont-save-answers'], :flag, 'Skip saving answers to answers.yaml?',
-                      :default => false
+                      :default => !!config.app[:dont_save_answers]
 
     config.modules.each do |mod|
       self.class.option d("--[no-]enable-#{mod.name}"),
@@ -112,9 +117,9 @@ class KafoConfigure < Clamp::Command
     end
   end
 
-  def store_params
+  def store_params(file = nil)
     data = Hash[config.modules.map { |mod| [mod.name, mod.enabled? ? mod.params_hash : false] }]
-    config.store(data)
+    config.store(data, file)
   end
 
   def validate_all(logging = true)
@@ -155,6 +160,7 @@ class KafoConfigure < Clamp::Command
       exit_code = e.status.exitstatus
     end
     logger.info "Puppet has finished, bye!"
+    FileUtils.rm(temp_config_file, :force => true)
     exit(exit_code)
   end
 
@@ -192,4 +198,7 @@ class KafoConfigure < Clamp::Command
     File.join(self.class.root_dir, 'config', 'kafo.yaml')
   end
 
+  def temp_config_file
+    @temp_config_file ||= "/tmp/kafo_answers_#{rand(1_000_000)}.yaml"
+  end
 end

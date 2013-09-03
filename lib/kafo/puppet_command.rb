@@ -6,8 +6,14 @@ class PuppetCommand
   end
 
   def command
+    custom_answer_file = if KafoConfigure.temp_config_file.nil?
+      ''
+    else
+      "$kafo_answer_file=\"#{KafoConfigure.temp_config_file}\""
+    end
+
     result = [
-        "echo '$kafo_config_file=\"#{KafoConfigure.config_file}\" #{@command}'",
+        "echo '$kafo_config_file=\"#{KafoConfigure.config_file}\" #{custom_answer_file} #{@command}'",
         " | ",
         "puppet apply #{@options.join(' ')} #{@suffix}"
     ].join

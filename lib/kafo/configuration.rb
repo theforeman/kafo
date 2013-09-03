@@ -3,7 +3,7 @@ require 'kafo/puppet_module'
 require 'kafo/password_manager'
 
 class Configuration
-  attr_reader :config_file
+  attr_reader :config_file, :answer_file
 
   DEFAULT = {
       :log_dir            => '/var/log/kafo',
@@ -86,13 +86,16 @@ class Configuration
   end
 
   def config_header
-    files = [ app[:config_header_file], File.join(KafoConfigure.gem_root, '/config/config_header.txt') ]
+    files = [ app[:config_header_file], File.join(KafoConfigure.gem_root, '/config/config_header.txt') ].compact
     file = files.select { |f| File.exists?(f) }.first
     @config_header ||= file.nil? ? '' : File.read(file)
   end
 
-  def store(data)
-    File.open(config_file, 'w') { |file| file.write(config_header + YAML.dump(data)) }
+  def store(data, file = nil)
+    filename = file || answer_file
+    FileUtils.touch filename
+    File.chmod 0600, filename
+    File.open(filename, 'w') { |file| file.write(config_header + YAML.dump(data)) }
   end
 
   private
