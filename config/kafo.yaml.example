@@ -23,3 +23,4 @@
 ## Advanced configuration - if not set it's ignored
 # :log_owner: root
 # :log_group: root
+# :config_header_file:

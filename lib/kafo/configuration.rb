@@ -85,13 +85,10 @@ class Configuration
     !!value || value.is_a?(Hash)
   end
 
-  # TODO make configurable by default empty
   def config_header
-    @config_header ||= File.read(File.join(gem_root_path, '/config/config_header.txt'))
-  end
-
-  def gem_root_path
-    @gem_root_path ||= File.join(File.dirname(__FILE__), '../../')
+    files = [ app[:config_header_file], File.join(KafoConfigure.gem_root, '/config/config_header.txt') ]
+    file = files.select { |f| File.exists?(f) }.first
+    @config_header ||= file.nil? ? '' : File.read(file)
   end
 
   def store(data)
