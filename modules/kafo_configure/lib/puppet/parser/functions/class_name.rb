@@ -7,12 +7,9 @@
 #
 module Puppet::Parser::Functions
   newfunction(:class_name, :type => :rvalue) do |args|
-    case args[0]
-      when 'puppetmaster'
-        'puppet::server'
-    else
-      args[0]
-    end
+    mapping = YAML.load_file(lookupvar('kafo_config_file'))[:mapping]
+    mod = args[0].to_sym
+    mapping[mod].nil? ? mod : "#{mapping[mod][:dir_name]}::#{mapping[mod][:manifest_name]}"
   end
 end
 

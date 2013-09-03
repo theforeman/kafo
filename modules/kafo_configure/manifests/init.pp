@@ -4,14 +4,10 @@
 #   $modulepath/config/answers.yaml
 #   /etc/kafo-configure/answers.yaml
 #
-class kafo_configure(
-  $answers = undef
-) {
+class kafo_configure {
 
   $password = load_kafo_password()
-  $params   = loadanyyaml($answers,
-                      "/etc/kafo-configure/answers.yaml",
-                      "config/answers.yaml")
+  $params   = loadanyyaml(load_kafo_answer_file())
   $keys     = kafo_ordered(hash_keys($params))
 
   kafo_configure::yaml_to_class { $keys: }

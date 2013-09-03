@@ -23,6 +23,7 @@ if ARGV.size > 0
 #!/usr/bin/env ruby
 require 'rubygems'
 require 'kafo'
+CONFIG_FILE = "/etc/#{script_name}/#{script_name}"
 KafoConfigure.run
 EOS
   File.open(script_name, 'w') { |file| file.write(content) }
@@ -32,6 +33,6 @@ end
 puts "Your directory was kafofied"
 
 puts "Now you should:"
-puts "  1. upload your puppet modules to modules directory"
-puts "  2. create default config/answers.yaml"
+puts "  1. upload your puppet modules to modules directory (you can use librarian-puppet project)"
+puts "  2. create default config/answers.yaml or modify config/kafo.yaml to laod another answer file"
 puts "  3. run #{script_name}"

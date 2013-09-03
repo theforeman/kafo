@@ -43,7 +43,7 @@ module Params
     end
 
     def phrase
-      Configuration::KAFO[:password]
+      KafoConfigure.config.app[:password]
     end
 
   end

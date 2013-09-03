@@ -17,11 +17,10 @@ class KafoConfigure < Clamp::Command
 
   def initialize(*args)
     root_dir            = Dir.pwd
-    @logger             = Logging.logger.root
-    # TODO read also file from different places (aka foreman_install puppet)
-    config_file         = File.join(root_dir, 'config', 'answers.yaml')
-    self.class.config   = Configuration.new(config_file)
     self.class.root_dir = root_dir
+    self.class.config   = Configuration.new(config_file)
+    Logger.setup
+    @logger             = Logging.logger.root
     set_env
     super
     set_parameters
@@ -36,7 +35,7 @@ class KafoConfigure < Clamp::Command
     parse_cli_arguments
 
     if verbose?
-      logger.appenders = logger.appenders << ::Logging.appenders.stdout(:layout => COLOR_LAYOUT)
+      logger.appenders = logger.appenders << ::Logging.appenders.stdout(:layout => Logger::COLOR_LAYOUT)
     end
 
     unless SystemChecker.check
@@ -127,7 +126,7 @@ class KafoConfigure < Clamp::Command
 
   def run_installation
     exit_code = 0
-    modules_path = "modules:#{File.join(File.dirname(__FILE__), '../../modules')}"
+    modules_path = "#{config.app[:puppet_modules_dir]}:#{File.join(File.dirname(__FILE__), '../../modules')}"
     options = [
         "--modulepath #{modules_path}",
         '--verbose',
@@ -138,7 +137,7 @@ class KafoConfigure < Clamp::Command
     ]
     options.push '--noop' if noop?
     begin
-      PTY.spawn("echo 'include kafo_configure' | puppet apply #{options.join(' ')}") do |stdin, stdout, pid|
+      PTY.spawn("echo '$kafo_config_file=\"#{config_file}\" include kafo_configure' | puppet apply #{options.join(' ')}") do |stdin, stdout, pid|
         begin
           stdin.each { |line| puppet_log(line) }
         rescue Errno::EIO
@@ -183,6 +182,12 @@ class KafoConfigure < Clamp::Command
     # Puppet tries to determine FQDN from /etc/resolv.conf and we do NOT want this behavior
     facter_hostname = Socket.gethostname
     ENV['FACTER_fqdn'] = facter_hostname
+  end
+
+  def config_file
+    return CONFIG_FILE if defined?(CONFIG_FILE) && File.exists?(CONFIG_FILE)
+    return '/etc/kafo/kafo.yaml' if File.exists?('/etc/kafo/kafo.yaml')
+    File.join(self.class.root_dir, 'config', 'kafo.yaml')
   end
 
 end

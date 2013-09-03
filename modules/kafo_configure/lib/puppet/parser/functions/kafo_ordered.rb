@@ -5,7 +5,7 @@
 # order
 module Puppet::Parser::Functions
   newfunction(:kafo_ordered, :type => :rvalue) do |args|
-    order = YAML.load_file('config/kafo.yaml')[:order]
+    order = YAML.load_file(lookupvar('kafo_config_file'))[:order]
     if order.nil?
       args[0]
     else

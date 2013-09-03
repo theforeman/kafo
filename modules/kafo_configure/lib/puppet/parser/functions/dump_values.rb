@@ -3,7 +3,7 @@
 module Puppet::Parser::Functions
   newfunction(:dump_values) do |args|
     data = Hash[args.map { |arg| [arg, lookupvar(arg)] }]
-    File.open('config/default_values.yaml', 'w') { |file| file.write(YAML.dump(data)) }
+    dump_dir = YAML.load_file(lookupvar('kafo_config_file'))[:default_values_dir]
+    File.open("#{dump_dir}/default_values.yaml", 'w') { |file| file.write(YAML.dump(data)) }
   end
 end
-

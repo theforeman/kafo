@@ -5,50 +5,54 @@ require 'kafo/password_manager'
 class Configuration
   attr_reader :config_file
 
-  def self.application_config_file
-    File.join(Dir.pwd, 'config/kafo.yaml')
-  end
-
-  def self.save_configuration(configuration)
-    File.open(application_config_file, 'w') { |file| file.write(YAML.dump(configuration)) }
-  end
-
-  def self.configure_application
-    begin
-      configuration = YAML.load_file(application_config_file)
-    rescue => e
-      configuration = {}
-    end
-
-    default           = {
-      :log_dir   => '/var/log/kafo',
-      :log_level => :info,
-      :no_prefix => false,
-      :mapping   => {}
-    }
-    
-    result            = default.merge(configuration || {})
-    result[:password] ||= PasswordManager.new.password
-    save_configuration(result)
-
-    result
-  end
-
-  KAFO = configure_application
+  DEFAULT = {
+      :log_dir            => '/var/log/kafo',
+      :log_level          => :info,
+      :no_prefix          => false,
+      :mapping            => {},
+      :answer_file        => '/etc/kafo/kafo.yaml',
+      :puppet_modules_dir => 'modules',
+      :default_values_dir => '/tmp'
+  }
 
   def initialize(file)
+    @config_file = file
+    configure_application
     @logger = Logging.logger.root
-    @logger.info "Loading config file #{file}"
 
+    @answer_file = app[:answer_file]
     begin
-      @data        = YAML.load_file(file)
+      @data        = YAML.load_file(@answer_file)
     rescue Errno::ENOENT => e
-      puts "No answers file at #{file} found, can not continue"
+      puts "No answers file at #{@answer_file} found, can not continue"
       exit(23)
     end
 
-    @config_file = file
-    @config_dir  = File.join(Dir.pwd, 'config')
+    @config_dir  = File.dirname(@config_file)
+  end
+
+  def save_configuration(configuration)
+    File.open(@config_file, 'w') { |file| file.write(YAML.dump(configuration)) }
+  end
+
+  def configure_application
+    result = app
+    save_configuration(result)
+    result
+  end
+
+  def app
+    @app ||= begin
+      begin
+        configuration = YAML.load_file(@config_file)
+      rescue => e
+        configuration = {}
+      end
+
+      result            = DEFAULT.merge(configuration || {})
+      result[:password] ||= PasswordManager.new.password
+      result
+    end
   end
 
   def modules
@@ -60,7 +64,7 @@ class Configuration
       @logger.info "Parsing default values from puppet modules..."
       # TODO not dry, kafo_configure.rb does similar thing
       modules_path = "modules:#{File.join(gem_root_path, 'modules')}"
-      @logger.debug `echo '#{includes} dump_values(#{params})' | puppet apply --modulepath #{modules_path} 2>&1`
+      @logger.debug `echo '$kafo_config_file="#{@config_file}" #{includes} dump_values(#{params})' | puppet apply --modulepath #{modules_path} 2>&1`
       unless $?.exitstatus == 0
         @logger.error "Could not get default values, cannot continue"
         exit(25)

@@ -1,15 +1,24 @@
 # kafo main configuration file example
 # you can rename it to kafo.yaml so it overwrite default kafo settings
-# note current configuration is written tokafo.yaml every time kafo is run
+# note current configuration is written to kafo.yaml every time kafo is run
 
-## Useful for development, e.g. when you want to move log files to local directory
-# :log_dir: '/var/log/kafo'
-# :log_level: :info
+## Installer configuration
+# Path to answer file, if the file does not exist a $pwd/config/answers.yaml is used as a fallback
+# :answer_file: /etc/kafo/kafo.yaml
+# Uncomment if you want to load puppet modules from a specific path, $pwd/modules is used by default
+# :puppet_modules_dir: /usr/share/kafo/modules
 
 ## Kafo tuning, customization of core functionality
 # :no_prefix: false
 # :mapping: {}
 # :order:
+
+## Useful for development, e.g. when you want to move log files to local directory
+# :log_dir: /var/log/kafo
+# :log_level: :info
+
+# Change if you want to debug default answers for you modules, this directory holds default answers
+# :default_values_dir: /tmp
 
 ## Advanced configuration - if not set it's ignored
 # :log_owner: root

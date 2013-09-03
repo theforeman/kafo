@@ -64,7 +64,7 @@ class PuppetModule
 
   # mapping from configuration with stringified keys
   def mapping
-    @mapping ||= Hash[Configuration::KAFO[:mapping].map { |k, v| [k.to_s, v] }]
+    @mapping ||= Hash[KafoConfigure.config.app[:mapping].map { |k, v| [k.to_s, v] }]
   end
 
   # custom module directory name

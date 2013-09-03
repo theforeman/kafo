@@ -29,6 +29,7 @@ class PuppetModuleParser
     end
   end
 
+  # TODO - store parsed object type (Puppet::Parser::AST::Variable must be dumped later)
   def parameters
     parameters = {}
     arguments  = @object.respond_to?(:arguments) ? @object.arguments : {}

@@ -2,7 +2,7 @@
 #
 module Puppet::Parser::Functions
   newfunction(:load_kafo_password, :type => :rvalue) do |args|
-    YAML.load_file('config/kafo.yaml')[:password]
+    YAML.load_file(lookupvar('kafo_config_file'))[:password]
   end
 end
 
