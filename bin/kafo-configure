@@ -5,4 +5,4 @@
 
 $LOAD_PATH.unshift File.expand_path(File.join(File.dirname(__FILE__), '..', 'lib', 'kafo'))
 require 'kafo_configure'
-KafoConfigure.run
+exit KafoConfigure.run.exit_code
