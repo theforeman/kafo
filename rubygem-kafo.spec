@@ -8,7 +8,7 @@
 
 Summary: A gem for making installations based on puppet user friendly
 Name: %{?scl_prefix}rubygem-%{gem_name}
-Version: 0.0.7
+Version: 0.0.8
 Release: 1%{?dist}
 Group: Development/Libraries
 License: GPLv3+
@@ -94,6 +94,9 @@ cp -a .%{gem_dir}/* \
 %doc %{gem_instdir}/README.md
 
 %changelog
+* Wed Sep 04 2013 Marek Hulan <mhulan@redhat.com> 0.0.8-1
+- Fixed loading from custom default_values_dir (mhulan@redhat.com)
+
 * Wed Sep 04 2013 Marek Hulan <mhulan@redhat.com> 0.0.7-1
 - Support relative paths for installer_dir (mhulan@redhat.com)
 - Fixate all paths to installer_dir (mhulan@redhat.com)
