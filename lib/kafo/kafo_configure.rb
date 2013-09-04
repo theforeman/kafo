@@ -19,7 +19,7 @@ class KafoConfigure < Clamp::Command
   def initialize(*args)
     self.class.config_file = config_file
     self.class.config      = Configuration.new(self.class.config_file)
-    self.class.root_dir    = self.class.config.app[:installer_dir]
+    self.class.root_dir    = File.expand_path(self.class.config.app[:installer_dir])
     self.class.gem_root    = File.join(File.dirname(__FILE__), '../../')
     Logger.setup
     @logger = Logging.logger.root
