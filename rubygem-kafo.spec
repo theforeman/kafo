@@ -8,8 +8,8 @@
 
 Summary: A gem for making installations based on puppet user friendly
 Name: %{?scl_prefix}rubygem-%{gem_name}
-Version: 0.0.6
-Release: 3%{?dist}
+Version: 0.0.7
+Release: 1%{?dist}
 Group: Development/Libraries
 License: GPLv3+
 URL: https://github.com/theforeman/kafo
@@ -94,6 +94,19 @@ cp -a .%{gem_dir}/* \
 %doc %{gem_instdir}/README.md
 
 %changelog
+* Wed Sep 04 2013 Marek Hulan <mhulan@redhat.com> 0.0.7-1
+- Support relative paths for installer_dir (mhulan@redhat.com)
+- Fixate all paths to installer_dir (mhulan@redhat.com)
+- Offer an exit code, but don't actually exit (necasik@gmail.com)
+- Make "dont_save_answers" option work properly (mhulan@redhat.com)
+- Enable custom config comment template (mhulan@redhat.com)
+- Dry up puppet execution (mhulan@redhat.com)
+- Added create_resources puppet module (mhulan@redhat.com)
+- Configuration cleanup (mhulan@redhat.com)
+- Ruby-abi is not build requirement either (mhulan@redhat.com)
+- Adds Fedora 19 support to rpm spec (mhulan@redhat.com)
+- Fix small typo in example for mapping (inecas@redhat.com)
+
 * Thu Aug 29 2013 Marek Hulan <mhulan@redhat.com> 0.0.6-3
 - Ruby-abi is not build requirement either (mhulan@redhat.com)
 
