@@ -11,7 +11,7 @@ class Configuration
       :no_prefix          => false,
       :mapping            => {},
       :answer_file        => '/etc/kafo/kafo.yaml',
-      :puppet_modules_dir => 'modules',
+      :installer_dir      => '.',
       :default_values_dir => '/tmp'
   }
 

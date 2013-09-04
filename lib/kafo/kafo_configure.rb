@@ -17,11 +17,10 @@ class KafoConfigure < Clamp::Command
   end
 
   def initialize(*args)
-    root_dir               = Dir.pwd
-    self.class.root_dir    = root_dir
     self.class.config_file = config_file
-    self.class.config = Configuration.new(self.class.config_file)
-    self.class.gem_root = File.join(File.dirname(__FILE__), '../../')
+    self.class.config      = Configuration.new(self.class.config_file)
+    self.class.root_dir    = self.class.config.app[:installer_dir]
+    self.class.gem_root    = File.join(File.dirname(__FILE__), '../../')
     Logger.setup
     @logger = Logging.logger.root
     set_env
@@ -237,7 +236,7 @@ class KafoConfigure < Clamp::Command
   def config_file
     return CONFIG_FILE if defined?(CONFIG_FILE) && File.exists?(CONFIG_FILE)
     return '/etc/kafo/kafo.yaml' if File.exists?('/etc/kafo/kafo.yaml')
-    File.join(self.class.root_dir, 'config', 'kafo.yaml')
+    File.join(Dir.pwd, 'config', 'kafo.yaml')
   end
 
   def temp_config_file
