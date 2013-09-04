@@ -1,3 +1,4 @@
+# encoding: UTF-8
 module StringHelper
   def dashize(string)
     string.tr('_', '-')

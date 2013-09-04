@@ -1,3 +1,4 @@
+# encoding: UTF-8
 require 'kafo/param'
 require 'kafo/param_builder'
 require 'kafo/puppet_module_parser'

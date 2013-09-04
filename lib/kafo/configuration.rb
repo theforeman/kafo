@@ -1,3 +1,4 @@
+# encoding: UTF-8
 require 'yaml'
 require 'kafo/puppet_module'
 require 'kafo/password_manager'

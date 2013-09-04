@@ -1,3 +1,4 @@
+# encoding: UTF-8
 class PuppetCommand
   def initialize(command, options = [])
     @command = command

@@ -1,3 +1,4 @@
+# encoding: UTF-8
 # we require separate STDERR
 require 'open3'
 

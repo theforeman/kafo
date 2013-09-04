@@ -1,3 +1,4 @@
+# encoding: UTF-8
 require 'securerandom'
 require 'digest/sha2'
 require 'openssl'

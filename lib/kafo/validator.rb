@@ -1,3 +1,4 @@
+# encoding: UTF-8
 class Validator
 
   def initialize(params)

@@ -1,3 +1,4 @@
+# encoding: UTF-8
 class Param
   attr_reader :name, :module
   attr_accessor :default, :doc, :value_set

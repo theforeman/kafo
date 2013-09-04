@@ -1,3 +1,4 @@
+# encoding: UTF-8
 require 'pty'
 require 'clamp'
 require 'kafo/exceptions'

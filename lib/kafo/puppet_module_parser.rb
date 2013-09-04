@@ -1,3 +1,4 @@
+# encoding: UTF-8
 require 'puppet'
 require 'rdoc'
 # Based on ideas from puppet-parse by Johan van den Dorpe
