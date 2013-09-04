@@ -69,7 +69,7 @@ class Configuration
         exit(:default_error)
       end
       @logger.info "... finished"
-      YAML.load_file(File.join(@config_dir, 'default_values.yaml'))
+      YAML.load_file(File.join(KafoConfigure.config.app[:default_values_dir], 'default_values.yaml'))
     end
   end
 
