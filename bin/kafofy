@@ -23,7 +23,7 @@ if ARGV.size > 0
 #!/usr/bin/env ruby
 require 'rubygems'
 require 'kafo'
-CONFIG_FILE = "/etc/#{script_name}/#{script_name}"
+CONFIG_FILE = "/etc/#{name}/#{name}.yaml"
 KafoConfigure.run
 EOS
   File.open(script_name, 'w') { |file| file.write(content) }
