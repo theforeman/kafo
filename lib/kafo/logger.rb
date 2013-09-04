@@ -3,9 +3,6 @@ require 'logging'
 
 class Logger
   pattern        = "[%5l %d %c] %m\n"
-  COLOR_LAYOUT   = Logging::Layouts::Pattern.new(:pattern => pattern, :color_scheme => 'bright')
-  NOCOLOR_LAYOUT = Logging::Layouts::Pattern.new(:pattern => pattern, :color_scheme => nil)
-
   Logging.color_scheme('bright',
                        :levels => {
                            :info  => :green,
@@ -19,6 +16,8 @@ class Logger
                        :file   => :yellow,
                        :method => :yellow
   )
+  COLOR_LAYOUT   = Logging::Layouts::Pattern.new(:pattern => pattern, :color_scheme => 'bright')
+  NOCOLOR_LAYOUT = Logging::Layouts::Pattern.new(:pattern => pattern, :color_scheme => nil)
 
   def self.setup
     begin
