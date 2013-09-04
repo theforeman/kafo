@@ -25,7 +25,7 @@ class Configuration
       @data        = YAML.load_file(@answer_file)
     rescue Errno::ENOENT => e
       puts "No answers file at #{@answer_file} found, can not continue"
-      exit(:no_answer_file)
+      KafoConfigure.exit(:no_answer_file)
     end
 
     @config_dir  = File.dirname(@config_file)
@@ -68,7 +68,7 @@ class Configuration
       @logger.debug `#{command}`
       unless $?.exitstatus == 0
         @logger.error "Could not get default values, cannot continue"
-        exit(:default_error)
+        KafoConfigure.exit(:default_error)
       end
       @logger.info "... finished"
       YAML.load_file(File.join(KafoConfigure.config.app[:default_values_dir], 'default_values.yaml'))
