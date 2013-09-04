@@ -43,7 +43,7 @@ class PuppetModule
   rescue ConfigurationException => e
     puts "Unable to continue because of:"
     puts e.message
-    exit(22)
+    KafoConfigure.exit(:manifest_error)
   end
 
   def validations(param = nil)
