@@ -32,6 +32,8 @@ class Configuration
   end
 
   def save_configuration(configuration)
+    FileUtils.touch @config_file
+    File.chmod 0600, @config_file
     File.open(@config_file, 'w') { |file| file.write(YAML.dump(configuration)) }
   end
 
