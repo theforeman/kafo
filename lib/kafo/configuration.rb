@@ -69,7 +69,7 @@ class Configuration
       @logger.debug `#{command}`
       unless $?.exitstatus == 0
         @logger.error "Could not get default values, cannot continue"
-        KafoConfigure.exit(:default_error)
+        KafoConfigure.exit(:defaults_error)
       end
       @logger.info "... finished"
       YAML.load_file(File.join(KafoConfigure.config.app[:default_values_dir], 'default_values.yaml'))
