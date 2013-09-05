@@ -8,7 +8,7 @@
 
 Summary: A gem for making installations based on puppet user friendly
 Name: %{?scl_prefix}rubygem-%{gem_name}
-Version: 0.0.8
+Version: 0.0.9
 Release: 1%{?dist}
 Group: Development/Libraries
 License: GPLv3+
@@ -94,6 +94,13 @@ cp -a .%{gem_dir}/* \
 %doc %{gem_instdir}/README.md
 
 %changelog
+* Thu Sep 05 2013 Marek Hulan <mhulan@redhat.com> 0.0.9-1
+- Fix the name of an error (mhulan@redhat.com)
+- Add encoding comment (mhulan@redhat.com)
+- Fix exit in configuration (mhulan@redhat.com)
+- Make sure that main config has mode 0600 (mhulan@redhat.com)
+- Fix color layout on STDOUT (mhulan@redhat.com)
+
 * Wed Sep 04 2013 Marek Hulan <mhulan@redhat.com> 0.0.8-1
 - Fixed loading from custom default_values_dir (mhulan@redhat.com)
 
