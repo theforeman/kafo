@@ -9,6 +9,7 @@ require 'kafo/string_helper'
 require 'kafo/wizard'
 require 'kafo/system_checker'
 require 'kafo/puppet_command'
+require 'kafo/progress_bar'
 
 class KafoConfigure < Clamp::Command
   include StringHelper
@@ -16,7 +17,7 @@ class KafoConfigure < Clamp::Command
 
   class << self
     attr_accessor :config, :root_dir, :config_file, :gem_root, :temp_config_file,
-                  :modules_dir, :kafo_modules_dir
+                  :modules_dir, :kafo_modules_dir, :verbose
   end
 
   def initialize(*args)
@@ -29,6 +30,7 @@ class KafoConfigure < Clamp::Command
     self.class.kafo_modules_dir = self.class.config.app[:kafo_modules_dir] || (self.class.gem_root + '/modules')
     Logger.setup
     @logger = Logging.logger.root
+    @progress_bar = nil
     super
     set_parameters
     set_options
@@ -42,8 +44,10 @@ class KafoConfigure < Clamp::Command
     catch :exit do
       parse_cli_arguments
 
-      if verbose?
+      if (self.class.verbose = verbose?)
         logger.appenders = logger.appenders << ::Logging.appenders.stdout(:layout => Logger::COLOR_LAYOUT)
+      else
+        @progress_bar = ProgressBar.new
       end
 
       unless SystemChecker.check
@@ -192,7 +196,10 @@ class KafoConfigure < Clamp::Command
       command = PuppetCommand.new('include kafo_configure', options).command
       PTY.spawn(command) do |stdin, stdout, pid|
         begin
-          stdin.each { |line| puppet_log(line) }
+          stdin.each do |line|
+            puppet_log(*puppet_parse(line))
+            @progress_bar.update(line) if @progress_bar
+          end
         rescue Errno::EIO
           if PTY.respond_to?(:check) # ruby >= 1.9.2
             exit_code = PTY.check(pid, true).exitstatus
@@ -205,12 +212,18 @@ class KafoConfigure < Clamp::Command
     rescue PTY::ChildExited => e
       exit_code = e.status.exitstatus
     end
+    @progress_bar.close if @progress_bar
     logger.info "Puppet has finished, bye!"
     FileUtils.rm(temp_config_file, :force => true)
     exit(exit_code)
   end
 
-  def puppet_log(line)
+  def puppet_log(method, message)
+    @progress_bar.print ANSI::Code.red { message + "\n" } if method == :error && @progress_bar
+    Logging.logger['puppet'].send(method, message)
+  end
+
+  def puppet_parse(line)
     method, message = case
                         when line =~ /^Error:(.*)/i || line =~ /^Err:(.*)/i
                           [:error, $1]
@@ -223,7 +236,8 @@ class KafoConfigure < Clamp::Command
                         else
                           [:info, line]
                       end
-    Logging.logger['puppet'].send(method, message.chomp)
+
+    return [method, message.chomp]
   end
 
   def unset
