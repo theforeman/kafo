@@ -27,7 +27,7 @@ Gem::Specification.new do |spec|
 
   # puppet manifests parsing
   spec.add_dependency 'puppet'
-  spec.add_dependency 'rdoc', '~> 3.0'
+  spec.add_dependency 'rdoc', '>= 3.9.0'
   # better logging
   spec.add_dependency 'logging'
   # CLI interface
