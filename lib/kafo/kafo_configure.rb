@@ -208,11 +208,9 @@ class KafoConfigure < Clamp::Command
 
   def puppet_log(line)
     method, message = case
-                        when line =~ /^Error:(.*)/i
+                        when line =~ /^Error:(.*)/i || line =~ /^Err:(.*)/i
                           [:error, $1]
-                        when line =~ /^Warning:(.*)/i
-                          [:warn, $1]
-                        when line =~ /^Notice:(.*)/i
+                        when line =~ /^Warning:(.*)/i || line =~ /^Notice:(.*)/i
                           [:warn, $1]
                         when line =~ /^Info:(.*)/i
                           [:info, $1]
