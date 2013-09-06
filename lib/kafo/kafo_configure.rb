@@ -14,13 +14,15 @@ class KafoConfigure < Clamp::Command
   attr_reader :logger
 
   class << self
-    attr_accessor :config, :root_dir, :config_file, :gem_root, :temp_config_file
+    attr_accessor :config, :root_dir, :config_file, :gem_root, :temp_config_file, :modules_dir
   end
 
   def initialize(*args)
     self.class.config_file = config_file
     self.class.config      = Configuration.new(self.class.config_file)
     self.class.root_dir    = File.expand_path(self.class.config.app[:installer_dir])
+    modules_dir            = self.class.config.app[:module_dir] || (self.class.config.app[:installer_dir] + '/modules')
+    self.class.modules_dir = File.expand_path(modules_dir)
     self.class.gem_root    = File.join(File.dirname(__FILE__), '../../')
     Logger.setup
     @logger = Logging.logger.root

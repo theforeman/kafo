@@ -30,10 +30,8 @@ class PuppetCommand
   private
 
   def modules_path
-    installer_modules = KafoConfigure.config.app[:modules_dir] ||
-        (KafoConfigure.config.app[:installer_dir] + '/modules')
     [
-        installer_modules,
+        KafoConfigure.config.app[:modules_dir],
         File.join(KafoConfigure.gem_root, 'modules')
     ].join(':')
   end

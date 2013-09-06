@@ -2,7 +2,7 @@
 class Validator
 
   def initialize(params)
-    files = KafoConfigure.root_dir + '/modules/stdlib/lib/puppet/parser/functions/validate_*.rb'
+    files = KafoConfigure.modules_dir + '/*/lib/puppet/parser/functions/validate_*.rb'
     Dir.glob(files).each do |file|
       require file
     end
