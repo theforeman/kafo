@@ -7,15 +7,14 @@ module Params
   class Password < Param
     def value=(value)
       super
+      if @value.nil? || @value.empty?
+        @value = password_manager.password
+      end
       setup_password if @value.is_a?(::String)
       @value
     end
 
-    # if value was not specified and default is nil we generate a random password
-    # also we make sure that we have encrypted version that is to be outputted
     def value
-      @value = @value_set ? @value : (default || password_manager.password)
-      encrypt if @value.is_a?(::String)
       @encrypted
     end
 
