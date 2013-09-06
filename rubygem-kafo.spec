@@ -8,7 +8,7 @@
 
 Summary: A gem for making installations based on puppet user friendly
 Name: %{?scl_prefix}rubygem-%{gem_name}
-Version: 0.0.10
+Version: 0.0.11
 Release: 1%{?dist}
 Group: Development/Libraries
 License: GPLv3+
@@ -94,6 +94,16 @@ cp -a .%{gem_dir}/* \
 %doc %{gem_instdir}/README.md
 
 %changelog
+* Fri Sep 06 2013 Marek Hulan <mhulan@redhat.com> 0.0.11-1
+- Allow custom modules to define own validation functions (mhulan@redhat.com)
+- Ensure Facter fqdn matches hostname -f Ensure we have an FQDN and not a
+  shortname when done. (gsutclif@redhat.com)
+- Support older RDoc (mhulan@redhat.com)
+- Fix for short puppet messages (mhulan@redhat.com)
+- We support RDoc4 (mhulan@redhat.com)
+- Make sure decrypt function is available in templates (necasik@gmail.com)
+- Generate random password for blank password param (necasik@gmail.com)
+
 * Fri Sep 06 2013 Marek Hulan <mhulan@redhat.com> 0.0.10-1
 - Readme update (mhulan@redhat.com)
 - Explicit option to set path to modules directory (mhulan@redhat.com)
