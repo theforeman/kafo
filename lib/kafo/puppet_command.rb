@@ -31,8 +31,8 @@ class PuppetCommand
 
   def modules_path
     [
-        KafoConfigure.config.app[:modules_dir],
-        File.join(KafoConfigure.gem_root, 'modules')
+        KafoConfigure.modules_dir,
+        KafoConfigure.kafo_modules_dir,
     ].join(':')
   end
 end

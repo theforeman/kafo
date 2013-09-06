@@ -297,13 +297,17 @@ paths. In order to do that you can use following configuration options:
 
 * :answer_file: /etc/kafo/kafo.yaml
 * :installer_dir: /usr/share/kafo/
-* :modules_dir: /usr/share/kafo/modules
+* :modules_dir: /usr/share/foreman-installer/modules
+* :kafo_modules_dir: /usr/share/kafo/modules
 
 Answer file is obvious. Installer dir is a place where you installer is 
 installed. E.g. system checks will be loaded from here (under checks 
-subdirectory). On debian systems you may want to specify modules dir 
-independent on your installer location. If you specify this option your 
-installer puppet modules will be loaded from here.
+subdirectory). You can optionally change foreman-installer modules dir
+using modules_dir option.
+
+On debian systems you may want to specify kafo modules dir
+independent on your installer location. If you specify this option kafo
+internal installer puppet modules will be loaded from here.
 
 ## Order of puppet modules execution
 
