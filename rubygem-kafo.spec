@@ -8,7 +8,7 @@
 
 Summary: A gem for making installations based on puppet user friendly
 Name: %{?scl_prefix}rubygem-%{gem_name}
-Version: 0.0.11
+Version: 0.0.12
 Release: 1%{?dist}
 Group: Development/Libraries
 License: GPLv3+
@@ -94,6 +94,9 @@ cp -a .%{gem_dir}/* \
 %doc %{gem_instdir}/README.md
 
 %changelog
+* Fri Sep 06 2013 Marek Hulan <mhulan@redhat.com> 0.0.12-1
+- Make internal moduels path configurable (mhulan@redhat.com)
+
 * Fri Sep 06 2013 Marek Hulan <mhulan@redhat.com> 0.0.11-1
 - Allow custom modules to define own validation functions (mhulan@redhat.com)
 - Ensure Facter fqdn matches hostname -f Ensure we have an FQDN and not a
