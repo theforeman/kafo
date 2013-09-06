@@ -1,4 +1,5 @@
 # encoding: UTF-8
+require 'facter'
 require 'pty'
 require 'clamp'
 require 'kafo/exceptions'
@@ -26,7 +27,7 @@ class KafoConfigure < Clamp::Command
     self.class.gem_root    = File.join(File.dirname(__FILE__), '../../')
     Logger.setup
     @logger = Logging.logger.root
-    set_env
+    check_env
     super
     set_parameters
     set_options
@@ -97,7 +98,8 @@ class KafoConfigure < Clamp::Command
                     :manifest_error => 22,
                     :no_answer_file => 23,
                     :unknown_module => 24,
-                    :defaults_error => 25 }
+                    :defaults_error => 25,
+                    :wrong_hostname => 26}
     if error_codes.has_key? code
       return error_codes[code]
     else
@@ -228,10 +230,17 @@ class KafoConfigure < Clamp::Command
     params.select { |p| p.module.enabled? && p.value_set.nil? }
   end
 
-  def set_env
-    # Puppet tries to determine FQDN from /etc/resolv.conf and we do NOT want this behavior
-    facter_hostname = Socket.gethostname
-    ENV['FACTER_fqdn'] = facter_hostname
+  def check_env
+    # Check that facter actually has a value that matches the hostname.
+    # This should always be true for facter >= 1.7
+    fqdn_exit("'facter fqdn' does not match 'hostname -f'") if Facter.fqdn != `hostname -f`.chomp
+    # Every FQDN should have at least one dot
+    fqdn_exit("Invalid FQDN: #{Facter.fqdn}, check your hostname") unless Facter.fqdn.include?('.')
+  end
+
+  def fqdn_exit(message)
+    logger.error message
+    exit(:wrong_hostname)
   end
 
   def config_file
