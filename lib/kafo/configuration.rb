@@ -13,6 +13,7 @@ class Configuration
       :mapping            => {},
       :answer_file        => '/etc/kafo/kafo.yaml',
       :installer_dir      => '.',
+      :modules_dir        => './modules',
       :default_values_dir => '/tmp'
   }
 
