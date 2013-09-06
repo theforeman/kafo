@@ -4,7 +4,7 @@
 module Puppet::Parser::Functions
   newfunction(:load_kafo_answer_file, :type => :rvalue) do |args|
     answer_file = lookupvar('kafo_answer_file')
-    if answer_file && !answer_file.empty?
+    if answer_file && answer_file != :undefined && !answer_file.empty?
       answer_file
     else
       YAML.load_file(lookupvar('kafo_config_file'))[:answer_file]
