@@ -190,7 +190,8 @@ Kafo support password arguments. It's adding some level of protection for you
 passwords. Usually people generate random strings for passwords. However all
 values are stored in config/answers.yaml which introduce some security risk.
 
-If this is something to concern for you, you can use password type. It will
+If this is something to consider for you, you can use password type (see 
+Argument types for more info how to define parameter type). It will
 generate a secure (random) password of decent length (32 chars) and encrypts
 it using AES 256 in CBC mode. It uses a passphrase that is stored in
 config/kafo.yaml so if anyone gets an access to this file, he can read all
@@ -288,6 +289,21 @@ bin/foreman-installer --foreman-db-password=UNDEF
 ```
 
 It also works in interactive mode.
+
+## Custom paths
+
+Usually when you package your installer you want to load files from specific
+paths. In order to do that you can use following configuration options:
+
+* :answer_file: /etc/kafo/kafo.yaml
+* :installer_dir: /usr/share/kafo/
+* :modules_dir: /usr/share/kafo/modules
+
+Answer file is obvious. Installer dir is a place where you installer is 
+installed. E.g. system checks will be loaded from here (under checks 
+subdirectory). On debian systems you may want to specify modules dir 
+independent on your installer location. If you specify this option your 
+installer puppet modules will be loaded from here.
 
 ## Order of puppet modules execution
 
