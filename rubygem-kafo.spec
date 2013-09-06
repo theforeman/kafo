@@ -8,7 +8,7 @@
 
 Summary: A gem for making installations based on puppet user friendly
 Name: %{?scl_prefix}rubygem-%{gem_name}
-Version: 0.0.9
+Version: 0.0.10
 Release: 1%{?dist}
 Group: Development/Libraries
 License: GPLv3+
@@ -94,6 +94,11 @@ cp -a .%{gem_dir}/* \
 %doc %{gem_instdir}/README.md
 
 %changelog
+* Fri Sep 06 2013 Marek Hulan <mhulan@redhat.com> 0.0.10-1
+- Readme update (mhulan@redhat.com)
+- Explicit option to set path to modules directory (mhulan@redhat.com)
+- Support puppet 2.7 undefined variables (mhulan@redhat.com)
+
 * Thu Sep 05 2013 Marek Hulan <mhulan@redhat.com> 0.0.9-1
 - Fix the name of an error (mhulan@redhat.com)
 - Add encoding comment (mhulan@redhat.com)
