@@ -1,6 +1,9 @@
 # encoding: UTF-8
 require 'puppet'
 require 'rdoc'
+require 'rdoc/markup'        # required for RDoc < 0.9.5
+require 'rdoc/markup/parser' # required for RDoc < 0.9.5
+
 # Based on ideas from puppet-parse by Johan van den Dorpe
 class PuppetModuleParser
   def self.parse(file)
@@ -49,7 +52,11 @@ class PuppetModuleParser
   def docs
     docs = {}
     if !@object.doc.nil?
-      rdoc  = RDoc::Markup.parse(@object.doc)
+      if RDoc::Markup.respond_to?(:parse)
+        rdoc  = RDoc::Markup.parse(@object.doc)
+      else # RDoc < 3.10.0
+        rdoc = RDoc::Markup::Parser.parse(@object.doc)
+      end
       items = rdoc.parts.select { |part| part.respond_to?(:items) }.map(&:items).flatten
       items.each do |item|
         # Skip rdoc items that aren't paragraphs
