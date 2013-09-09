@@ -16,7 +16,7 @@ class PuppetCommand
     result = [
         "echo '$kafo_config_file=\"#{KafoConfigure.config_file}\" #{custom_answer_file} #{@command}'",
         " | ",
-        "puppet apply #{@options.join(' ')} #{@suffix}"
+        "LANGUAGE=en_US.UTF-8 LANG=en_US.UTF-8 LC_ALL=en_US.UTF-8 puppet apply #{@options.join(' ')} #{@suffix}"
     ].join
     @logger.debug result
     result
