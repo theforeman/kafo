@@ -17,8 +17,9 @@ class Configuration
       :default_values_dir => '/tmp'
   }
 
-  def initialize(file)
+  def initialize(file, persist = true)
     @config_file = file
+    @persist = persist
     configure_application
     @logger = Logging.logger.root
 
@@ -34,6 +35,7 @@ class Configuration
   end
 
   def save_configuration(configuration)
+    return true unless @persist
     FileUtils.touch @config_file
     File.chmod 0600, @config_file
     File.open(@config_file, 'w') { |file| file.write(YAML.dump(configuration)) }
