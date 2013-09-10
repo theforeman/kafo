@@ -19,6 +19,7 @@
 
 ## Useful for development, e.g. when you want to move log files to local directory
 # :log_dir: /var/log/kafo
+# :log_name: configure.log
 # :log_level: :info
 
 # Change if you want to debug default answers for you modules, this directory holds default answers
