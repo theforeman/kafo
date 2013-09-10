@@ -1,0 +1,104 @@
+#!/usr/bin/env ruby
+require 'clamp'
+require 'logging'
+require 'kafo/string_helper'
+
+$LOAD_PATH.unshift File.expand_path(File.join(File.dirname(__FILE__), '..', 'lib', 'kafo'))
+require 'configuration'
+
+KafoConfigure = OpenStruct.new
+
+class KafoExportParams < Clamp::Command
+  TYPES = %w(md html)
+
+  option ['-c', '--config'], 'FILE', 'Config file for which should we generate params',
+         :required => true
+
+  option ['-f', '--format'], 'FORMAT',
+         'Config file for which should we generate params', :default => 'md' do |format|
+    format = format.downcase
+    raise ArgumentError unless TYPES.include?(format)
+    format
+  end
+
+  def execute
+    c = Configuration.new(config, false)
+    KafoConfigure.config = c
+    KafoConfigure.root_dir = File.expand_path(c.app[:installer_dir])
+
+    exporter = self.class.const_get(format.capitalize).new(c)
+    exporter.print_out
+  end
+
+  class Html
+    include StringHelper
+
+    def initialize(config)
+      @config = config
+    end
+
+    def print_out
+      puts '<div id="installer-options">'
+      puts '  <table class="table table-bordered table-condensed">'
+      header
+      puts '    <tbody>'
+
+      @config.modules.each do |mod|
+        mod.params.each do |param|
+          puts '      <tr>'
+          puts "        <td>#{parametrize(param)}</td>"
+          puts "        <td>#{param.doc.join(' ')}</td>"
+          puts '      </tr>'
+        end
+      end
+
+      puts '    </tbody>'
+      puts '  </table>'
+      puts '</div>'
+    end
+
+    private
+
+    def header
+      puts '    <thead>'
+      puts '      <tr>'
+      puts '        <th>Option</th>'
+      puts '        <th>Description</th>'
+      puts '      </tr>'
+      puts '    </thead>'
+    end
+  end
+
+  class Md
+    include StringHelper
+
+    def initialize(config)
+      @config = config
+      @max = max_description_length
+    end
+
+    def print_out
+      puts "| #{('Parameter name').ljust(40)} | #{'Description'.ljust(@max)} |"
+      puts "| #{'-'*40} | #{'-' * @max} |"
+      @config.modules.each do |mod|
+        mod.params.each do |param|
+          puts "| #{parametrize(param).ljust(40)} | #{param.doc.join(' ').ljust(@max)} |"
+        end
+      end
+    end
+
+    private
+
+    def header
+      @header ||= "| #{'-'*40} | #{'-' * @max} |"
+    end
+
+    def max_description_length
+      doc_lengths = @config.modules.map { |mod| mod.params.map { |param| param.doc.join(' ').length } }.flatten
+      doc_lengths << 52
+      doc_lengths.max
+    end
+  end
+end
+
+KafoExportParams.run
