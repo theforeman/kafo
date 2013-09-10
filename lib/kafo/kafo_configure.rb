@@ -29,7 +29,6 @@ class KafoConfigure < Clamp::Command
     self.class.kafo_modules_dir = self.class.config.app[:kafo_modules_dir] || (self.class.gem_root + '/modules')
     Logger.setup
     @logger = Logging.logger.root
-    check_env
     super
     set_parameters
     set_options
@@ -100,8 +99,7 @@ class KafoConfigure < Clamp::Command
                     :manifest_error => 22,
                     :no_answer_file => 23,
                     :unknown_module => 24,
-                    :defaults_error => 25,
-                    :wrong_hostname => 26}
+                    :defaults_error => 25}
     if error_codes.has_key? code
       return error_codes[code]
     else
@@ -230,19 +228,6 @@ class KafoConfigure < Clamp::Command
 
   def unset
     params.select { |p| p.module.enabled? && p.value_set.nil? }
-  end
-
-  def check_env
-    # Check that facter actually has a value that matches the hostname.
-    # This should always be true for facter >= 1.7
-    fqdn_exit("'facter fqdn' does not match 'hostname -f'") if Facter.fqdn != `hostname -f`.chomp
-    # Every FQDN should have at least one dot
-    fqdn_exit("Invalid FQDN: #{Facter.fqdn}, check your hostname") unless Facter.fqdn.include?('.')
-  end
-
-  def fqdn_exit(message)
-    logger.error message
-    exit(:wrong_hostname)
   end
 
   def config_file
