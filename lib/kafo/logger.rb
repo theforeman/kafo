@@ -28,7 +28,7 @@ class Logger
     end
 
     logger   = Logging.logger.root
-    filename = "#{KafoConfigure.config.app[:log_dir]}/configure.log"
+    filename = "#{KafoConfigure.config.app[:log_dir]}/#{KafoConfigure.config.app[:log_name] || 'configure.log'}"
     begin
       logger.appenders = ::Logging.appenders.rolling_file('configure',
                                                           :filename => filename,
