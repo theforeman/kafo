@@ -364,6 +364,7 @@ exit $?
 Kafo can terminate either before or after puppet is ran. Puppet is ran with
 --detailed-exitcodes and Kafo returns the same exit code as puppet does. If
 kafo terminates after puppet run exit codes are:
+* '1' means there were parser/validation errors
 * '2' means there were changes,
 * '4' means there were failures during the transaction,
 * '6' means there were both changes and failures.
