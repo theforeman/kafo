@@ -377,7 +377,6 @@ Other exit codes that can be returned:
 * '23' means that you have no answer file
 * '24' means that your answer file asks for puppet module that you did not provide
 * '25' means that kafo could not get default values from puppet
-* '26' means that you machine does not seem to have FQDN set correctly
 
 
 # License
