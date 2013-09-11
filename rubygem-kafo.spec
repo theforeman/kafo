@@ -78,6 +78,7 @@ cp -a .%{gem_dir}/* \
 %{gem_instdir}/modules
 %{gem_dir}/bin/kafo-configure
 %{gem_dir}/bin/kafofy
+%{gem_dir}/bin/kafo-export-params
 
 %doc %{gem_instdir}/LICENSE.txt
 
