@@ -1,4 +1,4 @@
 # encoding: UTF-8
 module Kafo
-  VERSION = "0.0.12"
+  VERSION = "0.0.13"
 end
