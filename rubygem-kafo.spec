@@ -8,7 +8,7 @@
 
 Summary: A gem for making installations based on puppet user friendly
 Name: %{?scl_prefix}rubygem-%{gem_name}
-Version: 0.0.12
+Version: 0.0.13
 Release: 1%{?dist}
 Group: Development/Libraries
 License: GPLv3+
@@ -95,6 +95,17 @@ cp -a .%{gem_dir}/* \
 %doc %{gem_instdir}/README.md
 
 %changelog
+* Thu Sep 12 2013 Marek Hulan <mhulan@redhat.com> 0.0.13-1
+- Fixes packaging (mhulan@redhat.com)
+- Revert "Fix for Fedora 19 OS name" (mhulan@redhat.com)
+- Fix for dumping undef values in puppet 2.6 (mhulan@redhat.com)
+- exit code 1 means parser error (necasik@gmail.com)
+- Revert FQDN hostname enforcement (mhulan@redhat.com)
+- You can change log filename via configuration (mhulan@redhat.com)
+- Scripts for exporting params to md-like and html table (mhulan@redhat.com)
+- Fix for Fedora 19 OS name (mhulan@redhat.com)
+- Fixed type (mhulan@redhat.com)
+
 * Fri Sep 06 2013 Marek Hulan <mhulan@redhat.com> 0.0.12-1
 - Make internal moduels path configurable (mhulan@redhat.com)
 
