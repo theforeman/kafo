@@ -348,8 +348,7 @@ right version you can write a simple script and put it into checks directory.
 All files found there will be ran and if any has non-zero exit code, kafo
 wont execute puppet.
 
-Everything on STDOUT is logged in debug level, everything on STDERR is logged
-in error level.
+Everything on STDOUT and STDERR is logged in error level.
 
 Example shell script which checks java version
 
