@@ -8,7 +8,7 @@
 
 Summary: A gem for making installations based on puppet user friendly
 Name: %{?scl_prefix}rubygem-%{gem_name}
-Version: 0.0.13
+Version: 0.0.14
 Release: 1%{?dist}
 Group: Development/Libraries
 License: GPLv3+
@@ -95,6 +95,9 @@ cp -a .%{gem_dir}/* \
 %doc %{gem_instdir}/README.md
 
 %changelog
+* Fri Sep 13 2013 Marek Hulan <mhulan@redhat.com> 0.0.14-1
+- Fixes #3078 - system checks fix for Ruby 1.8.7 (mhulan@redhat.com)
+
 * Thu Sep 12 2013 Marek Hulan <mhulan@redhat.com> 0.0.13-1
 - Fixes packaging (mhulan@redhat.com)
 - Revert "Fix for Fedora 19 OS name" (mhulan@redhat.com)
