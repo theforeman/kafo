@@ -1,6 +1,4 @@
 # encoding: UTF-8
-# we require separate STDERR
-require 'open3'
 
 class SystemChecker
   def self.check
@@ -18,13 +16,9 @@ class SystemChecker
   def check
     @checkers.map! do |checker|
       logger.debug "Executing checker: #{checker}"
-      Open3.popen3(checker) { |stdin, stdout, stderr, wait_thr|
-        stdout = stdout.read
-        stderr = stderr.read
-        logger.debug stdout unless stdout.empty?
-        logger.error stderr unless stderr.empty?
-        wait_thr.value.success?
-      }
+      stdout = `#{checker}`
+      logger.error stdout unless stdout.empty?
+      $?.exitstatus == 0
     end
 
     @checkers.all?
