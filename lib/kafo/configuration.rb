@@ -87,7 +87,7 @@ class Configuration
   end
 
   def module_enabled?(mod)
-    value = @data[mod.name]
+    value = @data[mod.is_a?(String) ? mod : mod.name]
     !!value || value.is_a?(Hash)
   end
 
