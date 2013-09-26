@@ -107,17 +107,29 @@ class KafoConfigure < Clamp::Command
     end
   end
 
+  def params
+    @params ||= modules.map(&:params).flatten
+  rescue ModuleName => e
+    puts e
+    exit(:unknown_module)
+  end
+
+  def modules
+    config.modules
+  end
+
+  def module(name)
+    modules.detect { |m| m.name == name}
+  end
+
+  def param(mod, name)
+    params.detect { |p| p.name == name && p.module.name == mod }
+  end
+
   private
 
   def exit(code)
     self.class.exit(code)
-  end
-
-  def params
-    @params ||= config.modules.map(&:params).flatten
-  rescue ModuleName => e
-    puts e
-    exit(:unknown_module)
   end
 
   def set_parameters
