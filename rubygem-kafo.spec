@@ -8,7 +8,7 @@
 
 Summary: A gem for making installations based on puppet user friendly
 Name: %{?scl_prefix}rubygem-%{gem_name}
-Version: 0.0.15
+Version: 0.0.16
 Release: 1%{?dist}
 Group: Development/Libraries
 License: GPLv3+
@@ -95,6 +95,9 @@ cp -a .%{gem_dir}/* \
 %doc %{gem_instdir}/README.md
 
 %changelog
+* Thu Sep 26 2013 Marek Hulan <mhulan@redhat.com> 0.0.16-1
+- Version bump
+
 * Mon Sep 16 2013 Tomas Strachota <tstrachota@redhat.com> 0.0.15-1
 - Fixes #3084 - PTY.check should never return nil (mhulan@redhat.com)
 
