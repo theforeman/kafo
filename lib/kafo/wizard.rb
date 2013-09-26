@@ -78,7 +78,7 @@ END
 
   def configure(param)
     say "\n<%= color('Parameter #{param.name} (of module #{param.module.name})', :headline) %>"
-    say "<%= color(\"#{param.doc.join("\n")}\", :important) %>"
+    say "<%= color(\"#{param.doc.join("\n").gsub('"','\"')}\", :important) %>"
     value = param.multivalued? ? configure_multi(param) : configure_single(param)
     value_was = param.value
     param.value = value unless value.empty?
