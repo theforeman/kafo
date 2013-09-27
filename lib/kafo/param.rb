@@ -45,13 +45,25 @@ class Param
     # also we want to clone validations so we don't interfere
     validations.map! do |v|
       v = v.clone
-      args = v.arguments.select { |a| a.to_s == "$#{self.name}" }
+      if v.name == 'validate_re'
+        # validate_re does not take more variables as arguments, instead we need to pass all arguments
+        args = v.arguments
+      else
+        args = v.arguments.select { |a| a.to_s == "$#{self.name}" }
+      end
       v.arguments = Puppet::Parser::AST::ASTArray.new :children => args
       v
     end
 
     validator = Validator.new([self])
-    validations.map { |v| v.evaluate(validator) }.all?
+    validations.map! do |v|
+      result = v.evaluate(validator)
+      # validate_re returns nil if succeeds
+      result = true if v.name == 'validate_re' && result.nil?
+      result
+    end
+
+    validations.all?
   end
 
   # To be overwritten in children
