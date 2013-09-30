@@ -8,7 +8,7 @@
 
 Summary: A gem for making installations based on puppet user friendly
 Name: %{?scl_prefix}rubygem-%{gem_name}
-Version: 0.0.17
+Version: 0.1.0
 Release: 1%{?dist}
 Group: Development/Libraries
 License: GPLv3+
@@ -96,6 +96,9 @@ cp -a .%{gem_dir}/* \
 %doc %{gem_instdir}/README.md
 
 %changelog
+* Mon Sep 30 2013 Marek Hulan <mhulan@redhat.com> 0.1.0-1
+- Progress bar support (mhulan@redhat.com)
+
 * Fri Sep 27 2013 Marek Hulan <mhulan@redhat.com> 0.0.17-1
 - Fixes #3161 - don't throw away arguments for validate_re (mhulan@redhat.com)
 
