@@ -34,5 +34,6 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'clamp'
   # interactive mode
   spec.add_dependency 'highline'
-
+  # ruby progress bar
+  spec.add_dependency 'powerbar'
 end

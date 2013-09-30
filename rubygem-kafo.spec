@@ -22,6 +22,7 @@ Requires: %{?scl_prefix}rubygem(logging)
 Requires: %{?scl_prefix}rubygem(clamp)
 Requires: %{?scl_prefix}rubygem(highline)
 Requires: %{?scl_prefix}rubygem(rdoc)
+Requires: %{?scl_prefix}rubygem(powerbar)
 Requires: %{?scl_prefix}rubygems
 
 %if 0%{?rhel} == 6 && 0%{?scl_prefix:0} || 0%{?fedora} > 17
