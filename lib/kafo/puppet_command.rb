@@ -6,18 +6,21 @@ class PuppetCommand
     @logger  = Logging.logger.root
   end
 
-  def command
-    custom_answer_file = if KafoConfigure.temp_config_file.nil?
-      ''
-    else
-      "$kafo_answer_file=\"#{KafoConfigure.temp_config_file}\""
-    end
+  def custom_answer_file
+    KafoConfigure.temp_config_file.nil? ? '' : "$kafo_answer_file=\"#{KafoConfigure.temp_config_file}\""
+  end
 
+  def add_progress
+    KafoConfigure.verbose ? '' : "$kafo_add_progress=true"
+  end
+
+  def command
     result = [
-        "echo '$kafo_config_file=\"#{KafoConfigure.config_file}\" #{custom_answer_file} #{@command}'",
-        " | ",
-        "puppet apply #{@options.join(' ')} #{@suffix}"
-    ].join
+        "echo '$kafo_config_file=\"#{KafoConfigure.config_file}\" #{custom_answer_file} #{add_progress} #{@command}'",
+        '|',
+        "RUBYLIB=#{["#{KafoConfigure.gem_root}/modules", ENV['RUBYLIB']].join(File::PATH_SEPARATOR)}",
+        "puppet apply #{@options.join(' ')} #{@suffix}",
+    ].join(' ')
     @logger.debug result
     result
   end
