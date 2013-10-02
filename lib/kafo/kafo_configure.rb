@@ -188,7 +188,7 @@ class KafoConfigure < Clamp::Command
     logger.info 'Running validation checks'
     results = params.map do |param|
       result = param.valid?
-      logger.error "Parameter #{param.name} invalid" if logging && !result
+      progress_log(logger, :error, "Parameter #{with_prefix(param)} invalid") if logging && !result
       result
     end
     results.all?
@@ -230,9 +230,13 @@ class KafoConfigure < Clamp::Command
     exit(exit_code)
   end
 
-  def puppet_log(method, message)
+  def progress_log(logger, method, message)
     @progress_bar.print ANSI::Code.red { message + "\n" } if method == :error && @progress_bar
-    Logging.logger['puppet'].send(method, message)
+    logger.send(method, message)
+  end
+
+  def puppet_log(method, message)
+    progress_log(Logging.logger['puppet'], method, message)
   end
 
   def puppet_parse(line)
