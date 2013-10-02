@@ -44,8 +44,9 @@ class KafoConfigure < Clamp::Command
     catch :exit do
       parse_cli_arguments
 
-      if (self.class.verbose = verbose?)
-        logger.appenders = logger.appenders << ::Logging.appenders.stdout(:layout => Logger::COLOR_LAYOUT)
+      if (self.class.verbose = verbose? || debug?)
+        logger.appenders = logger.appenders << ::Logging.appenders.stdout(:layout => Logger::COLOR_LAYOUT,
+                                                                          :level  => debug? ? :debug : :info)
       else
         @progress_bar = ProgressBar.new
       end
@@ -148,6 +149,7 @@ class KafoConfigure < Clamp::Command
   def set_options
     self.class.option ['-i', '--interactive'], :flag, 'Run in interactive mode'
     self.class.option ['-v', '--verbose'], :flag, 'Display log on STDOUT instead of progressbar'
+    self.class.option ['--debug'], :flag, 'Display debug level logging on STDOUT (implies --verbose)'
     self.class.option ['-n', '--noop'], :flag, 'Run puppet in noop mode?', :default => false
     self.class.option ['-d', '--dont-save-answers'], :flag, 'Skip saving answers to answers.yaml?',
                       :default => !!config.app[:dont_save_answers]
