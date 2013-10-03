@@ -70,6 +70,14 @@ class Param
   def multivalued?
     false
   end
+
+  def <=> o
+    unless KafoConfigure.config.app[:no_prefix]
+      r = self.module_name <=> o.module_name
+      return r unless r == 0
+    end
+    self.name <=> o.name
+  end
 end
 
 require 'kafo/params/boolean'
