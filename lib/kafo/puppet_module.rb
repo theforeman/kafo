@@ -61,6 +61,10 @@ class PuppetModule
     Hash[params.map { |param| [param.name, param.value] }]
   end
 
+  def <=> o
+    self.name <=> o.name
+  end
+
   private
 
   # mapping from configuration with stringified keys

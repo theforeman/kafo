@@ -146,20 +146,20 @@ class KafoConfigure < Clamp::Command
   end
 
   def set_options
-    self.class.option ['-i', '--interactive'], :flag, 'Run in interactive mode'
-    self.class.option ['-v', '--verbose'], :flag, 'Display log on STDOUT instead of progressbar'
-    self.class.option ['-n', '--noop'], :flag, 'Run puppet in noop mode?', :default => false
     self.class.option ['-d', '--dont-save-answers'], :flag, 'Skip saving answers to answers.yaml?',
                       :default => !!config.app[:dont_save_answers]
+    self.class.option ['-i', '--interactive'], :flag, 'Run in interactive mode'
+    self.class.option ['-n', '--noop'], :flag, 'Run puppet in noop mode?', :default => false
+    self.class.option ['-v', '--verbose'], :flag, 'Display log on STDOUT instead of progressbar'
 
-    config.modules.each do |mod|
+    config.modules.sort.each do |mod|
       self.class.option d("--[no-]enable-#{mod.name}"),
                         :flag,
                         "Enable puppet module #{mod.name}?",
                         :default => mod.enabled?
     end
 
-    params.each do |param|
+    params.sort.each do |param|
       doc = param.doc.nil? ? 'UNDOCUMENTED' : param.doc.join("\n")
       self.class.option parametrize(param), '', doc,
                         :default => param.value, :multivalued => param.multivalued?
