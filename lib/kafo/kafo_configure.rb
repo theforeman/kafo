@@ -196,6 +196,7 @@ class KafoConfigure < Clamp::Command
 
   def run_installation
     exit_code = 0
+    exit_status = nil
     options = [
         '--verbose',
         '--debug',
@@ -212,16 +213,20 @@ class KafoConfigure < Clamp::Command
             puppet_log(*puppet_parse(line))
             @progress_bar.update(line) if @progress_bar
           end
-        rescue Errno::EIO
-          if PTY.respond_to?(:check) # ruby >= 1.9.2
-            exit_code = PTY.check(pid, true).exitstatus
-          else # ruby < 1.9.2
-            Process.wait(pid) rescue Errno::ECHILD
-            exit_code = $?.exitstatus
+        rescue Errno::EIO # we reach end of input
+          exit_status = PTY.check(pid, true) if PTY.respond_to?(:check) # ruby >= 1.9.2
+          if exit_status.nil? # process is still running or we have old ruby so we don't know
+            begin
+              Process.wait(pid)
+            rescue Errno::ECHILD # process could exit meanwhile so we rescue
+            end
+            exit_code = $?.exitstatus # after check $? should be set correctly
+          else # this should never happen (unless they change PTY.check behavior) in new ruby
+            exit_code = exit_code.exitstatus
           end
         end
       end
-    rescue PTY::ChildExited => e
+    rescue PTY::ChildExited => e # could be raised by Process.wait on older ruby or by PTY.check
       exit_code = e.status.exitstatus
     end
     @progress_bar.close if @progress_bar
