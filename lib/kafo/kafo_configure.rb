@@ -17,7 +17,7 @@ class KafoConfigure < Clamp::Command
 
   class << self
     attr_accessor :config, :root_dir, :config_file, :gem_root, :temp_config_file,
-                  :modules_dir, :kafo_modules_dir, :verbose
+                  :modules_dir, :kafo_modules_dir, :verbose, :app_options
   end
 
   def initialize(*args)
@@ -42,6 +42,7 @@ class KafoConfigure < Clamp::Command
 
   def execute
     catch :exit do
+      parse_app_arguments
       parse_cli_arguments
 
       if (self.class.verbose = verbose?)
@@ -111,6 +112,12 @@ class KafoConfigure < Clamp::Command
     end
   end
 
+  def self.app_option(*args, &block)
+    self.app_options ||= []
+    self.app_options.push self.option(*args, &block)
+    self.app_options.last
+  end
+
   def params
     @params ||= modules.map(&:params).flatten
   rescue ModuleName => e
@@ -146,11 +153,11 @@ class KafoConfigure < Clamp::Command
   end
 
   def set_options
-    self.class.option ['-d', '--dont-save-answers'], :flag, 'Skip saving answers to answers.yaml?',
+    self.class.app_option ['-d', '--dont-save-answers'], :flag, 'Skip saving answers to answers.yaml?',
                       :default => !!config.app[:dont_save_answers]
-    self.class.option ['-i', '--interactive'], :flag, 'Run in interactive mode'
-    self.class.option ['-n', '--noop'], :flag, 'Run puppet in noop mode?', :default => false
-    self.class.option ['-v', '--verbose'], :flag, 'Display log on STDOUT instead of progressbar'
+    self.class.app_option ['-i', '--interactive'], :flag, 'Run in interactive mode'
+    self.class.app_option ['-n', '--noop'], :flag, 'Run puppet in noop mode?', :default => false
+    self.class.app_option ['-v', '--verbose'], :flag, 'Display log on STDOUT instead of progressbar'
 
     config.modules.sort.each do |mod|
       self.class.option d("--[no-]enable-#{mod.name}"),
@@ -163,6 +170,17 @@ class KafoConfigure < Clamp::Command
       doc = param.doc.nil? ? 'UNDOCUMENTED' : param.doc.join("\n")
       self.class.option parametrize(param), '', doc,
                         :default => param.value, :multivalued => param.multivalued?
+    end
+  end
+
+  def parse_app_arguments
+    self.class.app_options.each do |option|
+      name = option.attribute_name
+      if option.flag?
+        config.app[name.to_sym] = instance_variable_get("@#{name}")
+      else
+        config.app[name.to_sym] = send(name)
+      end
     end
   end
 
