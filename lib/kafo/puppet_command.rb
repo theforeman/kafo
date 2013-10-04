@@ -3,7 +3,7 @@ class PuppetCommand
   def initialize(command, options = [])
     @command = command
     @options = options.push("--modulepath #{modules_path}")
-    @logger  = Logging.logger.root
+    @logger  = KafoConfigure.logger
   end
 
   def custom_answer_file

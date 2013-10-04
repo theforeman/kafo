@@ -8,7 +8,7 @@ class Configuration
 
   DEFAULT = {
       :log_dir            => '/var/log/kafo',
-      :log_level          => :info,
+      :log_level          => 'info',
       :no_prefix          => false,
       :mapping            => {},
       :answer_file        => '/etc/kafo/kafo.yaml',
@@ -21,7 +21,7 @@ class Configuration
     @config_file = file
     @persist = persist
     configure_application
-    @logger = Logging.logger.root
+    @logger = KafoConfigure.logger
 
     @answer_file = app[:answer_file]
     begin
