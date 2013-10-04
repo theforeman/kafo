@@ -31,8 +31,17 @@ class KafoConfigure < Clamp::Command
     Logger.setup
     @logger = Logging.logger.root
     @progress_bar = nil
+
     super
-    set_parameters
+
+    set_app_options
+    allowed = self.class.app_options.map(&:switches).flatten
+    # we need to parse app config params using clamp even before run method does it
+    # so we limit parsing only to app config options (because of --help and later defined params)
+    parse ARGV.select { |a| a =~ /([a-zA-Z0-9_-]*)([= ].*)?/ && allowed.include?($1) }
+    parse_app_arguments
+
+    set_parameters # here the params gets parsed and we need app config populated
     set_options
   end
 
@@ -42,7 +51,6 @@ class KafoConfigure < Clamp::Command
 
   def execute
     catch :exit do
-      parse_app_arguments
       parse_cli_arguments
 
       if (self.class.verbose = verbose?)
@@ -126,7 +134,7 @@ class KafoConfigure < Clamp::Command
   end
 
   def modules
-    config.modules
+    config.modules.sort
   end
 
   def module(name)
@@ -152,14 +160,18 @@ class KafoConfigure < Clamp::Command
     end
   end
 
-  def set_options
+  def set_app_options
     self.class.app_option ['-d', '--dont-save-answers'], :flag, 'Skip saving answers to answers.yaml?',
                       :default => !!config.app[:dont_save_answers]
+    self.class.app_option '--ignore-undocumented', :flag, 'Ignore inconsistent parameters documentation',
+                          :default => false
     self.class.app_option ['-i', '--interactive'], :flag, 'Run in interactive mode'
     self.class.app_option ['-n', '--noop'], :flag, 'Run puppet in noop mode?', :default => false
     self.class.app_option ['-v', '--verbose'], :flag, 'Display log on STDOUT instead of progressbar'
+  end
 
-    config.modules.sort.each do |mod|
+  def set_options
+    modules.each do |mod|
       self.class.option d("--[no-]enable-#{mod.name}"),
                         :flag,
                         "Enable puppet module #{mod.name}?",
