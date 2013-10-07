@@ -179,6 +179,7 @@ class KafoConfigure < Clamp::Command
     self.class.app_option ['-v', '--verbose'], :flag, 'Display log on STDOUT instead of progressbar'
     self.class.app_option ['-l', '--verbose-log-level'], 'LEVEL', 'Log level for verbose mode output',
                           :default => 'info'
+    self.class.app_option ['-x', '--detailed-exitcodes'], :flag, 'Pass detailed-exitcode option to Puppet and return that?', :default => false
   end
 
   def set_options
@@ -241,9 +242,9 @@ class KafoConfigure < Clamp::Command
         '--debug',
         '--color=false',
         '--show_diff',
-        '--detailed-exitcodes',
     ]
     options.push '--noop' if noop?
+    options.push '--detailed-exitcodes' if detailed_exitcodes?
     begin
       command = PuppetCommand.new('include kafo_configure', options).command
       PTY.spawn(command) do |stdin, stdout, pid|
