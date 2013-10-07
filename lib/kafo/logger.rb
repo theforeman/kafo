@@ -52,7 +52,8 @@ class Logger
   def self.setup_verbose
     logger           = Logging.logger['verbose']
     logger.level     = KafoConfigure.config.app[:verbose_log_level]
-    logger.appenders = [::Logging.appenders.stdout(:layout => COLOR_LAYOUT)]
+    layout           = KafoConfigure.config.app[:colors] ? COLOR_LAYOUT : NOCOLOR_LAYOUT
+    logger.appenders = [::Logging.appenders.stdout(:layout => layout)]
     self.loggers<< logger
   end
 

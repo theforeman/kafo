@@ -1,6 +1,11 @@
 require 'powerbar'
 require 'ansi/code'
 
+# Progress bar base class
+#
+# To define new progress bar you can inherit from this class and implement
+# #finite_template and #infinite_template methods. Also you may find useful to
+# change more methods like #done_message or #print_error
 class ProgressBar
   def initialize
     @lines                                    = 0
@@ -28,7 +33,7 @@ class ProgressBar
   end
 
   def close
-    @bar.show({ :msg   => ANSI::Code.green { 'Done' + (' ' * 46) },
+    @bar.show({ :msg   => done_message,
                 :done  => @total == :unknown ? @bar.done + 1 : @total,
                 :total => @total }, true)
     @bar.close
@@ -38,20 +43,30 @@ class ProgressBar
     @bar.print line
   end
 
+  def print_error(line)
+    print line
+  end
+
   private
+
+  def done_message
+    text = 'Done'
+    text + (' ' * (50 - text.length))
+  end
 
   def format(line)
     (line.tr("\r\n", '') + (' ' * 50))[0..49]
   end
 
   def finite_template
-    'Installing'.ljust(22) +
-        ANSI::Code.yellow { ' ${<msg>}' } +
-        ANSI::Code.green { ' [${<percent>%}]' } +
-        ' [${<bar>}]'
+    'Installing... [${<percent>%}]'
   end
 
   def infinite_template
-    'Preparing installation' + ANSI::Code.yellow { ' ${<msg>}' }
+    'Installing...'
   end
+
 end
+
+require 'kafo/progress_bars/colored'
+require 'kafo/progress_bars/black_white'

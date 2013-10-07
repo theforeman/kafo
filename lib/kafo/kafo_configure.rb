@@ -34,6 +34,7 @@ class KafoConfigure < Clamp::Command
 
     set_app_options
     allowed = self.class.app_options.map(&:switches).flatten
+    allowed.map! { |s| s.include?('[no-]') ? [s.sub('[no-]', ''), s.sub('[no-]', 'no-')] : s }.flatten!
     # we need to parse app config params using clamp even before run method does it
     # so we limit parsing only to app config options (because of --help and later defined params)
     parse ARGV.select { |a| a =~ /([a-zA-Z0-9_-]*)([= ].*)?/ && allowed.include?($1) }
@@ -55,7 +56,7 @@ class KafoConfigure < Clamp::Command
       if (self.class.verbose = verbose?)
         Logger.setup_verbose
       else
-        @progress_bar = ProgressBar.new
+        @progress_bar = self.class.config.app[:colors] ? ProgressBars::Colored.new : ProgressBars::BlackWhite.new
       end
 
       unless SystemChecker.check
@@ -164,6 +165,8 @@ class KafoConfigure < Clamp::Command
   end
 
   def set_app_options
+    self.class.app_option ['--[no-]colors'], :flag, 'Use color output on STDOUT',
+                          :default => !!config.app[:colors]
     self.class.app_option ['-d', '--dont-save-answers'], :flag, 'Skip saving answers to answers.yaml?',
                           :default => !!config.app[:dont_save_answers]
     self.class.app_option '--ignore-undocumented', :flag, 'Ignore inconsistent parameters documentation',
@@ -196,11 +199,9 @@ class KafoConfigure < Clamp::Command
   def parse_app_arguments
     self.class.app_options.each do |option|
       name = option.attribute_name
-      if option.flag?
-        config.app[name.to_sym] = instance_variable_get("@#{name}")
-      else
-        config.app[name.to_sym] = send(name)
-      end
+      name = "#{name}?" if option.flag?
+      value = send(name)
+      config.app[name.to_sym] = value.nil? ? option.default_value : value
     end
   end
 
@@ -274,7 +275,7 @@ class KafoConfigure < Clamp::Command
   end
 
   def progress_log(method, message)
-    @progress_bar.print ANSI::Code.red { message + "\n" } if method == :error && @progress_bar
+    @progress_bar.print_error(message + "\n") if method == :error && @progress_bar
     logger.send(method, message)
   end
 

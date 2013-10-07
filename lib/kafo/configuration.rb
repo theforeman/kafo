@@ -6,6 +6,10 @@ require 'kafo/password_manager'
 class Configuration
   attr_reader :config_file, :answer_file
 
+  def self.colors_possible?
+    !`which tput 2> /dev/null`.empty? && `tput colors`.to_i > 0
+  end
+
   DEFAULT = {
       :log_dir            => '/var/log/kafo',
       :log_level          => 'info',
@@ -14,7 +18,8 @@ class Configuration
       :answer_file        => '/etc/kafo/kafo.yaml',
       :installer_dir      => '.',
       :modules_dir        => './modules',
-      :default_values_dir => '/tmp'
+      :default_values_dir => '/tmp',
+      :colors             => Configuration.colors_possible?
   }
 
   def initialize(file, persist = true)
