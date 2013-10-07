@@ -13,14 +13,14 @@ require 'kafo/progress_bar'
 
 class KafoConfigure < Clamp::Command
   include StringHelper
-  attr_reader :logger
 
   class << self
     attr_accessor :config, :root_dir, :config_file, :gem_root, :temp_config_file,
-                  :modules_dir, :kafo_modules_dir, :verbose, :app_options
+                  :modules_dir, :kafo_modules_dir, :verbose, :app_options, :logger
   end
 
   def initialize(*args)
+    self.class.logger      = Logger.new
     self.class.config_file = config_file
     self.class.config      = Configuration.new(self.class.config_file)
     self.class.root_dir    = File.expand_path(self.class.config.app[:installer_dir])
@@ -28,8 +28,6 @@ class KafoConfigure < Clamp::Command
     self.class.modules_dir = File.expand_path(modules_dir)
     self.class.gem_root    = File.join(File.dirname(__FILE__), '../../')
     self.class.kafo_modules_dir = self.class.config.app[:kafo_modules_dir] || (self.class.gem_root + '/modules')
-    Logger.setup
-    @logger = Logging.logger.root
     @progress_bar = nil
 
     super
@@ -40,6 +38,7 @@ class KafoConfigure < Clamp::Command
     # so we limit parsing only to app config options (because of --help and later defined params)
     parse ARGV.select { |a| a =~ /([a-zA-Z0-9_-]*)([= ].*)?/ && allowed.include?($1) }
     parse_app_arguments
+    Logger.setup
 
     set_parameters # here the params gets parsed and we need app config populated
     set_options
@@ -54,7 +53,7 @@ class KafoConfigure < Clamp::Command
       parse_cli_arguments
 
       if (self.class.verbose = verbose?)
-        logger.appenders = logger.appenders << ::Logging.appenders.stdout(:layout => Logger::COLOR_LAYOUT)
+        Logger.setup_verbose
       else
         @progress_bar = ProgressBar.new
       end
@@ -147,6 +146,10 @@ class KafoConfigure < Clamp::Command
 
   private
 
+  def logger
+    self.class.logger
+  end
+
   def exit(code)
     self.class.exit(code)
   end
@@ -162,12 +165,17 @@ class KafoConfigure < Clamp::Command
 
   def set_app_options
     self.class.app_option ['-d', '--dont-save-answers'], :flag, 'Skip saving answers to answers.yaml?',
-                      :default => !!config.app[:dont_save_answers]
+                          :default => !!config.app[:dont_save_answers]
     self.class.app_option '--ignore-undocumented', :flag, 'Ignore inconsistent parameters documentation',
                           :default => false
     self.class.app_option ['-i', '--interactive'], :flag, 'Run in interactive mode'
-    self.class.app_option ['-n', '--noop'], :flag, 'Run puppet in noop mode?', :default => false
+    self.class.app_option '--log-level', 'LEVEL', 'Log level for log file output',
+                          :default => config.app[:log_level]
+    self.class.app_option ['-n', '--noop'], :flag, 'Run puppet in noop mode?',
+                          :default => false
     self.class.app_option ['-v', '--verbose'], :flag, 'Display log on STDOUT instead of progressbar'
+    self.class.app_option ['-l', '--verbose-log-level'], 'LEVEL', 'Log level for verbose mode output',
+                          :default => 'info'
   end
 
   def set_options
@@ -218,7 +226,7 @@ class KafoConfigure < Clamp::Command
     logger.info 'Running validation checks'
     results = params.map do |param|
       result = param.valid?
-      progress_log(logger, :error, "Parameter #{with_prefix(param)} invalid") if logging && !result
+      progress_log(:error, "Parameter #{with_prefix(param)} invalid") if logging && !result
       result
     end
     results.all?
@@ -240,7 +248,7 @@ class KafoConfigure < Clamp::Command
       PTY.spawn(command) do |stdin, stdout, pid|
         begin
           stdin.each do |line|
-            puppet_log(*puppet_parse(line))
+            progress_log(*puppet_parse(line))
             @progress_bar.update(line) if @progress_bar
           end
         rescue Errno::EIO # we reach end of input
@@ -265,13 +273,9 @@ class KafoConfigure < Clamp::Command
     exit(exit_code)
   end
 
-  def progress_log(logger, method, message)
+  def progress_log(method, message)
     @progress_bar.print ANSI::Code.red { message + "\n" } if method == :error && @progress_bar
     logger.send(method, message)
-  end
-
-  def puppet_log(method, message)
-    progress_log(Logging.logger['puppet'], method, message)
   end
 
   def puppet_parse(line)
