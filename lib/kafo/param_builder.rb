@@ -8,6 +8,8 @@ class ParamBuilder
   end
 
   def validate
+    return true if KafoConfigure.config.app[:ignore_undocumented]
+
     parameters = @data['parameters'].keys.sort
     docs       = @data['docs'].keys.sort
     if parameters == docs
