@@ -3,7 +3,11 @@ require 'fileutils'
 require 'logging'
 
 class Logger
-  pattern        = "[%5l %d %c] %m\n"
+  class << self
+    attr_accessor :loggers
+  end
+
+  PATTERN        = "[%5l %d %c] %m\n"
   Logging.color_scheme('bright',
                        :levels => {
                            :info  => :green,
@@ -17,8 +21,8 @@ class Logger
                        :file   => :yellow,
                        :method => :yellow
   )
-  COLOR_LAYOUT   = Logging::Layouts::Pattern.new(:pattern => pattern, :color_scheme => 'bright')
-  NOCOLOR_LAYOUT = Logging::Layouts::Pattern.new(:pattern => pattern, :color_scheme => nil)
+  COLOR_LAYOUT   = Logging::Layouts::Pattern.new(:pattern => PATTERN, :color_scheme => 'bright')
+  NOCOLOR_LAYOUT = Logging::Layouts::Pattern.new(:pattern => PATTERN, :color_scheme => nil)
 
   def self.setup
     begin
@@ -27,7 +31,7 @@ class Logger
       puts "No permissions to create log dir #{KafoConfigure.config.app[:log_dir]}"
     end
 
-    logger   = Logging.logger.root
+    logger   = Logging.logger['main']
     filename = "#{KafoConfigure.config.app[:log_dir]}/#{KafoConfigure.config.app[:log_name] || 'configure.log'}"
     begin
       logger.appenders = ::Logging.appenders.rolling_file('configure',
@@ -42,5 +46,24 @@ class Logger
     end
 
     logger.level = KafoConfigure.config.app[:log_level]
+    self.loggers = [logger]
+  end
+
+  def self.setup_verbose
+    logger           = Logging.logger['verbose']
+    logger.level     = KafoConfigure.config.app[:verbose_log_level]
+    logger.appenders = [::Logging.appenders.stdout(:layout => COLOR_LAYOUT)]
+    self.loggers<< logger
+  end
+
+  # proxy to all loggers we have setup
+  def method_missing(*args, &block)
+    self.class.loggers.each do |logger|
+      logger.send *args, &block
+    end
+  end
+
+  def respond_to?(*args, &block)
+    self.class.loggers.first.respond_to? *args, &block
   end
 end

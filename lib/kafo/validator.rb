@@ -8,7 +8,7 @@ class Validator
     end
 
     @params = params
-    @logger = Logging.logger.root
+    @logger = KafoConfigure.logger
 
     @cache ||= Hash.new do |hash, key|
       @logger.debug "Looked for #{key}"

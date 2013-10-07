@@ -16,7 +16,7 @@ class PuppetModule
     @manifest_path = File.join(KafoConfigure.root_dir, '/modules/', module_manifest_path)
     @parser        = parser
     @validations   = []
-    @logger        = Logging.logger.root
+    @logger        = KafoConfigure.logger
   end
 
   def enabled?

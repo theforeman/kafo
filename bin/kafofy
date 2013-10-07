@@ -24,7 +24,8 @@ if ARGV.size > 0
 require 'rubygems'
 require 'kafo'
 CONFIG_FILE = "/etc/#{name}/#{name}.yaml"
-KafoConfigure.run
+result = KafoConfigure.run
+exit result.nil? ? 0 : result.exit_code
 EOS
   File.open(script_name, 'w') { |file| file.write(content) }
   FileUtils.chmod 0755, script_name
