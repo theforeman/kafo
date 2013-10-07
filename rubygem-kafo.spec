@@ -8,7 +8,7 @@
 
 Summary: A gem for making installations based on puppet user friendly
 Name: %{?scl_prefix}rubygem-%{gem_name}
-Version: 0.1.0
+Version: 0.2.0
 Release: 1%{?dist}
 Group: Development/Libraries
 License: GPLv3+
@@ -96,6 +96,18 @@ cp -a .%{gem_dir}/* \
 %doc %{gem_instdir}/README.md
 
 %changelog
+* Mon Oct 07 2013 Marek Hulan <mhulan@redhat.com> 0.2.0-1
+- Fixes #3062 - Add --no-colors support (mhulan@redhat.com)
+- Fixes #3191 - custom verbose log level configuration (mhulan@redhat.com)
+- Fixes #3188 - don't prefix symbols with !ruby/sym (mhulan@redhat.com)
+- Fixes #3032 - ignore documentation inconsistency option (mhulan@redhat.com)
+- Share CLI args with app config (mhulan@redhat.com)
+- Merge pull request #21 from domcleal/help-sort (dominic@computerkb.co.uk)
+- Sort modules and parameters in --help output (dcleal@redhat.com)
+- Fixes #3175 - process exiting is handled more carefully (mhulan@redhat.com)
+- Exit with 0 when calling kafo-configure --help (dcleal@redhat.com)
+- Print validation errors to console when using progress bar (dcleal@redhat.com)
+
 * Mon Sep 30 2013 Marek Hulan <mhulan@redhat.com> 0.1.0-1
 - Progress bar support (mhulan@redhat.com)
 
