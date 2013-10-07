@@ -38,7 +38,7 @@ class Configuration
     return true unless @persist
     FileUtils.touch @config_file
     File.chmod 0600, @config_file
-    File.open(@config_file, 'w') { |file| file.write(YAML.dump(configuration)) }
+    File.open(@config_file, 'w') { |file| file.write(format(YAML.dump(configuration))) }
   end
 
   def configure_application
@@ -101,7 +101,7 @@ class Configuration
     filename = file || answer_file
     FileUtils.touch filename
     File.chmod 0600, filename
-    File.open(filename, 'w') { |file| file.write(config_header + YAML.dump(data)) }
+    File.open(filename, 'w') { |file| file.write(config_header + format(YAML.dump(data))) }
   end
 
   private
@@ -114,5 +114,9 @@ class Configuration
     params = modules.map(&:params).flatten
     params = params.select { |p| p.default != 'UNSET' }
     params.map { |param| "#{param.default}" }.join(',')
+  end
+
+  def format(data)
+    data.gsub('!ruby/sym ', ':')
   end
 end
