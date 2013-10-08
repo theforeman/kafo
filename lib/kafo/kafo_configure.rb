@@ -10,6 +10,7 @@ require 'kafo/wizard'
 require 'kafo/system_checker'
 require 'kafo/puppet_command'
 require 'kafo/progress_bar'
+require 'kafo/hooking'
 
 class KafoConfigure < Clamp::Command
   include StringHelper
@@ -17,18 +18,24 @@ class KafoConfigure < Clamp::Command
   class << self
     attr_accessor :config, :root_dir, :config_file, :gem_root, :temp_config_file,
                   :modules_dir, :kafo_modules_dir, :verbose, :app_options, :logger
+    attr_writer   :hooking
+
+    def hooking
+      @hooking ||= Hooking.new
+    end
   end
 
   def initialize(*args)
-    self.class.logger      = Logger.new
-    self.class.config_file = config_file
-    self.class.config      = Configuration.new(self.class.config_file)
-    self.class.root_dir    = File.expand_path(self.class.config.app[:installer_dir])
-    modules_dir            = self.class.config.app[:module_dir] || (self.class.config.app[:installer_dir] + '/modules')
-    self.class.modules_dir = File.expand_path(modules_dir)
-    self.class.gem_root    = File.join(File.dirname(__FILE__), '../../')
+    self.class.logger           = Logger.new
+    self.class.config_file      = config_file
+    self.class.config           = Configuration.new(self.class.config_file)
+    self.class.root_dir         = File.expand_path(self.class.config.app[:installer_dir])
+    modules_dir                 = self.class.config.app[:module_dir] || (self.class.config.app[:installer_dir] + '/modules')
+    self.class.modules_dir      = File.expand_path(modules_dir)
+    self.class.gem_root         = File.join(File.dirname(__FILE__), '../../')
     self.class.kafo_modules_dir = self.class.config.app[:kafo_modules_dir] || (self.class.gem_root + '/modules')
-    @progress_bar = nil
+    @progress_bar               = nil
+    self.class.hooking.kafo     = self
 
     super
 
@@ -233,6 +240,7 @@ class KafoConfigure < Clamp::Command
   end
 
   def run_installation
+    self.class.hooking.execute(:pre) if self.class.hooking
     exit_code = 0
     exit_status = nil
     options = [
@@ -270,6 +278,7 @@ class KafoConfigure < Clamp::Command
     @progress_bar.close if @progress_bar
     logger.info "Puppet has finished, bye!"
     FileUtils.rm(temp_config_file, :force => true)
+    self.class.hooking.execute(:post) if self.class.hooking
     exit(exit_code)
   end
 
