@@ -76,6 +76,8 @@ class Configuration
       command = PuppetCommand.new("#{includes} dump_values(#{params})").append('2>&1').command
       @logger.debug `#{command}`
       unless $?.exitstatus == 0
+        log = app[:log_dir] + '/' + app[:log_name]
+        puts "Could not get default values, check log file at #{log} for more information"
         @logger.error "Could not get default values, cannot continue"
         KafoConfigure.exit(:defaults_error)
       end
