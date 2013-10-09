@@ -8,7 +8,7 @@
 
 Summary: A gem for making installations based on puppet user friendly
 Name: %{?scl_prefix}rubygem-%{gem_name}
-Version: 0.2.0
+Version: 0.2.1
 Release: 1%{?dist}
 Group: Development/Libraries
 License: GPLv3+
@@ -96,6 +96,11 @@ cp -a .%{gem_dir}/* \
 %doc %{gem_instdir}/README.md
 
 %changelog
+* Wed Oct 09 2013 Marek Hulan <mhulan@redhat.com> 0.2.1-1
+- Fixes #3227 - restore app options names (mhulan@redhat.com)
+- Fixes #3217 - Do not output messages to STDOUT (mhulan@redhat.com)
+- Fixes #3216 - Print error on STDOUT (mhulan@redhat.com)
+
 * Mon Oct 07 2013 Marek Hulan <mhulan@redhat.com> 0.2.0-1
 - Fixes #3062 - Add --no-colors support (mhulan@redhat.com)
 - Fixes #3191 - custom verbose log level configuration (mhulan@redhat.com)
