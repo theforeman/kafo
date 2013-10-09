@@ -57,14 +57,9 @@ class Logger
     self.loggers<< logger
   end
 
-  # proxy to all loggers we have setup
-  def method_missing(*args, &block)
-    self.class.loggers.each do |logger|
-      logger.send *args, &block
+  %w(fatal error warn info debug).each do |name|
+    define_method(name) do |*args, &block|
+      self.class.loggers.each { |logger| logger.send name, *args, &block }
     end
-  end
-
-  def respond_to?(*args, &block)
-    self.class.loggers.first.respond_to? *args, &block
   end
 end
