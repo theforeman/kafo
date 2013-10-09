@@ -199,8 +199,7 @@ class KafoConfigure < Clamp::Command
   def parse_app_arguments
     self.class.app_options.each do |option|
       name = option.attribute_name
-      name = "#{name}?" if option.flag?
-      value = send(name)
+      value = send(option.flag? ? "#{name}?" : name)
       config.app[name.to_sym] = value.nil? ? option.default_value : value
     end
   end
