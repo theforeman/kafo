@@ -4,10 +4,10 @@ require 'yaml'
 
 class Wizard
   def initialize
+    @config = KafoConfigure.config
+    @name   = @config.app[:name] || 'Kafo'
     setup_terminal
     setup_colors
-    @name   = 'Kafo'
-    @config = KafoConfigure.config
   end
 
   def run
@@ -118,7 +118,7 @@ END
 
   # setup colour scheme for prompts
   def setup_colors
-    HighLine.color_scheme = HighLine::ColorScheme.new do |cs|
+    colors = HighLine::ColorScheme.new do |cs|
       cs[:headline]        = [:bold, :yellow, :on_black]
       cs[:horizontal_line] = [:bold, :white, :on_black]
       cs[:important]       = [:bold, :white, :on_black]
@@ -127,5 +127,11 @@ END
       cs[:cancel]          = [:bold, :red, :on_black]
       cs[:run]             = [:bold, :green, :on_black]
     end
+
+    nocolors = HighLine::ColorScheme.new do |cs|
+      colors.keys.each { |k| cs[k.to_sym] = [] }
+    end
+
+    HighLine.color_scheme = @config.app[:colors] ? colors : nocolors
   end
 end
