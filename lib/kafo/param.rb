@@ -1,7 +1,7 @@
 # encoding: UTF-8
 class Param
   attr_reader :name, :module
-  attr_accessor :default, :doc, :value_set
+  attr_accessor :default, :doc, :value_set, :condition, :groups
 
   def initialize(builder, name)
     @name = name

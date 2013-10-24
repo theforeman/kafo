@@ -30,9 +30,11 @@ class ParamBuilder
   end
 
   def build(name, data)
-    param         = get_type(data[:types][name]).new(@module, name)
-    param.default = data[:values][name]
-    param.doc     = data[:docs][name]
+    param           = get_type(data[:types][name]).new(@module, name)
+    param.default   = data[:values][name]
+    param.doc       = data[:docs][name]
+    param.groups    = data[:groups][name]
+    param.condition = data[:conditions][name]
     param
   end
 
