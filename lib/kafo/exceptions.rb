@@ -4,3 +4,6 @@ end
 
 class ModuleName < StandardError
 end
+
+class DocParseError < StandardError
+end

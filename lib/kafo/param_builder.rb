@@ -10,8 +10,8 @@ class ParamBuilder
   def validate
     return true if KafoConfigure.config.app[:ignore_undocumented]
 
-    parameters = @data['parameters'].keys.sort
-    docs       = @data['docs'].keys.sort
+    parameters = @data[:parameters].sort
+    docs       = @data[:docs].keys.sort
     if parameters == docs
       return true
     else
@@ -24,39 +24,25 @@ class ParamBuilder
   end
 
   def build_params
-    @data['parameters'].keys.map do |param_name|
-      build(param_name, @data['parameters'][param_name], @data['docs'][param_name])
+    @data[:parameters].map do |param_name|
+      build(param_name, @data)
     end
   end
 
-  def build(name, default, docs)
-    param         = get_type(docs).new(@module, name)
-    param.default = default
-    param.doc     = get_documentation(docs)
+  def build(name, data)
+    param         = get_type(data[:types][name]).new(@module, name)
+    param.default = data[:values][name]
+    param.doc     = data[:docs][name]
     param
   end
 
   private
 
-  def get_documentation(docs)
-    return nil if docs.nil?
-    docs.select { |line| line !~ ATTRIBUTE_RE }
-  end
-
-  def get_type(docs)
-    type = (get_attributes(docs)[:type] || '').capitalize
-    type.empty? || !Params.const_defined?(type) ? Params::String : Params.const_get(type)
-  end
-
-  def get_attributes(docs)
-    data = {}
-    return data if docs.nil?
-
-    docs.each do |line|
-      if line =~ ATTRIBUTE_RE
-        data[$1.to_sym] = $2
-      end
-    end
-    data
+  # we don't want to be strict so people can define their own parameters
+  # down side of this is when you have typo in your type (e.g. type:bol)
+  # it will be treated as a String
+  def get_type(type)
+    type = type.capitalize
+    Params.const_defined?(type) ? Params.const_get(type) : Params::String
   end
 end

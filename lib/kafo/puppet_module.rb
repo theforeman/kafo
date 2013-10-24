@@ -35,7 +35,7 @@ class PuppetModule
     @params      = []
     raw_data     = @parser.parse(manifest_path)
     builder      = builder_klass.new(self, raw_data)
-    @validations = raw_data['validations']
+    @validations = raw_data[:validations]
 
     builder.validate
     @params      = builder.build_params
