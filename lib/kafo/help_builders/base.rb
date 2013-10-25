@@ -1,3 +1,4 @@
+# encoding: UTF-8
 module HelpBuilders
   class Base < Clamp::Help::Builder
     include StringHelper

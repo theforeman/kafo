@@ -1,3 +1,4 @@
+# encoding: UTF-8
 module HelpBuilders
   class Basic < Base
     def add_module(name, items)

@@ -1,3 +1,4 @@
+# encoding: UTF-8
 require 'rdoc'
 require 'rdoc/markup' # required for RDoc < 0.9.5
 require 'rdoc/markup/parser' # required for RDoc < 0.9.5
