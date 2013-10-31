@@ -15,6 +15,8 @@ BASIC_MANIFEST = <<EOS
 #                    consisting of 3 lines
 # $typed::           something having it's type explicitly set
 #                    type:boolean
+# $multivalue::      list of users
+#                    type:array
 # === Advanced parameters
 #
 # $debug::           we have advanced parameter, yay!
@@ -44,7 +46,17 @@ class testing(
   $version = '1.0',
   $undocumented = 'does not have documentation',
   $undef = undef,
-  $debug = true) {
+  $multiline = undef,
+  $typed = true,
+  $multivalue = ['x', 'y'],
+  $debug = true,
+  $db_type = 'mysql',
+  $remote = true,
+  $server = 'mysql.example.com',
+  $username = 'root',
+  $password = 'toor',
+  $file = undef,
+  $m_i_a = 'test') {
 
   validate_string($undocumented)
   if $version == '1.0' {

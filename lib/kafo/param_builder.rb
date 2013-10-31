@@ -1,10 +1,11 @@
 # encoding: UTF-8
-class ParamBuilder
-  ATTRIBUTE_RE = /^(type):(.*)/
+require 'kafo/param_group'
 
+class ParamBuilder
   def initialize(mod, data)
     @data   = data
     @module = mod
+    @groups = []
   end
 
   def validate
@@ -29,6 +30,23 @@ class ParamBuilder
     end
   end
 
+  def build_param_groups(params)
+    data = Hash[ @data[:groups].map { |name, groups| [name, groups.select { |g| g =~ /parameters/i }] } ]
+    data.each do |param_name, param_groups|
+      param_groups.each_with_index do |group_name, i|
+        param_group = find_or_build_group(group_name)
+        param_group.add_child find_or_build_group(param_groups[i + 1]) unless i + 1 >= param_groups.size
+      end
+
+      param_group = find_or_build_group(param_groups.last)
+      param       = params.detect { |p| p.name == param_name }
+      param_group.add_param param unless param.nil?
+    end
+
+    # top level groups
+    data.values.map(&:first).compact.uniq.map { |name| @groups.detect { |g| g.name == name } }
+  end
+
   def build(name, data)
     param           = get_type(data[:types][name]).new(@module, name)
     param.default   = data[:values][name]
@@ -39,6 +57,15 @@ class ParamBuilder
   end
 
   private
+
+  def find_or_build_group(name)
+    unless (param_group = @groups.detect { |g| g.name == name })
+      param_group = ParamGroup.new(name)
+      param_group.module = @module
+      @groups.push param_group
+    end
+    param_group
+  end
 
   # we don't want to be strict so people can define their own parameters
   # down side of this is when you have typo in your type (e.g. type:bol)

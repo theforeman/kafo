@@ -73,7 +73,7 @@ class KafoConfigure < Clamp::Command
       end
 
       if interactive?
-        wizard = Wizard.new
+        wizard = Wizard.new(self)
         wizard.run
       else
         unless validate_all
