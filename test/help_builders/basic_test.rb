@@ -36,18 +36,18 @@ describe HelpBuilders::Basic do
   describe "#add_list" do
     before { builder.add_list('Options', clamp_definitions) }
     let(:output) { stdout.rewind; stdout.read }
-    it { output.must_include 'Options' }
-    it { output.must_include '= Generic:' }
-    it { output.must_include '--no-colors' }
-    it { output.must_include 'app wide argument, not a parameter' }
-    it { output.must_include '= Module puppet:' }
-    it { output.must_include '--puppet-version' }
-    it { output.must_include 'version parameter' }
-    it { output.wont_include '--puppet-server' }
-    it { output.wont_include 'enable puppetmaster server' }
-    it { output.wont_include '--puppet-port' }
-    it { output.wont_include 'puppetmaster port' }
-    it { output.wont_include 'Basic' }
-    it { output.wont_include 'Advanced' }
+    specify { output.must_include 'Options' }
+    specify { output.must_include '= Generic:' }
+    specify { output.must_include '--no-colors' }
+    specify { output.must_include 'app wide argument, not a parameter' }
+    specify { output.must_include '= Module puppet:' }
+    specify { output.must_include '--puppet-version' }
+    specify { output.must_include 'version parameter' }
+    specify { output.wont_include '--puppet-server' }
+    specify { output.wont_include 'enable puppetmaster server' }
+    specify { output.wont_include '--puppet-port' }
+    specify { output.wont_include 'puppetmaster port' }
+    specify { output.wont_include 'Basic' }
+    specify { output.wont_include 'Advanced' }
   end
 end

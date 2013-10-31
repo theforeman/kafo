@@ -4,7 +4,8 @@ require 'rdoc/markup' # required for RDoc < 0.9.5
 require 'rdoc/markup/parser' # required for RDoc < 0.9.5
 
 class DocParser
-  ATTRIBUTE_LINE = /^(condition|type)[ ]*:[ ]*(.*)/
+  ATTRIBUTE_LINE = /^(condition|type)\s*:\s*(.*)/
+  HEADER_CONDITION = /\A(.+)\s*condition:\s*(.+)\Z/
 
   def initialize(text)
     @text           = text
@@ -13,7 +14,7 @@ class DocParser
     @groups         = {}
     @conditions     = {}
     @types          = Hash.new('string')
-    rdoc_parse
+    @rdoc           = rdoc_parser.parse(@text)
   end
 
   attr_reader :docs, :groups, :types, :conditions
@@ -41,7 +42,7 @@ class DocParser
     label = para.label.is_a?(Array) ? para.label.first : para.label
     # Documentation must be a list - if there's no label then skip
     return if label.nil?
-    key              = label.tr('^A-Za-z0-9_-', '')
+    key              = label.gsub(/[^A-Za-z0-9_-]/, '')
     @groups[key]     = current_groups
     text_parts       = para.parts.first.parts.map!(&:strip)
     attributes, docs = text_parts.partition { |line| line =~ ATTRIBUTE_LINE }
@@ -59,13 +60,17 @@ class DocParser
         when 'type'
           @types[parameter] = value
         when 'condition'
-          condition = value
+          if condition.nil?
+            condition = value
+          else
+            raise DocParseError, "Two or more conditions defined for #{name}"
+          end
         else
           raise DocParseError, "Unknown attribute #{name}"
       end
 
     end
-    condition              = [current_condition, condition].select { |c| !c.nil? }.join(' && ')
+    condition              = [current_condition, condition].compact.join(' && ')
     @conditions[parameter] = condition.empty? ? nil : condition
   end
 
@@ -84,7 +89,7 @@ class DocParser
   end
 
   def nesting(heading)
-    if heading.text =~ /\A(.+)[ ]*condition:[ ]*(.+)\Z/
+    if heading.text =~ HEADER_CONDITION
       text, condition = $1, $2
     else
       text, condition = heading.text, nil
@@ -109,11 +114,11 @@ class DocParser
     @nesting_buffer.last
   end
 
-  def rdoc_parse
+  def rdoc_parser
     if RDoc::Markup.respond_to?(:parse)
-      @rdoc = RDoc::Markup.parse(@text)
+      RDoc::Markup
     else # RDoc < 3.10.0
-      @rdoc = RDoc::Markup::Parser.parse(@text)
+      RDoc::Markup::Parser
     end
   end
 

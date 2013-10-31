@@ -7,3 +7,9 @@ end
 
 class DocParseError < StandardError
 end
+
+class ConditionError < StandardError
+end
+
+class TypeError < StandardError
+end

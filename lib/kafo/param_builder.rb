@@ -31,11 +31,13 @@ class ParamBuilder
   end
 
   def build_param_groups(params)
-    data = Hash[ @data[:groups].map { |name, groups| [name, groups.select { |g| g =~ /parameters/i }] } ]
+    data = Hash[ get_parameters_groups_by_param_name ]
     data.each do |param_name, param_groups|
       param_groups.each_with_index do |group_name, i|
         param_group = find_or_build_group(group_name)
-        param_group.add_child find_or_build_group(param_groups[i + 1]) unless i + 1 >= param_groups.size
+        if i + 1 < param_groups.size
+          param_group.add_child find_or_build_group(param_groups[i + 1])
+        end
       end
 
       param_group = find_or_build_group(param_groups.last)
@@ -58,8 +60,15 @@ class ParamBuilder
 
   private
 
+  def get_parameters_groups_by_param_name
+    @data[:groups].map do |name, groups|
+      [ name, groups.select { |g| g =~ /parameters/i } ]
+    end
+  end
+
   def find_or_build_group(name)
-    unless (param_group = @groups.detect { |g| g.name == name })
+    param_group = @groups.detect { |g| g.name == name }
+    unless param_group
       param_group = ParamGroup.new(name)
       param_group.module = @module
       @groups.push param_group
@@ -67,11 +76,8 @@ class ParamBuilder
     param_group
   end
 
-  # we don't want to be strict so people can define their own parameters
-  # down side of this is when you have typo in your type (e.g. type:bol)
-  # it will be treated as a String
   def get_type(type)
     type = type.capitalize
-    Params.const_defined?(type) ? Params.const_get(type) : Params::String
+    Params.const_defined?(type) ? Params.const_get(type) : raise(TypeError, "undefined parameter type '#{type}'")
   end
 end

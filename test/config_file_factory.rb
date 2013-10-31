@@ -8,7 +8,7 @@ class ConfigFileFactory
   end
 
   def self.build_file(content)
-    f = Tempfile.new(['testing_config', '.yaml'])
+    f = Tempfile.open(['testing_config', '.yaml'])
     f.write content
     f.close
     f

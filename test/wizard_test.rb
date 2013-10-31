@@ -16,6 +16,7 @@ describe Wizard do
     kafo.config.app[:colors] = false
 
     kafo.config.instance_variable_set '@modules', [puppet_module]
+    kafo.params = puppet_module.params
     kafo
   end
 
@@ -301,8 +302,33 @@ describe Wizard do
           wizard.send(:configure_group, advanced_group)
         end
         must_be_on_stdout(output, 'configure executed')
-        must_be_on_stdout(output, 'debug', 'db_type', 'remote', 'server', 'username', 'password', 'file')
+        must_be_on_stdout(output, 'debug', 'db_type', 'remote', 'server', 'username')
+        wont_be_on_stdout(output, 'password', 'file') # because of condition
         must_be_on_stdout(output, 'Configure testing')
+      end
+    end
+
+    describe "#render_params" do
+      let(:visible) { Params::String.new(nil, 'visible').tap { |p| p.condition = 'true' } }
+      let(:invisible) { Params::String.new(nil, 'invisible').tap { |p| p.condition = 'false' } }
+      let(:params) { [visible, invisible] }
+
+      before do
+        input.puts 'cancel'
+        input.rewind
+
+        wizard.choose do |menu|
+          wizard.send(:render_params, params, menu)
+          menu.choice 'cancel'
+        end
+      end
+
+      it "does not display params with false condition" do
+        wont_be_on_stdout(output, 'invisible')
+      end
+
+      it "does display params with true condition" do
+        must_be_on_stdout(output, 'visible')
       end
     end
 

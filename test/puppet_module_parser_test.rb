@@ -76,22 +76,22 @@ describe PuppetModuleParser do
 
     describe 'data structure' do
       let(:keys) { data.keys }
-      it { keys.must_include :values }
-      it { keys.must_include :validations }
-      it { keys.must_include :docs }
-      it { keys.must_include :parameters }
-      it { keys.must_include :types }
-      it { keys.must_include :groups }
-      it { keys.must_include :conditions }
+      specify { keys.must_include :values }
+      specify { keys.must_include :validations }
+      specify { keys.must_include :docs }
+      specify { keys.must_include :parameters }
+      specify { keys.must_include :types }
+      specify { keys.must_include :groups }
+      specify { keys.must_include :conditions }
     end
 
     let(:parameters) { data[:parameters] }
     describe 'parsed parameters' do
-      it { parameters.must_include 'version' }
-      it { parameters.must_include 'undocumented' }
-      it { parameters.must_include 'undef' }
-      it { parameters.must_include 'debug' }
-      it { parameters.wont_include 'documented' }
+      specify { parameters.must_include 'version' }
+      specify { parameters.must_include 'undocumented' }
+      specify { parameters.must_include 'undef' }
+      specify { parameters.must_include 'debug' }
+      specify { parameters.wont_include 'documented' }
     end
 
     describe "parsed values" do
@@ -99,54 +99,54 @@ describe PuppetModuleParser do
       it 'includes values for all parameters' do
         parameters.each { |p| values.keys.must_include p }
       end
-      it { values['version'].must_equal '1.0' }
-      it { values['undef'].must_equal :undef }
-      it { values['debug'].must_equal true }
+      specify { values['version'].must_equal '1.0' }
+      specify { values['undef'].must_equal :undef }
+      specify { values['debug'].must_equal true }
     end
 
     describe "parsed validations" do
       let(:validations) { data[:validations] }
-      it { validations.size.must_equal 1 }
-      it { validations.map(&:name).each { |v| v.must_equal 'validate_string' } }
-      it { validations.each { |v| v.must_be_kind_of Puppet::Parser::AST::Function } }
+      specify { validations.size.must_equal 1 }
+      specify { validations.map(&:name).each { |v| v.must_equal 'validate_string' } }
+      specify { validations.each { |v| v.must_be_kind_of Puppet::Parser::AST::Function } }
     end
 
     describe "parsed documentation" do
       let(:docs) { data[:docs]}
-      it { docs.keys.must_include 'documented' }
-      it { docs.keys.must_include 'version' }
-      it { docs.keys.must_include 'undef' }
-      it { docs.keys.wont_include 'm_i_a' }
-      it { docs.keys.wont_include 'undocumented' }
-      it { docs['version'].must_equal ['some version number'] }
-      it { docs['multiline'].must_equal ['param with multiline', 'documentation', 'consisting of 3 lines'] }
-      it { docs['typed'].wont_include 'type:bool' }
+      specify { docs.keys.must_include 'documented' }
+      specify { docs.keys.must_include 'version' }
+      specify { docs.keys.must_include 'undef' }
+      specify { docs.keys.wont_include 'm_i_a' }
+      specify { docs.keys.wont_include 'undocumented' }
+      specify { docs['version'].must_equal ['some version number'] }
+      specify { docs['multiline'].must_equal ['param with multiline', 'documentation', 'consisting of 3 lines'] }
+      specify { docs['typed'].wont_include 'type:bool' }
     end
 
     describe "parsed groups" do
       let(:groups) { data[:groups] }
-      it { groups['version'].must_equal ['Parameters'] }
-      it { groups['debug'].must_equal ['Advanced parameters'] }
-      it { groups['server'].must_equal ['Advanced parameters', 'MySQL'] }
-      it { groups['file'].must_equal ['Advanced parameters', 'Sqlite'] }
-      it { groups['log_level'].must_equal ['Extra parameters'] }
+      specify { groups['version'].must_equal ['Parameters'] }
+      specify { groups['debug'].must_equal ['Advanced parameters'] }
+      specify { groups['server'].must_equal ['Advanced parameters', 'MySQL'] }
+      specify { groups['file'].must_equal ['Advanced parameters', 'Sqlite'] }
+      specify { groups['log_level'].must_equal ['Extra parameters'] }
     end
 
     describe "parsed types" do
       let(:types) { data[:types] }
-      it { types['version'].must_equal 'string' }
-      it { types['typed'].must_equal 'boolean' }
-      it { types['remote'].must_equal 'boolean' }
+      specify { types['version'].must_equal 'string' }
+      specify { types['typed'].must_equal 'boolean' }
+      specify { types['remote'].must_equal 'boolean' }
     end
 
     describe "parsed conditions" do
       let(:conditions) { data[:conditions] }
-      it { conditions['version'].must_be_nil }
-      it { conditions['typed'].must_be_nil }
-      it { conditions['remote'].must_equal '$db_type == \'mysql\'' }
-      it { conditions['server'].must_equal '$db_type == \'mysql\' && $remote' }
-      it { conditions['username'].must_equal '$db_type == \'mysql\'' }
-      it { conditions['password'].must_equal '$db_type == \'mysql\' && $username != \'root\'' }
+      specify { conditions['version'].must_be_nil }
+      specify { conditions['typed'].must_be_nil }
+      specify { conditions['remote'].must_equal '$db_type == \'mysql\'' }
+      specify { conditions['server'].must_equal '$db_type == \'mysql\' && $remote' }
+      specify { conditions['username'].must_equal '$db_type == \'mysql\'' }
+      specify { conditions['password'].must_equal '$db_type == \'mysql\' && $username != \'root\'' }
     end
   end
 end

@@ -1,3 +1,7 @@
 module Params
-  class String < Param; end
+  class String < Param
+    def condition_value
+      %{"#{value}"}
+    end
+  end
 end

@@ -69,11 +69,7 @@ END
         menu.prompt = 'Choose an option from the menu... '
         menu.choice("Enable/disable #{mod.name} module, current value: <%= color('#{mod.enabled?}', :info) %>") { turn_module(mod) }
         if mod.enabled?
-          mod.primary_parameter_group.params.each do |param|
-            menu.choice "Set <%= color('#{param.name}', :important) %>, current value: <%= color('#{param.value}', :info) %>" do
-              configure(param)
-            end
-          end
+          render_params(mod.primary_parameter_group.params, menu)
 
           others = mod.primary_parameter_group.children + mod.other_parameter_groups
           others.each do |group|
@@ -91,17 +87,23 @@ END
       say "\n<%= color('Group #{group.formatted_name} (of module #{group.module.name})', :headline) %>"
       choose do |menu|
 
-        group.params.each do |param|
-          menu.choice "Set <%= color('#{param.name}', :important) %>, current value: <%= color('#{param.value}', :info) %>" do
-            configure(param)
-          end
-        end
+        render_params(group.params, menu)
 
         group.children.each do |subgroup|
           menu.choice("Configure #{subgroup.formatted_name}") { configure_group(subgroup) }
         end
 
         menu.choice("Back to parent menu") { go_back = true }
+      end
+    end
+  end
+
+  def render_params(params, menu)
+    params.each do |param|
+      if param.visible?(@kafo.params)
+        menu.choice "Set <%= color('#{param.name}', :important) %>, current value: <%= color('#{param.value}', :info) %>" do
+          configure(param)
+        end
       end
     end
   end

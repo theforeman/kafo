@@ -10,7 +10,7 @@ class ParamGroup
   end
 
   def formatted_name
-    @formatted_name ||= @name[-1] == ':' ? @name.chop : @name
+    @formatted_name ||= @name.sub(/:\Z/,'')
   end
 
   def add_child(group)

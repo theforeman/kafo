@@ -37,47 +37,47 @@ describe HelpBuilders::Advanced do
     describe "multi group output" do
       before { builder.add_list('Options', clamp_definitions) }
       let(:output) { stdout.rewind; stdout.read }
-      it { output.must_include 'Options' }
-      it { output.must_include '= Generic:' }
-      it { output.must_include '--no-colors' }
-      it { output.must_include 'app wide argument, not a parameter' }
-      it { output.must_include '= Module puppet:' }
-      it { output.must_include '== Basic' }
-      it { output.must_include '--puppet-version' }
-      it { output.must_include 'version parameter' }
-      it { output.must_include '== Advanced' }
-      it { output.must_include '--puppet-server' }
-      it { output.must_include 'enable puppetmaster server' }
-      it { output.must_include '--puppet-port' }
-      it { output.must_include 'puppetmaster port' }
+      specify { output.must_include 'Options' }
+      specify { output.must_include '= Generic:' }
+      specify { output.must_include '--no-colors' }
+      specify { output.must_include 'app wide argument, not a parameter' }
+      specify { output.must_include '= Module puppet:' }
+      specify { output.must_include '== Basic' }
+      specify { output.must_include '--puppet-version' }
+      specify { output.must_include 'version parameter' }
+      specify { output.must_include '== Advanced' }
+      specify { output.must_include '--puppet-server' }
+      specify { output.must_include 'enable puppetmaster server' }
+      specify { output.must_include '--puppet-port' }
+      specify { output.must_include 'puppetmaster port' }
     end
 
     describe "single group output" do
       before { builder.add_list('Options', clamp_definitions[2..3]) }
       let(:output) { stdout.rewind; stdout.read }
-      it { output.must_include 'Options' }
-      it { output.must_include '= Generic:' }
-      it { output.must_include '--no-colors' }
-      it { output.must_include 'app wide argument, not a parameter' }
-      it { output.must_include '= Module puppet:' }
-      it { output.wont_include '== Basic'}
-      it { output.wont_include '== Advanced'}
-      it { output.must_include '--puppet-port' }
-      it { output.must_include 'puppetmaster port' }
+      specify { output.must_include 'Options' }
+      specify { output.must_include '= Generic:' }
+      specify { output.must_include '--no-colors' }
+      specify { output.must_include 'app wide argument, not a parameter' }
+      specify { output.must_include '= Module puppet:' }
+      specify { output.wont_include '== Basic'}
+      specify { output.wont_include '== Advanced'}
+      specify { output.must_include '--puppet-port' }
+      specify { output.must_include 'puppetmaster port' }
     end
 
     describe "no group" do
       before { builder.add_list('Options', clamp_definitions[3..3]) }
       let(:output) { stdout.rewind; stdout.read }
-      it { output.must_include 'Options' }
-      it { output.must_include '= Generic:' }
-      it { output.must_include '--no-colors' }
-      it { output.must_include 'app wide argument, not a parameter' }
-      it { output.wont_include '= Module puppet:' }
-      it { output.wont_include '== Basic'}
-      it { output.wont_include '== Advanced'}
-      it { output.wont_include '--puppet-version' }
-      it { output.wont_include '--puppet-port' }
+      specify { output.must_include 'Options' }
+      specify { output.must_include '= Generic:' }
+      specify { output.must_include '--no-colors' }
+      specify { output.must_include 'app wide argument, not a parameter' }
+      specify { output.wont_include '= Module puppet:' }
+      specify { output.wont_include '== Basic'}
+      specify { output.wont_include '== Advanced'}
+      specify { output.wont_include '--puppet-version' }
+      specify { output.wont_include '--puppet-port' }
     end
   end
 end

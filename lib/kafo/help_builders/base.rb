@@ -1,5 +1,9 @@
 # encoding: UTF-8
 module HelpBuilders
+  DEFAULT_GROUP_NAME = 'Basic'
+  DEFAULT_MODULE_NAME = 'Generic'
+  IGNORE_IN_GROUP_NAME = /\s*parameters:?/
+
   class Base < Clamp::Help::Builder
     include StringHelper
 
@@ -45,29 +49,26 @@ module HelpBuilders
 
     def by_parameter_groups(items)
       data = Hash.new { |h, k| h[k] = [] }
-      mapping(items).each do |item, param|
+      params_mapping(items).each do |item, param|
         data[group(param)].push item
       end
       data
     end
 
     def group(param)
-      name = ''
-      begin
-        name = param.groups.pop
-      end until name.nil? || name.include?('parameters')
-      name.nil? ? 'Basic' : name.sub(/[ ]*parameters:?/, '')
+      name = param.groups.reverse.find { |group| group.include?('parameters') }
+      name.nil? ? DEFAULT_GROUP_NAME : name.sub(IGNORE_IN_GROUP_NAME, '')
     end
 
-    def by_module(items)
+    def by_module(help_items)
       data = Hash.new { |h, k| h[k] = [] }
-      mapping(items).each do |item, param|
-        data[param.nil? ? 'Generic' : param.module_name].push item
+      params_mapping(help_items).each do |item, param|
+        data[param.nil? ? DEFAULT_MODULE_NAME : param.module_name].push item
       end
       data
     end
 
-    def mapping(items)
+    def params_mapping(items)
       items.map { |i| [i, parametrization[i.help.first.strip]] }
     end
 

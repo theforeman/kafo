@@ -57,3 +57,11 @@ def must_be_on_stdout(output, *args)
     stdout.must_include inclusion
   end
 end
+
+def wont_be_on_stdout(output, *args)
+  output.rewind
+  stdout = output.read
+  args.each do |inclusion|
+    stdout.wont_include inclusion
+  end
+end
