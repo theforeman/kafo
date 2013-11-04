@@ -10,117 +10,119 @@ require 'configuration'
 
 KafoConfigure = OpenStruct.new
 
-class KafoExportParams < Clamp::Command
-  TYPES = %w(md html asciidoc)
+module Kafo
+  class KafoExportParams < Clamp::Command
+    TYPES = %w(md html asciidoc)
 
-  option ['-c', '--config'], 'FILE', 'Config file for which should we generate params',
-         :required => true
+    option ['-c', '--config'], 'FILE', 'Config file for which should we generate params',
+           :required => true
 
-  option ['-f', '--format'], 'FORMAT',
-         'Config file for which should we generate params', :default => 'md' do |format|
-    format = format.downcase
-    raise ArgumentError unless TYPES.include?(format)
-    format
-  end
-
-  def execute
-    c = Configuration.new(config, false)
-    KafoConfigure.config = c
-    KafoConfigure.root_dir = File.expand_path(c.app[:installer_dir])
-
-    exporter = self.class.const_get(format.capitalize).new(c)
-    exporter.print_out
-  end
-
-  class Html
-    include StringHelper
-
-    def initialize(config)
-      @config = config
+    option ['-f', '--format'], 'FORMAT',
+           'Config file for which should we generate params', :default => 'md' do |format|
+      format = format.downcase
+      raise ArgumentError unless TYPES.include?(format)
+      format
     end
 
-    def print_out
-      puts '<div id="installer-options">'
-      puts '  <table class="table table-bordered table-condensed">'
-      header
-      puts '    <tbody>'
+    def execute
+      c                      = Configuration.new(config, false)
+      KafoConfigure.config   = c
+      KafoConfigure.root_dir = File.expand_path(c.app[:installer_dir])
 
-      @config.modules.sort.each do |mod|
-        mod.params.sort.each do |param|
-          puts '      <tr>'
-          puts "        <td style='white-space:nowrap'>#{parametrize(param)}</td>"
-          puts "        <td>#{param.doc.join(' ')}</td>"
-          puts '      </tr>'
-        end
+      exporter = self.class.const_get(format.capitalize).new(c)
+      exporter.print_out
+    end
+
+    class Html
+      include StringHelper
+
+      def initialize(config)
+        @config = config
       end
 
-      puts '    </tbody>'
-      puts '  </table>'
-      puts '</div>'
+      def print_out
+        puts '<div id="installer-options">'
+        puts '  <table class="table table-bordered table-condensed">'
+        header
+        puts '    <tbody>'
+
+        @config.modules.sort.each do |mod|
+          mod.params.sort.each do |param|
+            puts '      <tr>'
+            puts "        <td style='white-space:nowrap'>#{parametrize(param)}</td>"
+            puts "        <td>#{param.doc.join(' ')}</td>"
+            puts '      </tr>'
+          end
+        end
+
+        puts '    </tbody>'
+        puts '  </table>'
+        puts '</div>'
+      end
+
+      private
+
+      def header
+        puts '    <thead>'
+        puts '      <tr>'
+        puts '        <th>Option</th>'
+        puts '        <th>Description</th>'
+        puts '      </tr>'
+        puts '    </thead>'
+      end
     end
 
-    private
+    class Asciidoc
+      include StringHelper
 
-    def header
-      puts '    <thead>'
-      puts '      <tr>'
-      puts '        <th>Option</th>'
-      puts '        <th>Description</th>'
-      puts '      </tr>'
-      puts '    </thead>'
-    end
-  end
+      def initialize(config)
+        @config = config
+      end
 
-  class Asciidoc
-    include StringHelper
-
-    def initialize(config)
-      @config = config
-    end
-
-    def print_out
-      @config.modules.sort.each do |mod|
-        puts "Parameters for '#{mod}'\n:"
-        mod.params.sort.each do |param|
-          puts "#{parametrize(param)}::"
-          puts param.doc.join("\n")
+      def print_out
+        @config.modules.sort.each do |mod|
+          puts "Parameters for '#{mod}'\n:"
+          mod.params.sort.each do |param|
+            puts "#{parametrize(param)}::"
+            puts param.doc.join("\n")
+            puts "\n"
+          end
           puts "\n"
         end
-        puts "\n"
       end
     end
-  end
 
-  class Md
-    include StringHelper
+    class Md
+      include StringHelper
 
-    def initialize(config)
-      @config = config
-      @max = max_description_length
-    end
+      def initialize(config)
+        @config = config
+        @max    = max_description_length
+      end
 
-    def print_out
-      puts "| #{('Parameter name').ljust(40)} | #{'Description'.ljust(@max)} |"
-      puts "| #{'-'*40} | #{'-' * @max} |"
-      @config.modules.sort.each do |mod|
-        mod.params.sort.each do |param|
-          puts "| #{parametrize(param).ljust(40)} | #{param.doc.join(' ').ljust(@max)} |"
+      def print_out
+        puts "| #{('Parameter name').ljust(40)} | #{'Description'.ljust(@max)} |"
+        puts "| #{'-'*40} | #{'-' * @max} |"
+        @config.modules.sort.each do |mod|
+          mod.params.sort.each do |param|
+            puts "| #{parametrize(param).ljust(40)} | #{param.doc.join(' ').ljust(@max)} |"
+          end
         end
       end
-    end
 
-    private
+      private
 
-    def header
-      @header ||= "| #{'-'*40} | #{'-' * @max} |"
-    end
+      def header
+        @header ||= "| #{'-'*40} | #{'-' * @max} |"
+      end
 
-    def max_description_length
-      doc_lengths = @config.modules.map { |mod| mod.params.map { |param| param.doc.join(' ').length } }.flatten
-      doc_lengths << 52
-      doc_lengths.max
+      def max_description_length
+        doc_lengths = @config.modules.map { |mod| mod.params.map { |param| param.doc.join(' ').length } }.flatten
+        doc_lengths << 52
+        doc_lengths.max
+      end
     end
   end
 end
 
-KafoExportParams.run
+Kafo::KafoExportParams.run

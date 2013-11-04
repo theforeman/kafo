@@ -1,21 +1,25 @@
 # encoding: UTF-8
-module StringHelper
-  def dashize(string)
-    string.tr('_', '-')
-  end
-  alias :d :dashize
+module Kafo
+  module StringHelper
+    def dashize(string)
+      string.tr('_', '-')
+    end
 
-  def underscore(string)
-    string.tr('-', '_')
-  end
-  alias :u :underscore
+    alias :d :dashize
 
-  def with_prefix(param)
-    prefix = KafoConfigure.config.app[:no_prefix] ? '' : "#{d(param.module_name)}-"
-    "#{prefix}#{d(param.name)}"
-  end
+    def underscore(string)
+      string.tr('-', '_')
+    end
 
-  def parametrize(param)
-    "--#{with_prefix(param)}"
+    alias :u :underscore
+
+    def with_prefix(param)
+      prefix = KafoConfigure.config.app[:no_prefix] ? '' : "#{d(param.module_name)}-"
+      "#{prefix}#{d(param.name)}"
+    end
+
+    def parametrize(param)
+      "--#{with_prefix(param)}"
+    end
   end
 end

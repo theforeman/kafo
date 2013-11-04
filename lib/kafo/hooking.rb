@@ -1,35 +1,37 @@
-class Hooking
+module Kafo
+  class Hooking
 
-  attr_accessor :hooks, :kafo
+    attr_accessor :hooks, :kafo
 
-  def initialize
-    self.hooks = Hash.new { |h, k| h[k] = {} }
-  end
-
-  def logger
-    KafoConfigure.logger
-  end
-
-  def execute(group)
-    logger.info "Executing hooks in group #{group}"
-    self.hooks[group].each_pair do |name, hook|
-      result = hook.yield(kafo)
-      logger.debug "Hook #{name} returned #{result.inspect}"
+    def initialize
+      self.hooks = Hash.new { |h, k| h[k] = {} }
     end
-    logger.info "All hooks in group #{group} finished"
-  end
 
-  def register_pre(name, &block)
-    register(:pre, name, &block)
-  end
+    def logger
+      KafoConfigure.logger
+    end
 
-  def register_post(name, &block)
-    register(:post, name, &block)
-  end
+    def execute(group)
+      logger.info "Executing hooks in group #{group}"
+      self.hooks[group].each_pair do |name, hook|
+        result = hook.yield(kafo)
+        logger.debug "Hook #{name} returned #{result.inspect}"
+      end
+      logger.info "All hooks in group #{group} finished"
+    end
 
-  private
+    def register_pre(name, &block)
+      register(:pre, name, &block)
+    end
 
-  def register(group, name, &block)
-    self.hooks[group][name] = block
+    def register_post(name, &block)
+      register(:post, name, &block)
+    end
+
+    private
+
+    def register(group, name, &block)
+      self.hooks[group][name] = block
+    end
   end
 end
