@@ -1,19 +1,23 @@
 # encoding: UTF-8
 require 'puppet'
-require 'rdoc'
-require 'rdoc/markup'        # required for RDoc < 0.9.5
-require 'rdoc/markup/parser' # required for RDoc < 0.9.5
+require 'kafo/doc_parser'
 
 # Based on ideas from puppet-parse by Johan van den Dorpe
+# we don't build any tree structure since e.g. params from doc does not
+# have to be defined in puppet DSL and vice versa, we just gather all info
+# we can read from the whole manifest
 class PuppetModuleParser
   def self.parse(file)
     content = new(file)
+    docs = content.docs
 
-    {
-        'parameters'  => content.parameters,
-        'docs'        => content.docs,
-        'validations' => content.validations
+    data              = {
+        :values      => content.values,
+        :validations => content.validations
     }
+    data[:parameters] = data[:values].keys
+    data.merge!(docs)
+    data
   end
 
   def initialize(file)
@@ -34,41 +38,33 @@ class PuppetModuleParser
   end
 
   # TODO - store parsed object type (Puppet::Parser::AST::Variable must be dumped later)
-  def parameters
+  def values
     parameters = {}
     arguments  = @object.respond_to?(:arguments) ? @object.arguments : {}
     arguments.each { |k, v| parameters[k] = v.respond_to?(:value) ? v.value : nil }
     parameters
   end
 
-  def klass
-    @object.name if @object.class.respond_to?(:name)
-  end
-
   def validations(param = nil)
     @object.code.select { |stmt| stmt.is_a?(Puppet::Parser::AST::Function) && stmt.name =~ /^validate_/ }
   end
 
+  # returns data in following form
+  # {
+  #   :docs => { $param1 => 'documentation without types and conditions'}
+  #   :types => { $param1 => 'boolean'},
+  #   :groups => { $param1 => ['Parameters', 'Advanced']},
+  #   :conditions => { $param1 => '$db_type == "mysql"'},
+  # }
   def docs
-    docs = {}
-    if !@object.doc.nil?
-      if RDoc::Markup.respond_to?(:parse)
-        rdoc  = RDoc::Markup.parse(@object.doc)
-      else # RDoc < 3.10.0
-        rdoc = RDoc::Markup::Parser.parse(@object.doc)
-      end
-      items = rdoc.parts.select { |part| part.respond_to?(:items) }.map(&:items).flatten
-      items.each do |item|
-        # Skip rdoc items that aren't paragraphs
-        next unless (item.parts.to_s.scan("RDoc::Markup::Paragraph") == ["RDoc::Markup::Paragraph"])
-        # RDoc (>= 4) makes label an array
-        label = item.label.is_a?(Array) ? item.label.first : item.label
-        # Documentation must be a list - if there's no label then skip
-        next if label.nil?
-        key       = label.tr('^A-Za-z0-9_-', '')
-        docs[key] = item.parts.first.parts.map!(&:strip)
-      end
+    data = { :docs => {}, :types => {}, :groups => {}, :conditions => {} }
+    unless @object.doc.nil?
+      parser            = DocParser.new(@object.doc).parse
+      data[:docs]       = parser.docs
+      data[:groups]     = parser.groups
+      data[:types]      = parser.types
+      data[:conditions] = parser.conditions
     end
-    docs
+    data
   end
 end

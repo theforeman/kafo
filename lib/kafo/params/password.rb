@@ -18,6 +18,10 @@ module Params
       @encrypted
     end
 
+    def condition_value
+      "\"#{value}\""
+    end
+
     private
 
     def setup_password

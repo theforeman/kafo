@@ -1,17 +1,18 @@
 # encoding: UTF-8
-class ParamBuilder
-  ATTRIBUTE_RE = /^(type):(.*)/
+require 'kafo/param_group'
 
+class ParamBuilder
   def initialize(mod, data)
     @data   = data
     @module = mod
+    @groups = []
   end
 
   def validate
     return true if KafoConfigure.config.app[:ignore_undocumented]
 
-    parameters = @data['parameters'].keys.sort
-    docs       = @data['docs'].keys.sort
+    parameters = @data[:parameters].sort
+    docs       = @data[:docs].keys.sort
     if parameters == docs
       return true
     else
@@ -24,39 +25,59 @@ class ParamBuilder
   end
 
   def build_params
-    @data['parameters'].keys.map do |param_name|
-      build(param_name, @data['parameters'][param_name], @data['docs'][param_name])
+    @data[:parameters].map do |param_name|
+      build(param_name, @data)
     end
   end
 
-  def build(name, default, docs)
-    param         = get_type(docs).new(@module, name)
-    param.default = default
-    param.doc     = get_documentation(docs)
+  def build_param_groups(params)
+    data = Hash[ get_parameters_groups_by_param_name ]
+    data.each do |param_name, param_groups|
+      param_groups.each_with_index do |group_name, i|
+        param_group = find_or_build_group(group_name)
+        if i + 1 < param_groups.size
+          param_group.add_child find_or_build_group(param_groups[i + 1])
+        end
+      end
+
+      param_group = find_or_build_group(param_groups.last)
+      param       = params.detect { |p| p.name == param_name }
+      param_group.add_param param unless param.nil?
+    end
+
+    # top level groups
+    data.values.map(&:first).compact.uniq.map { |name| @groups.detect { |g| g.name == name } }
+  end
+
+  def build(name, data)
+    param           = get_type(data[:types][name]).new(@module, name)
+    param.default   = data[:values][name]
+    param.doc       = data[:docs][name]
+    param.groups    = data[:groups][name]
+    param.condition = data[:conditions][name]
     param
   end
 
   private
 
-  def get_documentation(docs)
-    return nil if docs.nil?
-    docs.select { |line| line !~ ATTRIBUTE_RE }
-  end
-
-  def get_type(docs)
-    type = (get_attributes(docs)[:type] || '').capitalize
-    type.empty? || !Params.const_defined?(type) ? Params::String : Params.const_get(type)
-  end
-
-  def get_attributes(docs)
-    data = {}
-    return data if docs.nil?
-
-    docs.each do |line|
-      if line =~ ATTRIBUTE_RE
-        data[$1.to_sym] = $2
-      end
+  def get_parameters_groups_by_param_name
+    @data[:groups].map do |name, groups|
+      [ name, groups.select { |g| g =~ /parameters/i } ]
     end
-    data
+  end
+
+  def find_or_build_group(name)
+    param_group = @groups.detect { |g| g.name == name }
+    unless param_group
+      param_group = ParamGroup.new(name)
+      param_group.module = @module
+      @groups.push param_group
+    end
+    param_group
+  end
+
+  def get_type(type)
+    type = type.capitalize
+    Params.const_defined?(type) ? Params.const_get(type) : raise(TypeError, "undefined parameter type '#{type}'")
   end
 end

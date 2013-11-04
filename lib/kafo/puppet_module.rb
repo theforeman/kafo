@@ -5,7 +5,10 @@ require 'kafo/puppet_module_parser'
 require 'kafo/validator'
 
 class PuppetModule
-  attr_reader :name, :params, :dir_name, :class_name, :manifest_name, :manifest_path
+  PRIMARY_GROUP_NAME = 'Parameters'
+
+  attr_reader :name, :params, :dir_name, :class_name, :manifest_name, :manifest_path,
+              :groups
 
   def initialize(name, parser = PuppetModuleParser)
     @name          = name
@@ -17,6 +20,7 @@ class PuppetModule
     @parser        = parser
     @validations   = []
     @logger        = KafoConfigure.logger
+    @groups        = {}
   end
 
   def enabled?
@@ -35,16 +39,24 @@ class PuppetModule
     @params      = []
     raw_data     = @parser.parse(manifest_path)
     builder      = builder_klass.new(self, raw_data)
-    @validations = raw_data['validations']
+    @validations = raw_data[:validations]
 
     builder.validate
     @params      = builder.build_params
+    @groups      = builder.build_param_groups(@params)
 
     self
   rescue ConfigurationException => e
-    puts "Unable to continue because of:"
-    puts e.message
+    @logger.error "Unable to continue because of: #{e.message}"
     KafoConfigure.exit(:manifest_error)
+  end
+
+  def primary_parameter_group
+    @groups.detect { |g| g.formatted_name == PRIMARY_GROUP_NAME }
+  end
+
+  def other_parameter_groups
+    @groups.select { |g| g.formatted_name != PRIMARY_GROUP_NAME }
   end
 
   def validations(param = nil)

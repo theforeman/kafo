@@ -1,7 +1,9 @@
 # encoding: UTF-8
+require 'kafo/condition'
+
 class Param
   attr_reader :name, :module
-  attr_accessor :default, :doc, :value_set
+  attr_accessor :default, :doc, :value_set, :condition, :groups
 
   def initialize(builder, name)
     @name = name
@@ -77,6 +79,20 @@ class Param
       return r unless r == 0
     end
     self.name <=> o.name
+  end
+
+  def visible?(context = [])
+    condition.nil? || condition.empty? ? true : evaluate_condition(context)
+  end
+
+  def condition_value
+    value.to_s
+  end
+
+  private
+
+  def evaluate_condition(context = [])
+    Condition.new(condition, context).evaluate
   end
 end
 

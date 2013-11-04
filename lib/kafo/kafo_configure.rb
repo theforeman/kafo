@@ -6,6 +6,7 @@ require 'kafo/exceptions'
 require 'kafo/configuration'
 require 'kafo/logger'
 require 'kafo/string_helper'
+require 'kafo/help_builder'
 require 'kafo/wizard'
 require 'kafo/system_checker'
 require 'kafo/puppet_command'
@@ -72,7 +73,7 @@ class KafoConfigure < Clamp::Command
       end
 
       if interactive?
-        wizard = Wizard.new
+        wizard = Wizard.new(self)
         wizard.run
       else
         unless validate_all
@@ -125,6 +126,16 @@ class KafoConfigure < Clamp::Command
     else
       raise "Unknown code #{code}"
     end
+  end
+
+  def help
+    self.class.help(invocation_path, self)
+  end
+
+  def self.help(*args)
+    kafo = args.pop
+    builder_class = kafo.full_help? ? HelpBuilders::Advanced : HelpBuilders::Basic
+    super(*args, builder_class.new(kafo.params))
   end
 
   def self.app_option(*args, &block)
@@ -189,6 +200,11 @@ class KafoConfigure < Clamp::Command
   end
 
   def set_options
+    self.class.option '--full-help', :flag, "print complete help" do
+      @full_help = true
+      request_help
+    end
+
     modules.each do |mod|
       self.class.option d("--[no-]enable-#{mod.name}"),
                         :flag,

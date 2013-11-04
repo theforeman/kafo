@@ -3,8 +3,9 @@ require 'highline/import'
 require 'yaml'
 
 class Wizard
-  def initialize
-    @config = KafoConfigure.config
+  def initialize(kafo)
+    @kafo   = kafo
+    @config = kafo.config
     @name   = @config.app[:name] || 'Kafo'
     setup_terminal
     setup_colors
@@ -23,6 +24,9 @@ END
     exit 0 unless agree("\n<%= color('Ready to start?', :question) %> (y/n)", false)
 
     main_menu
+  rescue Interrupt
+    puts "Got interrupt, exiting"
+    exit(0)
   end
 
   private
@@ -65,13 +69,41 @@ END
         menu.prompt = 'Choose an option from the menu... '
         menu.choice("Enable/disable #{mod.name} module, current value: <%= color('#{mod.enabled?}', :info) %>") { turn_module(mod) }
         if mod.enabled?
-          mod.params.each do |param|
-            menu.choice "Set <%= color('#{param.name}', :important) %>, current value: <%= color('#{param.value}', :info) %>" do
-              configure(param)
-            end
+          render_params(mod.primary_parameter_group.params, menu)
+
+          others = mod.primary_parameter_group.children + mod.other_parameter_groups
+          others.each do |group|
+            menu.choice("Configure #{group.formatted_name}") { configure_group(group) }
           end
         end
         menu.choice("Back to main menu") { go_back = true }
+      end
+    end
+  end
+
+  def configure_group(group)
+    go_back = false
+    until go_back
+      say "\n<%= color('Group #{group.formatted_name} (of module #{group.module.name})', :headline) %>"
+      choose do |menu|
+
+        render_params(group.params, menu)
+
+        group.children.each do |subgroup|
+          menu.choice("Configure #{subgroup.formatted_name}") { configure_group(subgroup) }
+        end
+
+        menu.choice("Back to parent menu") { go_back = true }
+      end
+    end
+  end
+
+  def render_params(params, menu)
+    params.each do |param|
+      if param.visible?(@kafo.params)
+        menu.choice "Set <%= color('#{param.name}', :important) %>, current value: <%= color('#{param.value}', :info) %>" do
+          configure(param)
+        end
       end
     end
   end
