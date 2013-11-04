@@ -290,6 +290,45 @@ bin/foreman-installer --foreman-db-password=UNDEF
 
 It also works in interactive mode.
 
+## Hooks
+
+You may need to add new features to the installer. Kafo provides simple hook
+mechanism that allows you to run custom code just before and after the puppet
+is ran. Let's assume we want to add --reset-foreman-db option to our
+foreman-installer. We add following lines to generated installer script
+
+```ruby
+require 'kafo/hooking'
+
+# functions specific to foreman installer
+KafoConfigure.app_option '--reset-foreman-db',
+  :flag, 'Drop foreman database first? You will lose all data!', :default => false
+
+KafoConfigure.hooking.register_pre(:reset_db) do |kafo|
+  if kafo.config.app[:reset_foreman_db] && !kafo.config.app[:noop]
+    `which foreman-rake > /dev/null 2>&1`
+    if $?.success?
+      KafoConfigure.logger.info 'Dropping database!'
+      output = `foreman-rake db:drop 2>&1`
+      KafoConfigure.logger.debug output.to_s
+      unless $?.success?
+        KafoConfigure.logger.warn "Unable to drop DB, ignoring since it's not fatal, output was: '#{output}''"
+      end
+    else
+      KafoConfigure.logger.warn 'Foreman not installed yet, can not drop database!'
+    end
+  end
+end
+```
+
+Note that we can access other installer options using ```kafo.config.app```. Since ```kafo``` is
+KafoConfigure instance, you can even access puppet params values. Last but not least you have
+access to logger.
+
+You can register as many hooks as you need. They are executed in unspecified order. Every hook
+must have a unique name. In a very similar way you can register :post hooks that are executed
+right after puppet run is over.
+
 ## Custom paths
 
 Usually when you package your installer you want to load files from specific
