@@ -138,7 +138,8 @@ module Kafo
     def self.help(*args)
       kafo          = args.pop
       builder_class = kafo.full_help? ? HelpBuilders::Advanced : HelpBuilders::Basic
-      super(*args, builder_class.new(kafo.params))
+      args.push builder_class.new(kafo.params)
+      super(*args)
     end
 
     def self.app_option(*args, &block)
