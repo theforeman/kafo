@@ -22,19 +22,22 @@ module Kafo
     end
 
     def initialize(file)
+      @file = file
       raise ModuleName, "File not found #{file}, check you answer file" unless File.exists?(file)
       parser                        = Puppet::Parser::Parser.new('production')
       values                        = Puppet.settings.instance_variable_get('@values')
       values[:production][:confdir] ||= '/' # just some stubbing
-      parser.import(file)
+      parser.import(@file)
 
-      # Find object in list of hostclasses
-      parser.environment.known_resource_types.hostclasses.each do |x|
-        @object = x.last if x.last.file == file
+      # Find object corresponding to class defined in init.pp in list of hostclasses
+      parser.environment.known_resource_types.hostclasses.each do |ast_objects|
+        ast_type = ast_objects.last
+        @object = ast_type if ast_type.file == file
       end
       # Find object in list of definitions
-      parser.environment.known_resource_types.definitions.each do |x|
-        @object = x.last if x.last.file == file
+      parser.environment.known_resource_types.definitions.each do |ast_objects|
+        ast_type = ast_objects.last
+        @object = ast_type.last if ast_type.last.file == file
       end
     end
 
@@ -59,7 +62,9 @@ module Kafo
     # }
     def docs
       data = { :docs => {}, :types => {}, :groups => {}, :conditions => {} }
-      unless @object.doc.nil?
+      if @object.nil?
+        raise DocParseError, "no documentation found for manifest #{@file}, parsing error?"
+      elsif !@object.doc.nil?
         parser            = DocParser.new(@object.doc).parse
         data[:docs]       = parser.docs
         data[:groups]     = parser.groups

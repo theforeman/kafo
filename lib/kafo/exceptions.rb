@@ -11,7 +11,7 @@ module Kafo
 
   class ConditionError < StandardError
   end
-end
 
-class TypeError < StandardError
+  class TypeError < StandardError
+  end
 end

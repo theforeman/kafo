@@ -102,6 +102,54 @@ class testing(
 }
 EOS
 
+MANIFEST_WITHOUT_PRIMARY_GROUP = <<EOS
+# This manifests has no primary group
+#
+# === Basic parameters:
+#
+# $version::         some version number
+#
+# === Advanced parameters:
+#
+# $documented::      something that is documented
+#
+class testing2(
+  $version    = '1.0',
+  $documented = 'test') {
+
+  package {"testing":
+    ensure => present
+  }
+}
+EOS
+
+MANIFEST_WITHOUT_ANY_GROUP = <<EOS
+# This manifests has no primary group
+#
+# $version::         some version number
+# $documented::      something that is documented
+#
+class testing3(
+  $version    = '1.0',
+  $documented = 'test') {
+
+  package {"testing":
+    ensure => present
+  }
+}
+EOS
+
+NO_DOC_MANIFEST = <<EOS
+class testing4(
+  $version    = '1.0',
+  $documented = 'test') {
+
+  package {"testing":
+    ensure => present
+  }
+}
+EOS
+
 class Minitest::Spec
   before do
     Kafo::KafoConfigure.config   = Kafo::Configuration.new(ConfigFileFactory.build('basic', BASIC_CONFIGURATION).path)

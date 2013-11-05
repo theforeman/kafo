@@ -25,6 +25,16 @@ module Kafo
     let(:parsed) { mod.parse }
 
     describe "#parse(builder)" do
+      describe "without documentation" do
+        before do
+          KafoConfigure.config.app[:ignore_undocumented] = true
+        end
+
+        let(:mod) { PuppetModule.new 'puppet', TestParser.new(NO_DOC_MANIFEST) }
+        let(:docs) { parsed.params.map(&:doc) }
+        specify { docs.each { |doc| doc.must_be_nil } }
+      end
+
       describe "with not ignoring docs inconsitency" do
         before do
           KafoConfigure.config.app[:ignore_undocumented] = false
@@ -77,6 +87,26 @@ module Kafo
       specify { advanced_params.must_include('remote') }
       specify { advanced_params.must_include('file') }
       specify { advanced_params.wont_include('log_level') }
+
+      describe "manifest without primary group" do
+        let(:mod_wo_prim) { PuppetModule.new('puppet', TestParser.new(MANIFEST_WITHOUT_PRIMARY_GROUP)).parse }
+        let(:primary_group) { mod_wo_prim.primary_parameter_group }
+        specify { primary_group.params.must_be_empty }
+        let(:children_group_names) { primary_group.children.map(&:name) }
+        specify { children_group_names.must_include 'Basic parameters:' }
+        specify { children_group_names.must_include 'Advanced parameters:' }
+      end
+
+      describe "manifest without any group" do
+        let(:mod_wo_any) { PuppetModule.new('puppet', TestParser.new(MANIFEST_WITHOUT_ANY_GROUP)).parse }
+        let(:primary_group) { mod_wo_any.primary_parameter_group }
+        let(:primary_params) { primary_group.params }
+        specify { primary_params.wont_be_empty }
+        let(:primary_param_names) { primary_params.map(&:name) }
+        specify { primary_param_names.must_include 'version' }
+        specify { primary_param_names.must_include 'documented' }
+        specify { primary_group.children.must_be_empty }
+      end
     end
 
     describe "#validations" do
