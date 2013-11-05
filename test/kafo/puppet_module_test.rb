@@ -6,7 +6,7 @@ module Kafo
       KafoConfigure.config = Configuration.new(ConfigFileFactory.build('basic', BASIC_CONFIGURATION).path)
     end
 
-    let(:mod) { PuppetModule.new 'puppet', TestParser }
+    let(:mod) { PuppetModule.new 'puppet', TestParser.new(BASIC_MANIFEST) }
 
     describe "#enabled?" do
       specify { mod.enabled?.must_equal true }
@@ -55,7 +55,7 @@ module Kafo
     end
 
     describe "#primary_parameter_group" do
-      let(:primary_params) { parsed.primary_parameter_group.params.map(&:name) } # documented causes troubles! it's nil!
+      let(:primary_params) { parsed.primary_parameter_group.params.map(&:name) }
       specify { primary_params.must_include('version') }
       specify { primary_params.must_include('undef') }
       specify { primary_params.must_include('multiline') }
