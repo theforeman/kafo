@@ -1,14 +1,16 @@
-module Params
-  class Integer < Param
-    def value=(value)
-      super
-      @value = typecast(@value)
-    end
+module Kafo
+  module Params
+    class Integer < Param
+      def value=(value)
+        super
+        @value = typecast(@value)
+      end
 
-    private
+      private
 
-    def typecast(value)
-      value.nil? ? nil : value.to_i
+      def typecast(value)
+        value.nil? ? nil : value.to_i
+      end
     end
   end
 end

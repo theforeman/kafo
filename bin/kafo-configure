@@ -1,9 +1,6 @@
 #!/usr/bin/env ruby
 
-# TODO cover with tests
-# TODO validations: "puppet master --compile <fqdn>" compiles a catalog for a given host but it uses the global manifest/modules rather than stdin.. but by specifying --manifestdir you could get it to read a site.pp that contains the "include kafo_configure"
-
 $LOAD_PATH.unshift File.expand_path(File.join(File.dirname(__FILE__), '..', 'lib', 'kafo'))
 require 'kafo_configure'
-result = KafoConfigure.run
+result = Kafo::KafoConfigure.run
 exit result.nil? ? 0 : result.exit_code

@@ -1,15 +1,17 @@
-module ProgressBars
-  class BlackWhite < ProgressBar
+module Kafo
+  module ProgressBars
+    class BlackWhite < ProgressBar
 
-    private
+      private
 
-    def finite_template
-      'Installing'.ljust(22) + ' ${<msg>} [${<percent>%}] [${<bar>}]'
+      def finite_template
+        'Installing'.ljust(22) + ' ${<msg>} [${<percent>%}] [${<bar>}]'
+      end
+
+      def infinite_template
+        'Preparing installation ${<msg>}'
+      end
+
     end
-
-    def infinite_template
-      'Preparing installation ${<msg>}'
-    end
-
   end
 end

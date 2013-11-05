@@ -10,6 +10,6 @@ class TestParser
   end
 
   def self.parse(manifest)
-    PuppetModuleParser.parse(ManifestFileFactory.build(manifest).path)
+    Kafo::PuppetModuleParser.parse(ManifestFileFactory.build(manifest).path)
   end
 end

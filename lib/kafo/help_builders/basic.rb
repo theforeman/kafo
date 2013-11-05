@@ -1,9 +1,12 @@
 # encoding: UTF-8
-module HelpBuilders
-  class Basic < Base
-    def add_module(name, items)
-      data = by_parameter_groups(items)
-      add_list(module_header(name), data['Basic'])
+
+module Kafo
+  module HelpBuilders
+    class Basic < Base
+      def add_module(name, items)
+        data = by_parameter_groups(items)
+        add_list(module_header(name), data['Basic'])
+      end
     end
   end
 end

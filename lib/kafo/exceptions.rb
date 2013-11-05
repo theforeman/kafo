@@ -1,14 +1,16 @@
 # encoding: UTF-8
-class ConfigurationException < StandardError
-end
+module Kafo
+  class ConfigurationException < StandardError
+  end
 
-class ModuleName < StandardError
-end
+  class ModuleName < StandardError
+  end
 
-class DocParseError < StandardError
-end
+  class DocParseError < StandardError
+  end
 
-class ConditionError < StandardError
+  class ConditionError < StandardError
+  end
 end
 
 class TypeError < StandardError
