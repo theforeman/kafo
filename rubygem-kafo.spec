@@ -8,7 +8,7 @@
 
 Summary: A gem for making installations based on puppet user friendly
 Name: %{?scl_prefix}rubygem-%{gem_name}
-Version: 0.2.1
+Version: 0.3.0
 Release: 1%{?dist}
 Group: Development/Libraries
 License: GPLv3+
@@ -19,7 +19,7 @@ Requires: %{?scl_prefix}ruby(abi) >= %{rubyabi}
 %endif
 Requires: %{?scl_prefix}puppet
 Requires: %{?scl_prefix}rubygem(logging)
-Requires: %{?scl_prefix}rubygem(clamp)
+Requires: %{?scl_prefix}rubygem(clamp) >= 0.6.2
 Requires: %{?scl_prefix}rubygem(highline)
 Requires: %{?scl_prefix}rubygem(rdoc)
 Requires: %{?scl_prefix}rubygem(powerbar)
@@ -96,6 +96,38 @@ cp -a .%{gem_dir}/* \
 %doc %{gem_instdir}/README.md
 
 %changelog
+* Fri Nov 08 2013 Marek Hulan <mhulan@redhat.com> 0.3.0-1
+- Be more tolerant for manifests (mhulan@redhat.com)
+- Fix tests caching (mhulan@redhat.com)
+- Fix for Ruby 1.8 (mhulan@redhat.com)
+- Namespace refactoring (mhulan@redhat.com)
+- Conditions are evaluated and reflected in wizard refs #3337
+  (mhulan@redhat.com)
+- Wizard respects parameter groups (mhulan@redhat.com)
+- Add encoding to new files (mhulan@redhat.com)
+- Support for brief and full help (mhulan@redhat.com)
+- Store parsed groups and conditions to params (mhulan@redhat.com)
+- New parser abilities (mhulan@redhat.com)
+- Add hooking support (mhulan@redhat.com)
+- Adding ascidoc formatter (lzap+git@redhat.com)
+- Fixes #3240 - Respect color settings in wizard (mhulan@redhat.com)
+
+* Fri Nov 08 2013 Marek Hulan <mhulan@redhat.com>
+- Be more tolerant for manifests (mhulan@redhat.com)
+- Fix tests caching (mhulan@redhat.com)
+- Fix for Ruby 1.8 (mhulan@redhat.com)
+- Namespace refactoring (mhulan@redhat.com)
+- Conditions are evaluated and reflected in wizard refs #3337
+  (mhulan@redhat.com)
+- Wizard respects parameter groups (mhulan@redhat.com)
+- Add encoding to new files (mhulan@redhat.com)
+- Support for brief and full help (mhulan@redhat.com)
+- Store parsed groups and conditions to params (mhulan@redhat.com)
+- New parser abilities (mhulan@redhat.com)
+- Add hooking support (mhulan@redhat.com)
+- Adding ascidoc formatter (lzap+git@redhat.com)
+- Fixes #3240 - Respect color settings in wizard (mhulan@redhat.com)
+
 * Wed Oct 09 2013 Marek Hulan <mhulan@redhat.com> 0.2.1-1
 - Fixes #3227 - restore app options names (mhulan@redhat.com)
 - Fixes #3217 - Do not output messages to STDOUT (mhulan@redhat.com)
