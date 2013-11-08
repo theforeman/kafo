@@ -4,11 +4,16 @@ require 'kafo/condition'
 module Kafo
   class Param
     attr_reader :name, :module
-    attr_accessor :default, :doc, :value_set, :condition, :groups
+    attr_accessor :default, :doc, :value_set, :condition
+    attr_writer :groups
 
     def initialize(builder, name)
       @name   = name
       @module = builder
+    end
+
+    def groups
+      @groups || []
     end
 
     # we use @value_set flag because even nil can be valid value

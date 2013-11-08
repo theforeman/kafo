@@ -31,5 +31,23 @@ module Kafo
       specify { param.condition_value.must_be_kind_of String }
     end
 
+    describe "group" do
+      it "should return empty array by default" do
+        param.groups.must_equal []
+      end
+
+      describe "when nil was set" do
+        before { param.groups = nil }
+        specify { param.groups.must_equal [] }
+      end
+
+      describe "groups were set" do
+        before { param.groups = [ ParamGroup.new('one'), ParamGroup.new('two') ] }
+        let(:group_names) { param.groups.map(&:name) }
+        specify { group_names.must_include 'one' }
+        specify { group_names.must_include 'two' }
+      end
+    end
+
   end
 end

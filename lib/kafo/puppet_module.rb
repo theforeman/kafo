@@ -53,7 +53,7 @@ module Kafo
     end
 
     def primary_parameter_group
-      @groups.detect { |g| g.formatted_name == PRIMARY_GROUP_NAME }
+      @groups.detect { |g| g.formatted_name == PRIMARY_GROUP_NAME } || dummy_primary_group
     end
 
     def other_parameter_groups
@@ -79,6 +79,16 @@ module Kafo
     end
 
     private
+
+    # used when user haven't specified any primary group by name, we create a new group
+    # that holds all other groups as children, if we have no other groups (no children)
+    # we set all parameters that this module hold
+    def dummy_primary_group
+      group = ParamGroup.new(PRIMARY_GROUP_NAME)
+      other_parameter_groups.each { |child| group.add_child(child) }
+      @params.each { |p| group.add_param(p) } if group.children.empty?
+      group
+    end
 
     # mapping from configuration with stringified keys
     def mapping

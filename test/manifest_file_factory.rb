@@ -4,7 +4,9 @@ class ManifestFileFactory
   @manifests = {}
 
   def self.build(content)
-    @manifests['basic'] or @manifests['basic'] = build_file(content)
+    key = content.hash
+    @manifests[key] or @manifests[key] = build_file(content)
+    @manifests[key]
   end
 
   def self.build_file(content)

@@ -9,7 +9,7 @@ module Kafo
     let(:input) { StringIO.new }
     let(:output) { StringIO.new }
 
-    let(:puppet_module) { PuppetModule.new('puppet', TestParser).parse }
+    let(:puppet_module) { PuppetModule.new('puppet', TestParser.new(BASIC_MANIFEST)).parse }
     let(:kafo) do
       kafo                     = OpenStruct.new
       kafo.config              = KafoConfigure.config

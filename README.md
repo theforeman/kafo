@@ -168,6 +168,40 @@ class foreman (
 }
 ```
 
+You can separate your parameters into groups like this.
+
+Example - separating parameters into groups:
+```puppet
+# Manage your foreman server
+#
+# === Parameters:
+#
+# $foreman_url::            URL on which foreman is going to run
+#
+# === Advanced parameters:
+#
+# $foreman_port::           Foreman listens on this port
+#
+# ==== MySQL:
+#
+# $mysql_host::             MySQL server address
+```
+
+When you run the installer with ```--help``` argument it displays only
+parameters specified in ```=== Parameters:``` group. If you don't specify
+any group all parameters will be considered as Basic and will be displayed.
+
+If you run installer with ```--full-help``` you'll receive help of all
+parameters divided into groups. Note that only headers that include word
+parameters are considered as parameter groups. Other headers are ignored.
+Also note that you can nest parameter groups and the child has precedence.
+Help output does not take header level into account though.
+
+So in previous example, each parameter would be printed in one group even
+though MySQL is a child of Advanced parameter. All groups in help would be
+prefixed with second level (==). The first level is always a module to which
+particular parameter belongs.
+
 ## Argument types
 
 By default all arguments that are parsed from puppet are treated as string.
@@ -236,6 +270,125 @@ bin/foreman-installer --puppetmaster-environments=development --puppetmaster-env
 
 In interactive mode you'll be prompted for another value until you specify
 blank line.
+
+## Grouping in interactive mode
+
+If your module has too much parameters you may find useful grouping. Every
+block in your documentation (prefixed by header) forms a group. Unlike for
+help, all block are used in interactive mode. Suppose you have following
+example:
+
+```puppet
+# Testing class
+#
+# == Parameters:
+#
+# $one::    number one
+#
+# == Advanced parameters:
+#
+# $two::    number two
+#
+# === Advanced A:
+#
+# $two_a::  2_a
+#
+# === Advanced 2_b
+#
+# $two_b::  2_b
+#
+# == Extra parameters:
+#
+# $three::  number three
+```
+
+When you enter Testing class module in interactive mode you see parameters
+from Basic group and options to configure parameters which belongs to rest
+of groups on same level, in this case Advanced and Extra parameters. 
+
+```
+Module foreman configuration
+1. Enable/disable foreman module, current value: true
+2. Set one, current value: '1'
+3. Configure Advanced parameters
+4. Configure Extra parameters
+5. Back to main menu
+```
+
+When you enter Extra paramaters, you see only $three and option to get back 
+to parent. In Advanced you see $two and two more subgroups - Advanced A and 
+Advanced B. When you enter these subgroups, you see their parameters of 
+course. Nesting is unlimited. Also there's no naming rule. Just notice that 
+the main group must be called `Parameters` and it's parameters are always 
+displayed on first level of module configuration.
+
+```
+Group Extra parameters (of module foreman)
+1. Set two_b, current value: '2b'
+2. Back to parent menu
+```
+
+If there's no primary group a new one is created for you and it does not have
+any parameter. This mean when user enters module configuration he or she will 
+see only subgroups in menu (no parameters until a particular subgroup is entered). 
+If there is no group in documentation a new primary group is created and it 
+holds all module parameters (there are no subgroups in module configuration).
+
+## Conditional parameters in interactive mode
+
+You can also define conditions to parameter and their groups. These conditions
+are evaluated in interactive mode and based on the result they are displayed
+to the user. You can use this for example to hide mysql_* parameters when
+$db_type is not set 'mysql'. Let's look at following example
+
+```puppet
+# Testing class
+#
+# == Parameters:
+#
+# $use_db::                  use database?
+#                            type:boolean
+#
+# == Database parameters:    condition: $use_db
+#
+# $database_type::           mysql/sqlite
+#
+# === MySQL:                 condition: $database_type == 'mysql'
+#
+# $remote::                  use remote connection
+#                            type:boolean
+# $host                      server to connect to
+#                            condition: $remote
+# $socket                    server to connect to
+#                            condition: !$remote
+```
+
+Here you can see we defined several conditions on group and parameter level.
+You can write condition in ruby language. All dollar-prefixed words are be
+substituted by value of a particular puppet parameter.
+
+Note that conditions are combined using ```&&``` when you nest them. So these
+are facts based on example:
+
+* $database_type, $remote, $host, $socket are displayed only when $use_db is set to true
+* $remote, $host, $socket are displayed only when $database_type is set to 'mysql'
+* $host is displayed only if $remote is set to true, $socket is displayed otherwise
+
+Here's explanation how conditions are constructed
+
+```
+-----------------------------------------------------------------------------
+| parameter name | resulting condition                                      |
+-----------------------------------------------------------------------------
+| $use_db        | true                                                     |
+| $database_type | true && $use_db                                          |
+| $remote        | true && $use_db && $database_type == 'mysql'             |
+| $host          | true && $use_db && $database_type == 'mysql' && $remote  |
+| $socket        | true && $use_db && $database_type == 'mysql' && !$remote |
+-----------------------------------------------------------------------------
+```
+As already said you can use whatever ruby code, so you could leverage e.g.
+parentheses, &&, ||, !, and, or
 
 ## Custom modules and manifest names
 
