@@ -1,8 +1,10 @@
 #encoding UTF-8
 require 'test_helper'
 
-CANCEL  = "<%= color('Cancel run without Saving', :cancel) %>"
-CONFIRM = "<%= color('Save and run', :run) %>"
+RESET   = "\e[0m"
+CANCEL  = "Cancel run without Saving#{RESET}"
+CONFIRM = "Save and run#{RESET}"
+
 
 module Kafo
   describe Wizard do
@@ -97,7 +99,7 @@ module Kafo
           it "displays menu" do
             must_exit_with_code(0) { wizard.send :main_menu }
             must_be_on_stdout(output,
-                              '[✓] Configure puppet',
+                              "[✓#{RESET}] Configure puppet",
                               'Display current config',
                               'Save and run',
                               'Cancel run without Saving')
@@ -121,7 +123,7 @@ module Kafo
 
         describe "enter module settings" do
           before do
-            input.puts '[✓] Configure puppet'
+            input.puts "[✓#{RESET}] Configure puppet"
             input.puts CANCEL
             input.rewind
           end
@@ -136,7 +138,7 @@ module Kafo
 
         describe "run installation" do
           before do
-            input.puts "<%= color('Save and run', :run) %>"
+            input.puts "Save and run#{RESET}"
             input.rewind
           end
 
@@ -207,7 +209,7 @@ module Kafo
         describe "change parameter value" do
           before do
             puppet_module.enable
-            input.puts "Set <%= color('version', :important) %>, current value: <%= color('1.0', :info) %>"
+            input.puts "Set version#{RESET}, current value: 1.0#{RESET}"
             input.puts "Back to main menu"
             input.rewind
           end
@@ -287,7 +289,7 @@ module Kafo
 
       describe "#configure_group(group)" do
         before do
-          input.puts "Set <%= color('debug', :important) %>, current value: <%= color('true', :info) %>"
+          input.puts "Set debug#{RESET}, current value: true#{RESET}"
           input.puts "Back to parent menu"
           input.rewind
         end
