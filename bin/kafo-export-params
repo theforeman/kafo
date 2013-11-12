@@ -81,7 +81,7 @@ module Kafo
 
       def print_out
         @config.modules.sort.each do |mod|
-          puts "Parameters for '#{mod}'\n:"
+          puts "Parameters for '#{mod.name}':\n\n"
           mod.params.sort.each do |param|
             puts "#{parametrize(param)}::"
             puts param.doc.join("\n")
