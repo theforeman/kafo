@@ -43,18 +43,15 @@ module Kafo
       super
 
       set_app_options
-      allowed = self.class.app_options.map(&:switches).flatten
-      allowed.map! { |s| s.include?('[no-]') ? [s.sub('[no-]', ''), s.sub('[no-]', 'no-')] : s }.flatten!
       # we need to parse app config params using clamp even before run method does it
       # so we limit parsing only to app config options (because of --help and later defined params)
-      parse ARGV.select { |a| a =~ /([a-zA-Z0-9_-]*)([= ].*)?/ && allowed.include?($1) }
+      parse clamp_app_arguments
       parse_app_arguments
       Logger.setup
 
       set_parameters # here the params gets parsed and we need app config populated
       set_options
     end
-
 
     def config
       self.class.config
@@ -221,6 +218,35 @@ module Kafo
         self.class.option parametrize(param), '', doc,
                           :default => param.value, :multivalued => param.multivalued?
       end
+    end
+
+    # ARGV can contain values for attributes e.g. ['-l', 'info']
+    # so we accept either allowed args or those that does not start with '-' and are right after
+    # accepted argument
+    def clamp_app_arguments
+      @allowed_clamp_app_arguments = self.class.app_options.map do |option|
+        option.switches.map { |s| is_yes_no_flag?(s) ? build_yes_no_variants(s) : s }
+      end
+      @allowed_clamp_app_arguments.flatten!
+
+      last_was_accepted = false
+      ARGV.select { |arg| last_was_accepted = is_allowed_attribute_name?(arg) || (last_was_accepted && is_value?(arg)) }
+    end
+
+    def is_yes_no_flag?(s)
+      s.include?('[no-]')
+    end
+
+    def build_yes_no_variants(s)
+      [ s.sub('[no-]', ''), s.sub('[no-]', 'no-') ]
+    end
+
+    def is_allowed_attribute_name?(str)
+      str =~ /([a-zA-Z0-9_-]*)([= ].*)?/ && @allowed_clamp_app_arguments.include?($1)
+    end
+
+    def is_value?(str)
+      !str.start_with?('-')
     end
 
     def parse_app_arguments
