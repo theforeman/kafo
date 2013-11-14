@@ -14,8 +14,9 @@ module Kafo
 
     def run
       message = "Welcome to the #{@name} installer!"
-      say("<%= color('#{message}', :headline) %>")
-      say("<%= color('#{'-' * message.size}', :horizontal_line) %>")
+      HighLine.color(message, :important)
+      say(HighLine.color(message, :headline))
+      say(HighLine.color('-' * message.size, :horizontal_line))
       say(<<END)
 
 This wizard will gather all required information. You can change any parameter to your needs.
@@ -35,22 +36,22 @@ END
     def main_menu
       finished = false
       until finished
-        say("\n<%= color('Main Config Menu', :headline) %>")
+        say("\n" + HighLine.color('Main Config Menu', :headline))
         choose do |menu|
           menu.prompt = 'Choose an option from the menu... '
           @config.modules.each do |mod|
-            menu.choice "[#{mod.enabled? ? '✓' : '✗'}] Configure #{mod.name}" do
+            menu.choice "[#{mod.enabled? ? HighLine.color('✓', :run) : HighLine.color('✗', :cancel)}] Configure #{mod.name}" do
               configure_module(mod)
             end
           end
           menu.choice "Display current config" do
             display_hash
           end
-          menu.choice "<%= color('Save and run', :run) %>" do
+          menu.choice HighLine.color('Save and run', :run) do
             KafoConfigure.config
             finished = true
           end
-          menu.choice "<%= color('Cancel run without Saving', :cancel) %>" do
+          menu.choice HighLine.color('Cancel run without Saving', :cancel) do
             say("Bye!"); exit 0
           end
         end
@@ -59,16 +60,16 @@ END
 
     def display_hash
       data = Hash[@config.modules.map { |mod| [mod.name, mod.enabled? ? mod.params_hash : false] }]
-      say "<%= color('#{YAML.dump data}', :info) %>"
+      say HighLine.color(YAML.dump(data), :info)
     end
 
     def configure_module(mod)
       go_back = false
       until go_back
-        say("\n<%= color('Module #{mod.name} configuration', :headline) %>")
+        say("\n" + HighLine.color("Module #{mod.name} configuration", :headline))
         choose do |menu|
           menu.prompt = 'Choose an option from the menu... '
-          menu.choice("Enable/disable #{mod.name} module, current value: <%= color('#{mod.enabled?}', :info) %>") { turn_module(mod) }
+          menu.choice("Enable/disable #{mod.name} module, current value: #{HighLine.color(mod.enabled?.to_s, :info)}") { turn_module(mod) }
           if mod.enabled?
             render_params(mod.primary_parameter_group.params, menu)
 
@@ -85,7 +86,7 @@ END
     def configure_group(group)
       go_back = false
       until go_back
-        say "\n<%= color('Group #{group.formatted_name} (of module #{group.module.name})', :headline) %>"
+        say "\n" + HighLine.color("Group #{group.formatted_name} (of module #{group.module.name})", :headline)
         choose do |menu|
 
           render_params(group.params, menu)
@@ -102,7 +103,7 @@ END
     def render_params(params, menu)
       params.each do |param|
         if param.visible?(@kafo.params)
-          menu.choice "Set <%= color('#{param.name}', :important) %>, current value: <%= color('#{param.value}', :info) %>" do
+          menu.choice "Set #{HighLine.color(param.name, :important)}, current value: #{HighLine.color(param.value.to_s, :info)}" do
             configure(param)
           end
         end
@@ -110,28 +111,28 @@ END
     end
 
     def configure(param)
-      say "\n<%= color('Parameter #{param.name} (of module #{param.module.name})', :headline) %>"
-      say "<%= color(\"#{param.doc.join("\n").gsub('"', '\"')}\", :important) %>"
+      say "\n" + HighLine.color("Parameter #{param.name} (of module #{param.module.name})", :headline)
+      say HighLine.color(param.doc.join("\n").gsub('"', '\"'), :important)
       value       = param.multivalued? ? configure_multi(param) : configure_single(param)
       value_was   = param.value
       param.value = value unless value.empty?
 
       until param.valid?
         param.value = value_was
-        say "\n<%= color('Invalid value for #{param.name}', :important) %>"
+        say "\n" + HighLine.color("Invalid value for #{param.name}", :important)
         value       = param.multivalued? ? configure_multi(param) : configure_single(param)
         param.value = value unless value.empty?
       end
     end
 
     def configure_single(param)
-      say "\ncurrent value: <%= color('#{param.value}', :info) %>"
+      say "\ncurrent value: #{HighLine.color(param.value.to_s, :info)}"
       ask("new value:")
     end
 
     def configure_multi(param)
-      say "<%= color('every line is a separate value, blank line to quit', :info) %>"
-      say "\ncurrent value: <%= color('#{param.value}', :info) %>"
+      say HighLine.color('every line is a separate value, blank line to quit', :info)
+      say "\ncurrent value: #{HighLine.color(param.value.to_s, :info)} %>"
       ask("new value:") do |q|
         q.gather = ""
       end
@@ -167,5 +168,6 @@ END
 
       HighLine.color_scheme = @config.app[:colors] ? colors : nocolors
     end
+
   end
 end

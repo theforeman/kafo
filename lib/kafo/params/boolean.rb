@@ -10,9 +10,9 @@ module Kafo
 
       def typecast(value)
         case value
-          when '0', 'false', 'f', false
+          when '0', 'false', 'f', 'n', false
             false
-          when '1', 'true', 't', true
+          when '1', 'true', 't', 'y', true
             true
           else
             value
