@@ -14,7 +14,7 @@ module Kafo
     def execute(group)
       logger.info "Executing hooks in group #{group}"
       self.hooks[group].each_pair do |name, hook|
-        result = hook.yield(kafo)
+        result = hook.call(kafo)
         logger.debug "Hook #{name} returned #{result.inspect}"
       end
       logger.info "All hooks in group #{group} finished"
