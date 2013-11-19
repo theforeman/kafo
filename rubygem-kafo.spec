@@ -8,7 +8,7 @@
 
 Summary: A gem for making installations based on puppet user friendly
 Name: %{?scl_prefix}rubygem-%{gem_name}
-Version: 0.3.0
+Version: 0.3.1
 Release: 1%{?dist}
 Group: Development/Libraries
 License: GPLv3+
@@ -96,6 +96,13 @@ cp -a .%{gem_dir}/* \
 %doc %{gem_instdir}/README.md
 
 %changelog
+* Tue Nov 19 2013 Marek Hulan <mhulan@redhat.com> 0.3.1-1
+- Fixes #3244 - Extend app options parsing (mhulan@redhat.com)
+- Fixes #3670 - Ruby 1.8 compatible hooks (mhulan@redhat.com)
+- Fixes #3619 - better parsing and escaping values (mhulan@redhat.com)
+- Updating asciidoc exporter (lzap+git@redhat.com)
+- Remove Fedora 18 koji target (dcleal@redhat.com)
+
 * Fri Nov 08 2013 Marek Hulan <mhulan@redhat.com> 0.3.0-1
 - Be more tolerant for manifests (mhulan@redhat.com)
 - Fix tests caching (mhulan@redhat.com)
