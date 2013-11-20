@@ -10,6 +10,10 @@ module Kafo
         true
       end
 
+      def condition_value
+        "[ #{value.map(&:inspect).join(', ')} ]"
+      end
+
       private
 
       def typecast(value)
