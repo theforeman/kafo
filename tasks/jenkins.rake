@@ -1,5 +1,5 @@
 begin
-  testtool = RUBY_VERSION =~ /^1\.8/ ? 'test_unit' : 'minitest'
+  testtool = 'minitest'
   require "ci/reporter/rake/#{testtool}"
   namespace :jenkins do
     task :unit => ["jenkins:setup:#{testtool}", 'rake:test']
@@ -14,6 +14,6 @@ begin
     end
   end
 rescue LoadError
-  # ci/reporter/rake/rspec not present, skipping this definition
+  # ci/reporter/rake/minitest not present, skipping this definition
 end
 
