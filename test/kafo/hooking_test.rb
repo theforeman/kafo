@@ -8,9 +8,9 @@ class DummyLogger
   end
 
   LEVELS.each do |level|
-    define_method(level) do |message = nil|
+    define_method(level) do |*messages|
       current_level = instance_variable_get("@#{level}")
-      message.nil? ? current_level : current_level.puts(message)
+      messages.empty? ? current_level : current_level.puts(messages.first)
     end
   end
 
