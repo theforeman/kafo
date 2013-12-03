@@ -3,7 +3,11 @@ module Kafo
   class PuppetCommand
     def initialize(command, options = [])
       @command = command
-      @options = options.push("--modulepath #{modules_path}")
+
+      # Expand the modules_path to work around the fact that Puppet doesn't
+      # allow modulepath to contain relative (i.e ..) directory references as
+      # of 2.7.23.
+      @options = options.push("--modulepath #{File.expand_path(modules_path)}")
       @logger  = KafoConfigure.logger
     end
 
