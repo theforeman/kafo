@@ -188,7 +188,7 @@ module Kafo
                             :default => !!config.app[:colors]
       self.class.app_option ['-d', '--dont-save-answers'], :flag, 'Skip saving answers to answers.yaml?',
                             :default => !!config.app[:dont_save_answers]
-      self.class.app_option '--ignore-undocumented', :flag, 'Ignore inconsistent parameters documentation',
+      self.class.app_option '--ignore-undocumented', :flag, 'Ignore inconsistent parameter documentation',
                             :default => false
       self.class.app_option ['-i', '--interactive'], :flag, 'Run in interactive mode'
       self.class.app_option '--log-level', 'LEVEL', 'Log level for log file output',
@@ -209,7 +209,7 @@ module Kafo
       modules.each do |mod|
         self.class.option d("--[no-]enable-#{mod.name}"),
                           :flag,
-                          "Enable puppet module #{mod.name}?",
+                          "Enable '#{mod.name}' puppet module",
                           :default => mod.enabled?
       end
 
