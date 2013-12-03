@@ -8,7 +8,7 @@
 
 Summary: A gem for making installations based on puppet user friendly
 Name: %{?scl_prefix}rubygem-%{gem_name}
-Version: 0.3.1
+Version: 0.3.3
 Release: 1%{?dist}
 Group: Development/Libraries
 License: GPLv3+
@@ -96,6 +96,14 @@ cp -a .%{gem_dir}/* \
 %doc %{gem_instdir}/README.md
 
 %changelog
+* Tue Dec 03 2013 Marek Hulan <mhulan@redhat.com> 0.3.3-1
+- Fix #3789: remove relative parts of the modulepath (shk@redhat.com)
+- Use minitest for 1.8 in jenkins (mhulan@redhat.com)
+- Fix tests on ruby 1.9 (mhulan@redhat.com)
+- Fixes #3702 - Ruby 1.8 compatible fix for arrays (mhulan@redhat.com)
+- Fixes #3687 - Tests are compatible with ruby 1.8 (mhulan@redhat.com)
+- CI integration modifications (mhulan@redhat.com)
+
 * Tue Nov 19 2013 Marek Hulan <mhulan@redhat.com> 0.3.1-1
 - Fixes #3244 - Extend app options parsing (mhulan@redhat.com)
 - Fixes #3670 - Ruby 1.8 compatible hooks (mhulan@redhat.com)
