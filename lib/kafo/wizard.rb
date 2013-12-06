@@ -131,7 +131,7 @@ END
     end
 
     def configure_multi(param)
-      say HighLine.color('every line is a separate value, blank line to quit', :info)
+      say HighLine.color('every line is a separate value, blank line to quit, for hash use key:value syntax', :info)
       say "\ncurrent value: #{HighLine.color(param.value.to_s, :info)} %>"
       ask("new value:") do |q|
         q.gather = ""
