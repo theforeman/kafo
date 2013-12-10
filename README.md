@@ -271,6 +271,21 @@ bin/foreman-installer --puppetmaster-environments=development --puppetmaster-env
 In interactive mode you'll be prompted for another value until you specify
 blank line.
 
+## Hash arguments
+
+You can use Hash value not unlike Arrays. It's also multivalue type but
+you have to specify a key:value pairs like this.
+```bash
+bin/foreman-installer --puppet-server-git-branch-map=master:some --puppet-server-git-branch-map=development:another
+```
+
+The same applies in interactive mode, you enter each pair on separate line
+just like with Array, the only difference is that the line must be formatted
+as key:value.
+
+When parsing the value, the first colon divides key and value. All other
+colons are ignored.
+
 ## Grouping in interactive mode
 
 If your module has too much parameters you may find useful grouping. Every
