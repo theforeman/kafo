@@ -9,7 +9,7 @@ echo "include some_modules" | puppet apply
 ```
 ## Why should I care?
 
-Suppose you work on a software which you want to distribute to a machine in
+Suppose you work on software which you want to distribute to a machine in
 infrastructure managed by puppet. You write a puppet module for your app.
 But you also want to be able to distribute this app to a machine outside of
 puppet infrastructure (e.g. install it to your clients) or you want to install
