@@ -8,7 +8,7 @@
 
 Summary: A gem for making installations based on puppet user friendly
 Name: %{?scl_prefix}rubygem-%{gem_name}
-Version: 0.3.3
+Version: 0.3.4
 Release: 1%{?dist}
 Group: Development/Libraries
 License: GPLv3+
@@ -96,6 +96,13 @@ cp -a .%{gem_dir}/* \
 %doc %{gem_instdir}/README.md
 
 %changelog
+* Tue Dec 10 2013 Marek Hulan <mhulan@redhat.com> 0.3.4-1
+- Fixes #3831 - Add support for hash type (mhulan@redhat.com)
+- Add docs for new Hash type (mhulan@redhat.com)
+- Add Puppet 3.4 to supported list for progress bars (dcleal@redhat.com)
+- few help screen typos and improvements (lzap+git@redhat.com)
+- A tiny grammar fix (dcleal@redhat.com)
+
 * Tue Dec 03 2013 Marek Hulan <mhulan@redhat.com> 0.3.3-1
 - Fix #3789: remove relative parts of the modulepath (shk@redhat.com)
 - Use minitest for 1.8 in jenkins (mhulan@redhat.com)
