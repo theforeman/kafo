@@ -292,6 +292,7 @@ module Kafo
       options     = [
           '--verbose',
           '--debug',
+          '--trace',
           '--color=false',
           '--show_diff',
           '--detailed-exitcodes',
