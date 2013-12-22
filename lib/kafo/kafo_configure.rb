@@ -313,6 +313,7 @@ module Kafo
                 Process.wait(pid)
               rescue Errno::ECHILD # process could exit meanwhile so we rescue
               end
+              exit_code = $?.exitstatus
             end
           end
         end
