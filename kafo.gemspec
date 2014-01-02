@@ -1,9 +1,5 @@
 # coding: utf-8
-lib = File.expand_path('../lib', __FILE__)
-$LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-$LOAD_PATH.unshift(lib + '/kafo')
-$LOAD_PATH.unshift(lib + '/kafo/params')
-require 'kafo/version'
+require File.join(File.expand_path(File.dirname(__FILE__)), 'lib', 'kafo', 'version')
 
 Gem::Specification.new do |spec|
   spec.name          = "kafo"
