@@ -8,7 +8,7 @@
 
 Summary: A gem for making installations based on puppet user friendly
 Name: %{?scl_prefix}rubygem-%{gem_name}
-Version: 0.3.4
+Version: 0.3.6
 Release: 1%{?dist}
 Group: Development/Libraries
 License: GPLv3+
@@ -96,6 +96,14 @@ cp -a .%{gem_dir}/* \
 %doc %{gem_instdir}/README.md
 
 %changelog
+* Sun Jan 12 2014 Marek Hulan <mhulan@redhat.com> 0.3.6-1
+- Fixes ignoring of custom modules_dir path (mhulan@redhat.com)
+- Mention the --ignore-undocumented option in README (inecas@redhat.com)
+- Fix modules_dir config override (dcleal@redhat.com)
+- Fix logger require conflict (mhulan@redhat.com)
+- Keep exit status on non-PTY.check path (dcleal@redhat.com)
+- fixes #3394 - added --trace puppet option as default (lzap+git@redhat.com)
+
 * Tue Dec 10 2013 Marek Hulan <mhulan@redhat.com> 0.3.4-1
 - Fixes #3831 - Add support for hash type (mhulan@redhat.com)
 - Add docs for new Hash type (mhulan@redhat.com)
