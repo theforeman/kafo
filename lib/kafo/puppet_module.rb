@@ -17,7 +17,7 @@ module Kafo
       @manifest_name = get_manifest_name
       @class_name    = get_class_name
       @params        = []
-      @manifest_path = File.join(KafoConfigure.root_dir, '/modules/', module_manifest_path)
+      @manifest_path = File.join(KafoConfigure.modules_dir, module_manifest_path)
       @parser        = parser
       @validations   = []
       @logger        = KafoConfigure.logger
