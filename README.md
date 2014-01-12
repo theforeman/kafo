@@ -146,6 +146,10 @@ you must add documentation to your puppet class in init.pp. It's basically
 rdoc formatted documentation that must be above class definitions. There can
 be no space between doc block and class definition.
 
+In case of emergency, it's still possible to use
+`--ignore-undocumented` option, but in general it's not recommended to
+use it long-term.
+
 Example:
 ```puppet
 # Manage your foreman server
