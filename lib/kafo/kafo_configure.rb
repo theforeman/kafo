@@ -33,7 +33,7 @@ module Kafo
       self.class.config_file      = config_file
       self.class.config           = Configuration.new(self.class.config_file)
       self.class.root_dir         = File.expand_path(self.class.config.app[:installer_dir])
-      modules_dir                 = self.class.config.app[:module_dir] || (self.class.config.app[:installer_dir] + '/modules')
+      modules_dir                 = self.class.config.app[:modules_dir] || (self.class.config.app[:installer_dir] + '/modules')
       self.class.modules_dir      = File.expand_path(modules_dir)
       self.class.gem_root         = File.join(File.dirname(__FILE__), '../../')
       self.class.kafo_modules_dir = self.class.config.app[:kafo_modules_dir] || (self.class.gem_root + '/modules')
