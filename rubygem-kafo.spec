@@ -8,7 +8,7 @@
 
 Summary: A gem for making installations based on puppet user friendly
 Name: %{?scl_prefix}rubygem-%{gem_name}
-Version: 0.3.6
+Version: 0.3.7
 Release: 1%{?dist}
 Group: Development/Libraries
 License: GPLv3+
@@ -96,6 +96,11 @@ cp -a .%{gem_dir}/* \
 %doc %{gem_instdir}/README.md
 
 %changelog
+* Tue Jan 14 2014 Marek Hulan <mhulan@redhat.com> 0.3.7-1
+- Version bump (mhulan@redhat.com)
+- Howto release a new version (mhulan@redhat.com)
+- Fix error with nil modules_dir running kafo-export-params (dcleal@redhat.com)
+
 * Sun Jan 12 2014 Marek Hulan <mhulan@redhat.com> 0.3.6-1
 - Fixes ignoring of custom modules_dir path (mhulan@redhat.com)
 - Mention the --ignore-undocumented option in README (inecas@redhat.com)
