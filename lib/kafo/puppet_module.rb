@@ -47,7 +47,7 @@ module Kafo
       @groups = builder.build_param_groups(@params)
 
       self
-    rescue ConfigurationException => e
+    rescue Kafo::ConfigurationException => e
       @logger.error "Unable to continue because of: #{e.message}"
       KafoConfigure.exit(:manifest_error)
     end
