@@ -25,9 +25,10 @@ module Kafo
     end
 
     def execute
-      c                      = Configuration.new(config, false)
-      KafoConfigure.config   = c
-      KafoConfigure.root_dir = File.expand_path(c.app[:installer_dir])
+      c                         = Configuration.new(config, false)
+      KafoConfigure.config      = c
+      KafoConfigure.root_dir    = File.expand_path(c.app[:installer_dir])
+      KafoConfigure.modules_dir = File.expand_path(c.app[:modules_dir])
 
       exporter = self.class.const_get(format.capitalize).new(c)
       exporter.print_out
