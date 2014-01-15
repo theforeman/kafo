@@ -4,11 +4,16 @@ require 'ostruct'
 require 'clamp'
 require 'logging'
 require 'kafo/string_helper'
+require 'kafo/exceptions'
+require 'logger'
 
 $LOAD_PATH.unshift File.expand_path(File.join(File.dirname(__FILE__), '..', 'lib', 'kafo'))
 require 'configuration'
 
 KafoConfigure = OpenStruct.new
+def KafoConfigure.exit(code)
+  Kernel.exit(1)
+end
 
 module Kafo
   class KafoExportParams < Clamp::Command
@@ -29,6 +34,7 @@ module Kafo
       KafoConfigure.config      = c
       KafoConfigure.root_dir    = File.expand_path(c.app[:installer_dir])
       KafoConfigure.modules_dir = File.expand_path(c.app[:modules_dir])
+      KafoConfigure.logger      = Logger.new(STDOUT)
 
       exporter = self.class.const_get(format.capitalize).new(c)
       exporter.print_out
