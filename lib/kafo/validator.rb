@@ -3,8 +3,11 @@ module Kafo
   class Validator
 
     def initialize(params)
-      files = KafoConfigure.modules_dir + '/*/lib/puppet/parser/functions/validate_*.rb'
-      Dir.glob(files).each do |file|
+      validate_files = KafoConfigure.modules_dir + '/*/lib/puppet/parser/functions/validate_*.rb'
+      is_function_files = KafoConfigure.modules_dir + '/*/lib/puppet/parser/functions/is_*.rb'
+      definitions = Dir.glob(validate_files) + Dir.glob(is_function_files)
+
+      definitions.each do |file|
         require file
       end
 
