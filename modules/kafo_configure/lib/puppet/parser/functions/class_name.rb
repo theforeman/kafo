@@ -9,7 +9,7 @@ module Puppet::Parser::Functions
   newfunction(:class_name, :type => :rvalue) do |args|
     mapping = YAML.load_file(lookupvar('kafo_config_file'))[:mapping]
     mod = args[0].to_sym
-    mapping[mod].nil? ? mod : "#{mapping[mod][:dir_name]}::#{mapping[mod][:manifest_name]}"
+    mapping[mod].nil? ? mod : "#{mapping[mod][:dir_name]}::#{mapping[mod][:manifest_name].gsub('/', '::')}"
   end
 end
 

@@ -271,7 +271,7 @@ module Kafo
     end
 
     def store_params(file = nil)
-      data = Hash[config.modules.map { |mod| [mod.name, mod.enabled? ? mod.params_hash : false] }]
+      data = Hash[config.modules.map { |mod| [mod.identifier, mod.enabled? ? mod.params_hash : false] }]
       config.store(data, file)
     end
 

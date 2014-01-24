@@ -8,11 +8,12 @@ module Kafo
   class PuppetModule
     PRIMARY_GROUP_NAME = 'Parameters'
 
-    attr_reader :name, :params, :dir_name, :class_name, :manifest_name, :manifest_path,
+    attr_reader :name, :identifier, :params, :dir_name, :class_name, :manifest_name, :manifest_path,
                 :groups
 
-    def initialize(name, parser = PuppetModuleParser)
-      @name          = name
+    def initialize(identifier, parser = PuppetModuleParser)
+      @identifier    = identifier
+      @name          = get_name
       @dir_name      = get_dir_name
       @manifest_name = get_manifest_name
       @class_name    = get_class_name
@@ -97,20 +98,24 @@ module Kafo
 
     # custom module directory name
     def get_dir_name
-      mapping[name].nil? ? name : mapping[name][:dir_name]
+      mapping[identifier].nil? ? name : mapping[identifier][:dir_name]
     end
 
     # custom manifest filename without .pp extension
     def get_manifest_name
-      mapping[name].nil? ? 'init' : mapping[name][:manifest_name]
+      mapping[identifier].nil? ? 'init' : mapping[identifier][:manifest_name]
     end
 
     def get_class_name
-      manifest_name == 'init' ? name : "#{dir_name}::#{manifest_name}"
+      manifest_name == 'init' ? name : "#{dir_name}::#{manifest_name.gsub('_', '::')}"
     end
 
     def module_manifest_path
       "#{dir_name}/manifests/#{manifest_name}.pp"
+    end
+
+    def get_name
+      identifier.gsub('::', '_')
     end
 
   end

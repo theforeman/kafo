@@ -95,7 +95,7 @@ module Kafo
     end
 
     def module_enabled?(mod)
-      value = @data[mod.is_a?(String) ? mod : mod.name]
+      value = @data[mod.is_a?(String) ? mod : mod.identifier]
       !!value || value.is_a?(Hash)
     end
 
