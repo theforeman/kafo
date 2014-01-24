@@ -8,7 +8,7 @@
 
 Summary: A gem for making installations based on puppet user friendly
 Name: %{?scl_prefix}rubygem-%{gem_name}
-Version: 0.3.7
+Version: 0.3.8
 Release: 1%{?dist}
 Group: Development/Libraries
 License: GPLv3+
@@ -96,6 +96,11 @@ cp -a .%{gem_dir}/* \
 %doc %{gem_instdir}/README.md
 
 %changelog
+* Fri Jan 24 2014 Marek Hulan <mhulan@redhat.com> 0.3.8-1
+- Fixes #3990 - Load is_* functions in validator (mhulan@redhat.com)
+- Fixes #3887 - Support for deeply nested modules (mhulan@redhat.com)
+- Fix issue when manifests can't be parsed (mhulan@redhat.com)
+
 * Tue Jan 14 2014 Marek Hulan <mhulan@redhat.com> 0.3.7-1
 - Version bump (mhulan@redhat.com)
 - Howto release a new version (mhulan@redhat.com)
