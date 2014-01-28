@@ -26,6 +26,10 @@ module Kafo
       @value     = value == 'UNDEF' ? nil : value
     end
 
+    def dump_default
+      default
+    end
+
     def module_name
       self.module.name
     end

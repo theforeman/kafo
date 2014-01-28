@@ -13,6 +13,7 @@ module Kafo
 
     DEFAULT = {
         :log_dir            => '/var/log/kafo',
+        :log_name           => 'configuration.log',
         :log_level          => 'info',
         :no_prefix          => false,
         :mapping            => {},
@@ -121,7 +122,7 @@ module Kafo
     def params
       params = modules.map(&:params).flatten
       params = params.select { |p| p.default != 'UNSET' }
-      params.map { |param| "#{param.default}" }.join(',')
+      params.map { |param| "#{param.dump_default}" }.join(',')
     end
 
     def format(data)
