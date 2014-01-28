@@ -3,6 +3,8 @@
 # note current configuration is written to kafo.yaml every time kafo is run
 
 ## Installer configuration
+# Your project name
+# :name: Kafo
 # Path to answer file, if the file does not exist a $pwd/config/answers.yaml is used as a fallback
 # :answer_file: /etc/kafo/kafo.yaml
 # Custom installer path

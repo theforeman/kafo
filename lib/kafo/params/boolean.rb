@@ -6,6 +6,10 @@ module Kafo
         @value = typecast(@value)
       end
 
+      def dump_default
+        %{"#{super}"}
+      end
+
       private
 
       def typecast(value)
