@@ -49,7 +49,7 @@ module Kafo
 
       self
     rescue ConfigurationException => e
-      @logger.error "Unable to continue because of: #{e.message}"
+      @logger.fatal "Unable to continue because of: #{e.message}"
       KafoConfigure.exit(:manifest_error)
     end
 

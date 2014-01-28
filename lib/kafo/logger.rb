@@ -47,7 +47,13 @@ module Kafo
       end
 
       logger.level = KafoConfigure.config.app[:log_level]
-      self.loggers = [logger]
+
+      fatal_logger           = Logging.logger['fatal']
+      fatal_logger.level     = 'fatal'
+      layout                 = KafoConfigure.config.app[:colors] ? COLOR_LAYOUT : NOCOLOR_LAYOUT
+      fatal_logger.appenders = [::Logging.appenders.stderr(:layout => layout)]
+      
+      self.loggers = [logger, fatal_logger]
     end
 
     def self.setup_verbose
