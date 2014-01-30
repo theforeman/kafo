@@ -150,20 +150,28 @@ END
       $terminal.page_at = data.last if data.last
     end
 
+    def color_hash
+      @color_hash ||= {
+          :headline        => [:bold, :yellow, :on_black],
+          :horizontal_line => [:bold, :white, :on_black],
+          :important       => [:bold, :white, :on_black],
+          :question        => [:bold, :green, :on_black],
+          :info            => [:bold, :cyan, :on_black],
+          :cancel          => [:bold, :red, :on_black],
+          :run             => [:bold, :green, :on_black],
+      }
+    end
+
     # setup colour scheme for prompts
     def setup_colors
       colors = HighLine::ColorScheme.new do |cs|
-        cs[:headline]        = [:bold, :yellow, :on_black]
-        cs[:horizontal_line] = [:bold, :white, :on_black]
-        cs[:important]       = [:bold, :white, :on_black]
-        cs[:question]        = [:bold, :green, :on_black]
-        cs[:info]            = [:bold, :cyan, :on_black]
-        cs[:cancel]          = [:bold, :red, :on_black]
-        cs[:run]             = [:bold, :green, :on_black]
+        color_hash.keys.each do |key|
+          cs[key] = color_hash[key]
+        end
       end
 
       nocolors = HighLine::ColorScheme.new do |cs|
-        colors.keys.each { |k| cs[k.to_sym] = [] }
+        color_hash.keys.each { |k| cs[k.to_sym] = [] }
       end
 
       HighLine.color_scheme = @config.app[:colors] ? colors : nocolors
