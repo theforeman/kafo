@@ -8,7 +8,7 @@
 
 Summary: A gem for making installations based on puppet user friendly
 Name: %{?scl_prefix}rubygem-%{gem_name}
-Version: 0.3.11
+Version: 0.3.12
 Release: 1%{?dist}
 Group: Development/Libraries
 License: GPLv3+
@@ -96,6 +96,9 @@ cp -a .%{gem_dir}/* \
 %doc %{gem_instdir}/README.md
 
 %changelog
+* Thu Jan 30 2014 Marek Hulan <mhulan@redhat.com> 0.3.12-1
+- Fix --no-colors issues with older highline (mhulan@redhat.com)
+
 * Wed Jan 29 2014 Marek Hulan <mhulan@redhat.com> 0.3.11-1
 - Display fatal errors on STDOUT (mhulan@redhat.com)
 
