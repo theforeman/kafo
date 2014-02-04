@@ -1,6 +1,27 @@
 #!/usr/bin/env ruby
 
 require 'fileutils'
+require 'optparse'
+
+# Option Parsing
+name = ARGV[0]
+
+options = {}
+OptionParser.new do |opts|
+  opts.banner = "Usage: kafofy [installer_name]"
+  if name
+    options[:config_file] = "./config/#{name}.yaml"
+  else
+    options[:config_file] = nil
+  end
+  opts.on("-c", "--config_file FILE", "location of the configuration file") do |config_file|
+    options[:config_file] = config_file
+  end
+  options[:answers_file] = './config/answers.yaml'
+  opts.on("-a", "--answers_file FILE", "location of the answers file") do |answers_file|
+    options[:answers_file] = answers_file
+  end
+end.parse!
 
 # Create directory structure
 %w(bin config modules).each do |dir|
@@ -15,15 +36,15 @@ end
 
 script_name = "kafo-configure"
 # Optional configure script
-if ARGV.size > 0
-  name = ARGV[0]
+if name
   script_name = "bin/#{name}"
   puts "... creating #{script_name}"
   content = <<EOS
 #!/usr/bin/env ruby
 require 'rubygems'
+CONFIG_FILE = '#{options[:config_file]}'
+ANSWERS_FILE = '#{options[:answers_file]}'
 require 'kafo'
-CONFIG_FILE = "/etc/#{name}/#{name}.yaml"
 result = Kafo::KafoConfigure.run
 exit result.nil? ? 0 : result.exit_code
 EOS
