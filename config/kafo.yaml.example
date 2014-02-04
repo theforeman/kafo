@@ -6,7 +6,7 @@
 # Your project name
 # :name: Kafo
 # Path to answer file, if the file does not exist a $pwd/config/answers.yaml is used as a fallback
-# :answer_file: /etc/kafo/kafo.yaml
+# :answer_file: /etc/kafo/answers.yaml
 # Custom installer path
 # :installer_dir: /usr/share/kafo/
 # Uncomment if you want to load puppet modules from a specific path, $pwd/modules is used by default

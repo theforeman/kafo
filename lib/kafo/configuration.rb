@@ -11,13 +11,17 @@ module Kafo
       !`which tput 2> /dev/null`.empty? && `tput colors`.to_i > 0
     end
 
+    def self.answers_file
+      defined?(::ANSWERS_FILE) ? ::ANSWERS_FILE : '/etc/kafo/answers.yaml'
+    end
+
     DEFAULT = {
         :log_dir            => '/var/log/kafo',
         :log_name           => 'configuration.log',
         :log_level          => 'info',
         :no_prefix          => false,
         :mapping            => {},
-        :answer_file        => '/etc/kafo/kafo.yaml',
+        :answer_file        => Configuration.answers_file,
         :installer_dir      => '.',
         :modules_dir        => './modules',
         :default_values_dir => '/tmp',
