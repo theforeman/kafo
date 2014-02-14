@@ -24,9 +24,13 @@ module Kafo
     def initialize(file)
       @file = file
       raise ModuleName, "File not found #{file}, check you answer file" unless File.exists?(file)
-      parser                        = Puppet::Parser::Parser.new('production')
-      values                        = Puppet.settings.instance_variable_get('@values')
-      values[:production][:confdir] ||= '/' # just some stubbing
+      Puppet.settings[:confdir] ||= '/' # just some stubbing
+      if Puppet::Node::Environment.respond_to?(:create)
+        env = Puppet::Node::Environment.create(:production, [], '')
+      else
+        env = Puppet::Node::Environment.new(:production)
+      end
+      parser = Puppet::Parser::Parser.new(env)
       parser.import(@file)
 
       # Find object corresponding to class defined in init.pp in list of hostclasses
@@ -39,6 +43,7 @@ module Kafo
         ast_type = ast_objects.last
         @object = ast_type.last if ast_type.last.file == file
       end
+      parser
     end
 
     # TODO - store parsed object type (Puppet::Parser::AST::Variable must be dumped later)
