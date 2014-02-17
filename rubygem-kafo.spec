@@ -8,7 +8,7 @@
 
 Summary: A gem for making installations based on puppet user friendly
 Name: %{?scl_prefix}rubygem-%{gem_name}
-Version: 0.3.13
+Version: 0.3.14
 Release: 1%{?dist}
 Group: Development/Libraries
 License: GPLv3+
@@ -96,6 +96,9 @@ cp -a .%{gem_dir}/* \
 %doc %{gem_instdir}/README.md
 
 %changelog
+* Mon Feb 17 2014 Marek Hulan <mhulan@redhat.com> 0.3.14-1
+- Fix #4347 - validations adapted to latest puppet (mhulan@redhat.com)
+
 * Fri Feb 14 2014 Marek Hulan <mhulan@redhat.com> 0.3.13-1
 - Fix #4343 - adds compatibility with latest puppet version (mhulan@redhat.com)
 
