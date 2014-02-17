@@ -2,7 +2,14 @@
 module Kafo
   class Validator
 
+    def self.prepare_functions
+      return true if @reset || !Puppet::Parser::Functions.respond_to?(:reset)
+      Puppet::Parser::Functions.reset
+      @reset = true
+    end
+
     def initialize(params)
+      self.class.prepare_functions
       validate_files = KafoConfigure.modules_dir + '/*/lib/puppet/parser/functions/validate_*.rb'
       is_function_files = KafoConfigure.modules_dir + '/*/lib/puppet/parser/functions/is_*.rb'
       definitions = Dir.glob(validate_files) + Dir.glob(is_function_files)
@@ -57,7 +64,8 @@ module Kafo
     def engine
       @engine ||= begin
         klass = Class.new
-        klass.send :include, Puppet::Parser::Functions.environment_module
+        env = Puppet::PUPPETVERSION.start_with?('2.') ? env.name : Puppet.lookup(:current_environment)
+        klass.send :include, Puppet::Parser::Functions.environment_module(env)
         klass.new
       end
     end
