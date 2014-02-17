@@ -1,7 +1,12 @@
 #!/usr/bin/env ruby
 
+$LOAD_PATH.unshift File.expand_path(File.join(File.dirname(__FILE__), '..', 'lib'))
+
 require 'fileutils'
 require 'optparse'
+require 'yaml'
+require 'kafo/configuration'
+
 
 # Option Parsing
 name = ARGV[0]
@@ -9,11 +14,6 @@ name = ARGV[0]
 options = {}
 OptionParser.new do |opts|
   opts.banner = "Usage: kafofy [installer_name]"
-  if name
-    options[:config_file] = "./config/#{name}.yaml"
-  else
-    options[:config_file] = nil
-  end
   opts.on("-c", "--config_file FILE", "location of the configuration file") do |config_file|
     options[:config_file] = config_file
   end
@@ -22,6 +22,9 @@ OptionParser.new do |opts|
     options[:answers_file] = answers_file
   end
 end.parse!
+
+config = Kafo::Configuration::DEFAULT
+config[:answer_file] = options[:answers_file]
 
 # Create directory structure
 %w(bin config modules).each do |dir|
@@ -37,6 +40,16 @@ end
 script_name = "kafo-configure"
 # Optional configure script
 if name
+  if !options[:config_file]
+    options[:config_file] = "./config/#{name}.yaml"
+    puts "using #{options[:config_file]} as default config file"
+    if !File.exists?(options[:config_file])
+      puts "... creating config file #{options[:config_file]}"
+      FileUtils.touch options[:config_file]
+      File.chmod 0600, options[:config_file]
+      File.open(options[:config_file], 'w') { |file| file.write(YAML.dump(config).gsub('!ruby/sym ', ':'))}
+    end
+  end
   script_name = "bin/#{name}"
   puts "... creating #{script_name}"
   content = <<EOS
