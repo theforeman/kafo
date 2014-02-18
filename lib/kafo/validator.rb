@@ -15,7 +15,7 @@ module Kafo
       definitions = Dir.glob(validate_files) + Dir.glob(is_function_files)
 
       definitions.each do |file|
-        require file
+        require File.expand_path(file)
       end
 
       @params = params
@@ -64,10 +64,14 @@ module Kafo
     def engine
       @engine ||= begin
         klass = Class.new
-        env = Puppet::PUPPETVERSION.start_with?('2.') ? env.name : Puppet.lookup(:current_environment)
+        env = Puppet::PUPPETVERSION.start_with?('2.') ? nil : lookup_current_environment
         klass.send :include, Puppet::Parser::Functions.environment_module(env)
         klass.new
       end
+    end
+
+    def lookup_current_environment
+      @current_environment ||= Puppet.respond_to?(:lookup) ? Puppet.lookup(:current_environment) : Puppet::Node::Environment.current
     end
   end
 end
