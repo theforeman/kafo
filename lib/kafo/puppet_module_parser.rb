@@ -38,11 +38,7 @@ module Kafo
         ast_type = ast_objects.last
         @object = ast_type if ast_type.file == file
       end
-      # Find object in list of definitions
-      parser.environment.known_resource_types.definitions.each do |ast_objects|
-        ast_type = ast_objects.last
-        @object = ast_type.last if ast_type.last.file == file
-      end
+
       parser
     end
 
