@@ -68,6 +68,15 @@ kafofy foreman-installer
 You can see that it created modules directory where your puppet modules
 should live. It also created config and bin directories. If you specified
 argument (foreman-installer in this case) a script in bin was created.
+You can supply custom locations for you configuration and answers files using
+options:
+
+```kafofy --help
+Usage: kafofy [options] installer_name
+    -c, --config_file FILE           location of the configuration file
+    -a, --answers_file FILE          location of the answers file
+```
+
 It's the script you can use to run installer. If you did not specify any
 you can run your installer by ```kafo-configure``` which is provided by the gem.
 All configuration related files are to be found in config directory.
