@@ -11,17 +11,13 @@ module Kafo
       !`which tput 2> /dev/null`.empty? && `tput colors`.to_i > 0
     end
 
-    def self.answers_file
-      defined?(::ANSWERS_FILE) ? ::ANSWERS_FILE : '/etc/kafo/answers.yaml'
-    end
-
     DEFAULT = {
         :log_dir            => '/var/log/kafo',
         :log_name           => 'configuration.log',
         :log_level          => 'info',
         :no_prefix          => false,
         :mapping            => {},
-        :answer_file        => Configuration.answers_file,
+        :answer_file        => './config/answers.yaml',
         :installer_dir      => '.',
         :modules_dir        => './modules',
         :default_values_dir => '/tmp',
@@ -38,7 +34,7 @@ module Kafo
       begin
         @data = YAML.load_file(@answer_file)
       rescue Errno::ENOENT => e
-        puts "No answers file at #{@answer_file} found, can not continue"
+        puts "No answer file at #{@answer_file} found, can not continue"
         KafoConfigure.exit(:no_answer_file)
       end
 
