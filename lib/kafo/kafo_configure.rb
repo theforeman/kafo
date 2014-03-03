@@ -356,6 +356,7 @@ module Kafo
     def config_file
       return CONFIG_FILE if defined?(CONFIG_FILE) && File.exists?(CONFIG_FILE)
       return '/etc/kafo/kafo.yaml' if File.exists?('/etc/kafo/kafo.yaml')
+      return "#{::RbConfig::CONFIG['sysconfdir']}/kafo/kafo.yaml" if File.exists?("#{::RbConfig::CONFIG['sysconfdir']}/kafo/kafo.yaml")
       File.join(Dir.pwd, 'config', 'kafo.yaml')
     end
 
