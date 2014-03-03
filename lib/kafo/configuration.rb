@@ -17,7 +17,7 @@ module Kafo
         :log_level          => 'info',
         :no_prefix          => false,
         :mapping            => {},
-        :answer_file        => '/etc/kafo/kafo.yaml',
+        :answer_file        => './config/answers.yaml',
         :installer_dir      => '.',
         :modules_dir        => './modules',
         :default_values_dir => '/tmp',
@@ -34,7 +34,7 @@ module Kafo
       begin
         @data = YAML.load_file(@answer_file)
       rescue Errno::ENOENT => e
-        puts "No answers file at #{@answer_file} found, can not continue"
+        puts "No answer file at #{@answer_file} found, can not continue"
         KafoConfigure.exit(:no_answer_file)
       end
 

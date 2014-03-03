@@ -1,6 +1,33 @@
 #!/usr/bin/env ruby
 
+$LOAD_PATH.unshift File.expand_path(File.join(File.dirname(__FILE__), '..', 'lib'))
+
 require 'fileutils'
+require 'optparse'
+require 'yaml'
+require 'kafo/configuration'
+
+
+# Option Parsing
+options = {}
+OptionParser.new do |opts|
+  opts.banner = "Usage: kafofy"
+  options[:answer_file] = './config/answers.yaml'
+  opts.on("-a", "--answer_file FILE", "location of the answer file") do |answer_file|
+    options[:answer_file] = answer_file
+  end
+  opts.on("-c", "--config_file FILE", "location of the configuration file") do |config_file|
+    options[:config_file] = config_file
+  end
+  opts.on("-n", "--name NAME", "installer name") do |name|
+    options[:name] = name
+  end
+end.parse!
+
+config = Kafo::Configuration::DEFAULT
+options[:answer_file] ||= config[:answer_file]
+options[:name] ||= "kafo-configure"
+options[:config_file] ||= "./config/#{options[:name]}.yaml"
 
 # Create directory structure
 %w(bin config modules).each do |dir|
@@ -13,27 +40,36 @@ src = File.expand_path(File.join(File.dirname(__FILE__), '..'))
   FileUtils.cp src + "/config/#{file}", 'config/'
 end
 
-script_name = "kafo-configure"
-# Optional configure script
-if ARGV.size > 0
-  name = ARGV[0]
-  script_name = "bin/#{name}"
-  puts "... creating #{script_name}"
-  content = <<EOS
+# Create default config file
+puts "using #{options[:config_file]} as default config file"
+if !File.exists?(options[:config_file])
+  puts "... creating config file #{options[:config_file]}"
+  FileUtils.touch options[:config_file]
+  File.chmod 0600, options[:config_file]
+  FileUtils.cp('config/kafo.yaml.example', options[:config_file])
+  if options[:answer_file]
+    `sed -i 's/^# :answer_file.*$/:answer_file: #{options[:answer_file].gsub('/', '\/')}/' #{options[:config_file]}`
+    `sed -i 's/^# :name.*$/:name: #{options[:name]}/' #{options[:config_file]}`
+  end
+end
+
+# Installer script 
+script_name = "bin/#{options[:name]}"
+puts "... creating #{script_name}"
+content = <<EOS
 #!/usr/bin/env ruby
 require 'rubygems'
+CONFIG_FILE = '#{options[:config_file]}'
 require 'kafo'
-CONFIG_FILE = "/etc/#{name}/#{name}.yaml"
 result = Kafo::KafoConfigure.run
 exit result.nil? ? 0 : result.exit_code
 EOS
-  File.open(script_name, 'w') { |file| file.write(content) }
-  FileUtils.chmod 0755, script_name
-end
+File.open(script_name, 'w') { |file| file.write(content) }
+FileUtils.chmod 0755, script_name
 
 puts "Your directory was kafofied"
 
 puts "Now you should:"
 puts "  1. upload your puppet modules to modules directory (you can use librarian-puppet project)"
-puts "  2. create default config/answers.yaml or modify config/kafo.yaml to load another answer file"
-puts "  3. run #{script_name}"
+puts "  2. create default #{options[:answer_file]} or modify #{options[:config_file]} to load another answer file"
+puts "  3. run #{script_name} to install your modules"
