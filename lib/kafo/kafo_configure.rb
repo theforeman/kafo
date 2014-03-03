@@ -356,6 +356,7 @@ module Kafo
     def config_file
       return CONFIG_FILE if defined?(CONFIG_FILE) && File.exists?(CONFIG_FILE)
       return '/etc/kafo/kafo.yaml' if File.exists?('/etc/kafo/kafo.yaml')
+      return '/usr/local/etc/kafo/kafo.yaml' if File.exists?('/usr/local/etc/kafo/kafo.yaml')
       File.join(Dir.pwd, 'config', 'kafo.yaml')
     end
 
