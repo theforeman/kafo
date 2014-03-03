@@ -39,6 +39,8 @@ END
         say("\n" + HighLine.color('Main Config Menu', :headline))
         choose do |menu|
           menu.prompt = 'Choose an option from the menu... '
+          menu.select_by = :index
+
           @config.modules.each do |mod|
             menu.choice "[#{mod.enabled? ? HighLine.color('✓', :run) : HighLine.color('✗', :cancel)}] Configure #{mod.name}" do
               configure_module(mod)
@@ -69,6 +71,8 @@ END
         say("\n" + HighLine.color("Module #{mod.name} configuration", :headline))
         choose do |menu|
           menu.prompt = 'Choose an option from the menu... '
+          menu.select_by = :index
+
           menu.choice("Enable/disable #{mod.name} module, current value: #{HighLine.color(mod.enabled?.to_s, :info)}") { turn_module(mod) }
           if mod.enabled?
             render_params(mod.primary_parameter_group.params, menu)

@@ -31,7 +31,7 @@ Gem::Specification.new do |spec|
   # CLI interface
   spec.add_dependency 'clamp', '>= 0.6.2'
   # interactive mode
-  spec.add_dependency 'highline'
+  spec.add_dependency 'highline', '>= 1.6.21'
   # ruby progress bar
   spec.add_dependency 'powerbar'
 end
