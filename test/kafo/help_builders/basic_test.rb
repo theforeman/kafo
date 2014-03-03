@@ -17,6 +17,10 @@ module Kafo
               p.doc    = "puppetmaster port"
               p.groups = ["Advanced parameters:"]
             end,
+            Params::Integer.new(OpenStruct.new(:name => 'apache'), 'port').tap do |p|
+              p.doc    = "apache port"
+              p.groups = []
+            end,
         ]
       end
 
@@ -26,6 +30,7 @@ module Kafo
             OpenStruct.new(:help => ['--puppet-server', 'enable puppetmaster server']),
             OpenStruct.new(:help => ['--puppet-port', 'puppetmaster port']),
             OpenStruct.new(:help => ['--no-colors', 'app wide argument, not a parameter']),
+            OpenStruct.new(:help => ['--apache-port', 'apache module parameter']),
         ]
       end
 
@@ -51,6 +56,7 @@ module Kafo
         specify { output.wont_include 'puppetmaster port' }
         specify { output.wont_include 'Basic' }
         specify { output.wont_include 'Advanced' }
+        specify { output.must_match /Generic.*Module apache.*Module puppet/m}
       end
     end
   end

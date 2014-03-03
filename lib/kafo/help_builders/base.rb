@@ -19,7 +19,7 @@ module Kafo
           puts "\n#{heading}:"
 
           data = by_module(items)
-          data.keys.each do |section|
+          sorted_keys(data).each do |section|
             if section == 'Generic'
               add_list(header(1, section), data[section])
             else
@@ -32,6 +32,13 @@ module Kafo
       end
 
       private
+
+      # sorts modules by name with leaving Generic as first one
+      def sorted_keys(modules_hash)
+        keys = modules_hash.keys
+        keys.reject! { |k| k == DEFAULT_MODULE_NAME }
+        [ DEFAULT_MODULE_NAME ] + keys.sort
+      end
 
       def add_module(name, items)
         raise NotImplementedError, 'add module not defined'
