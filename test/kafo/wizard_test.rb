@@ -1,9 +1,8 @@
 #encoding: UTF-8
 require 'test_helper'
 
-RESET   = "\e[0m"
-CANCEL  = "Cancel run without Saving#{RESET}"
-CONFIRM = "Save and run#{RESET}"
+CANCEL  = "3"  # "Cancel run without Saving"
+CONFIRM = "4"  # "Save and run"
 
 
 module Kafo
@@ -17,6 +16,7 @@ module Kafo
       kafo.config              = KafoConfigure.config
       kafo.config.app[:name]   = 'Foreman'
       kafo.config.app[:colors] = false
+      ColorScheme.new(kafo.config).setup
 
       kafo.config.instance_variable_set '@modules', [puppet_module]
       kafo.params = puppet_module.params
@@ -52,23 +52,7 @@ module Kafo
       end
     end
 
-    describe "#setup_colors" do
-      describe "colors enabled" do
-        before { kafo.config.app[:colors] = true }
-        it "should use colorful scheme" do
-          wizard.send :setup_colors
-          HighLine.color_scheme[:headline].list.must_include :yellow
-        end
-      end
-
-      describe "colors disabled" do
-        before { kafo.config.app[:colors] = false }
-        it "should use colorless scheme" do
-          wizard.send :setup_colors
-          HighLine.color_scheme[:headline].list.wont_include :yellow
-        end
-      end
-
+    describe "menu navigation" do
       describe "#run" do
         describe "print welcome message and finish" do
           before do
@@ -99,7 +83,7 @@ module Kafo
           it "displays menu" do
             must_exit_with_code(0) { wizard.send :main_menu }
             must_be_on_stdout(output,
-                              "[✓#{RESET}] Configure puppet",
+                              "[✓] Configure puppet",
                               'Display current config',
                               'Save and run',
                               'Cancel run without Saving')
@@ -108,7 +92,7 @@ module Kafo
 
         describe "enter config dump" do
           before do
-            input.puts 'Display current config'
+            input.puts '2' #'Display current config'
             input.puts CANCEL
             input.rewind
           end
@@ -123,7 +107,7 @@ module Kafo
 
         describe "enter module settings" do
           before do
-            input.puts "[✓#{RESET}] Configure puppet"
+            input.puts "1" # "[✓] Configure puppet"
             input.puts CANCEL
             input.rewind
           end
@@ -138,7 +122,7 @@ module Kafo
 
         describe "run installation" do
           before do
-            input.puts "Save and run#{RESET}"
+            input.puts CONFIRM # "Save and run"
             input.rewind
           end
 
@@ -162,14 +146,14 @@ module Kafo
           before do
             puppet_module.enable
             puppet_module.enabled?.must_equal true
-            input.puts "1" # Enable/disable module
+            input.puts "1" # "Enable/disable module"
             input.puts "n" # disable module
-            input.puts "Back to main menu"
+            input.puts "2" # "Back to main menu"
             input.rewind
           end
 
           it "changes module flag" do
-            wizard.send(:configure_module, puppet_module)
+            must_not_raise_eof(input, output) { wizard.send(:configure_module, puppet_module) }
             puppet_module.enabled?.must_equal false
           end
         end
@@ -180,12 +164,12 @@ module Kafo
             puppet_module.enabled?.must_equal false
             input.puts "1" # Enable/disable module
             input.puts "y" # enable module
-            input.puts "Back to main menu"
+            input.puts "9" # "Back to main menu"
             input.rewind
           end
 
           it "changes module flag" do
-            wizard.send(:configure_module, puppet_module)
+            must_not_raise_eof(input, output) { wizard.send(:configure_module, puppet_module) }
             puppet_module.enabled?.must_equal true
           end
         end
@@ -193,14 +177,14 @@ module Kafo
         describe "configure subgroup" do
           before do
             puppet_module.enable
-            input.puts "Configure Advanced parameters"
-            input.puts "Back to main menu"
+            input.puts "7" #"Configure Advanced parameters"
+            input.puts "9" #"Back to main menu"
             input.rewind
           end
 
           it "executes configure_group(group)" do
             wizard.stub :configure_group, Proc.new { say('configure_group executed') } do
-              wizard.send(:configure_module, puppet_module)
+              must_not_raise_eof(input, output) { wizard.send(:configure_module, puppet_module) }
             end
             must_be_on_stdout(output, 'configure_group executed')
           end
@@ -209,14 +193,14 @@ module Kafo
         describe "change parameter value" do
           before do
             puppet_module.enable
-            input.puts "Set version#{RESET}, current value: 1.0#{RESET}"
-            input.puts "Back to main menu"
+            input.puts "2" # "Set version, current value: 1.0"
+            input.puts "9" # "Back to main menu"
             input.rewind
           end
 
           it "executes configure" do
             wizard.stub :configure, Proc.new { say('configure executed') } do
-              wizard.send(:configure_module, puppet_module)
+              must_not_raise_eof(input, output) { wizard.send(:configure_module, puppet_module) }
             end
             must_be_on_stdout(output, 'configure executed')
           end
@@ -289,7 +273,7 @@ module Kafo
 
       describe "#configure_group(group)" do
         before do
-          input.puts "Set debug#{RESET}, current value: true#{RESET}"
+          input.puts "Set debug, current value: true"
           input.puts "Back to parent menu"
           input.rewind
         end
