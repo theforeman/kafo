@@ -1,4 +1,12 @@
 # encoding: UTF-8
+
+# First of all we have to store ENV variable, requiring facter can override them
+module Kafo
+  module ENV
+    LANG = ::ENV['LANG']
+  end
+end
+
 require 'facter'
 require 'pty'
 require 'clamp'

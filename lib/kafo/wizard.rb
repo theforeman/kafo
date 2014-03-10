@@ -5,6 +5,13 @@ require 'yaml'
 
 module Kafo
   class Wizard
+    def self.utf_support?
+      Kafo::ENV::LANG =~ /UTF-8\z/
+    end
+
+    OK = utf_support? ? '✓' : 'y'
+    NO = utf_support? ? '✗' : 'n'
+
     def initialize(kafo)
       @kafo   = kafo
       @config = kafo.config
@@ -42,7 +49,7 @@ END
           menu.select_by = :index
 
           @config.modules.each do |mod|
-            menu.choice "[#{mod.enabled? ? HighLine.color('✓', :run) : HighLine.color('✗', :cancel)}] Configure #{mod.name}" do
+            menu.choice "[#{mod.enabled? ? HighLine.color(OK, :run) : HighLine.color(NO, :cancel)}] Configure #{mod.name}" do
               configure_module(mod)
             end
           end
