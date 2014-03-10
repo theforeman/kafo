@@ -13,6 +13,10 @@
 # :modules_dir: /usr/share/kafo/modules
 # Similar as modules_dir but for kafo internal modules, leave nil if you don't need to change it
 # :kafo_modules_dir:
+# Enable colors? If you don't touch this, we'll autodetect terminal capabilities
+# :colors: true
+# Color scheme, we support :bright and :dark (first is better for white background, dark for black background)
+# :color_of_background: :dark
 
 ## Kafo tuning, customization of core functionality
 # :no_prefix: false

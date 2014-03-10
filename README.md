@@ -524,6 +524,56 @@ You can register as many hooks as you need. They are executed in unspecified ord
 must have a unique name. In a very similar way you can register :post hooks that are executed
 right after puppet run is over.
 
+## Colors
+
+Everybody loves colors right? In case you don't you can disable them using ```--no-colors``` 
+argument or disallow them in installer config file (search for ```colors:``` key and set
+it to false). If you don't touch this setting, kafo will try to detect whether colors
+are supported and will enable/disable it accordingly.
+
+Kafo supports two sets of colors, one for terminals with bright and one for dark backround.
+You can specify your installer default scheme in installer config file (```color_of_background``` 
+key). Or user can override this default setting by ```--color-of-background``` argument.
+Possible values are ```dark``` and ```bright```.
+
+You can reuse kafo color schema in your custom hooks (so you can reuse dark/bright logic).
+Look at this example in bin/foreman-installer
+```ruby
+#!/usr/bin/env ruby
+
+# Run the install
+@result = Kafo::KafoConfigure.run
+exit 0 if @result.nil? # --help invocation
+
+# Puppet status codes say 0 for unchanged, 2 for changed succesfully
+if [0,2].include?(@result.exit_code)
+  say "  <%= color('Success!', :good) %>"
+
+  if module_enabled? 'foreman'
+    say "  * <%= color('Foreman', :info) %> is running at <%= color('#{get_param('foreman','foreman_url')}', :info) %>"
+    say "      Default credentials are '<%= color('admin:changeme', :info) %>'"e
+  end
+end
+```
+
+As you can see you can use HighLine helpers (e.g. say) with colors. Look at kafo/color_schema.rb for
+supported color identifiers. We can guarantee that there will always be at least :good, :bad, :info.
+
+Methods like module_enabled? and get_param are just helpers defined in the same file. If you find 
+them useful, here's the definition
+
+```ruby
+def module_enabled?(name)
+  mod = @result.module(name)
+  return false if mod.nil?
+  mod.enabled?
+end
+
+def get_param(mod, name)
+  @result.param(mod, name).value
+end
+```
+
 ## Custom paths
 
 Usually when you package your installer you want to load files from specific

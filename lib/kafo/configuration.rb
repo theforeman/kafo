@@ -12,16 +12,17 @@ module Kafo
     end
 
     DEFAULT = {
-        :log_dir            => '/var/log/kafo',
-        :log_name           => 'configuration.log',
-        :log_level          => 'info',
-        :no_prefix          => false,
-        :mapping            => {},
-        :answer_file        => './config/answers.yaml',
-        :installer_dir      => '.',
-        :modules_dir        => './modules',
-        :default_values_dir => '/tmp',
-        :colors             => Configuration.colors_possible?
+        :log_dir             => '/var/log/kafo',
+        :log_name            => 'configuration.log',
+        :log_level           => 'info',
+        :no_prefix           => false,
+        :mapping             => {},
+        :answer_file         => './config/answers.yaml',
+        :installer_dir       => '.',
+        :modules_dir         => './modules',
+        :default_values_dir  => '/tmp',
+        :colors              => Configuration.colors_possible?,
+        :color_of_background => :dark
     }
 
     def initialize(file, persist = true)

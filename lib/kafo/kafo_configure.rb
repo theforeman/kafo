@@ -1,4 +1,12 @@
 # encoding: UTF-8
+
+# First of all we have to store ENV variable, requiring facter can override them
+module Kafo
+  module ENV
+    LANG = ::ENV['LANG']
+  end
+end
+
 require 'facter'
 require 'pty'
 require 'clamp'
@@ -48,6 +56,7 @@ module Kafo
       parse clamp_app_arguments
       parse_app_arguments
       Logger.setup
+      ColorScheme.new(config).setup
 
       set_parameters # here the params gets parsed and we need app config populated
       set_options
@@ -186,6 +195,8 @@ module Kafo
     def set_app_options
       self.class.app_option ['--[no-]colors'], :flag, 'Use color output on STDOUT',
                             :default => !!config.app[:colors]
+      self.class.app_option ['--color-of-background'], 'COLOR', 'Your terminal background is :bright or :dark',
+                            :default => config.app[:color_of_background]
       self.class.app_option ['-d', '--dont-save-answers'], :flag, 'Skip saving answers to answers.yaml?',
                             :default => !!config.app[:dont_save_answers]
       self.class.app_option '--ignore-undocumented', :flag, 'Ignore inconsistent parameter documentation',

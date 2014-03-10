@@ -165,6 +165,18 @@ def must_exit_with_code(code, &block)
     block.call
   rescue SystemExit => e
     e.status.must_equal(code)
+  rescue EOFError => e
+    assert false, "input does not make process to exit normally (#{e.message})"
+  end
+end
+
+def must_not_raise_eof(input, output, &block)
+  begin
+    block.call
+  rescue EOFError => e
+    input.rewind
+    output.rewind
+    assert false, "input does not make process to exit normally (#{e.message})\ninput: #{input.read}\noutput: #{output.read}"
   end
 end
 
