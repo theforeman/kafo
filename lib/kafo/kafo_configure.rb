@@ -7,7 +7,6 @@ module Kafo
   end
 end
 
-require 'facter'
 require 'pty'
 require 'clamp'
 require 'kafo/exceptions'
@@ -156,7 +155,7 @@ module Kafo
 
     def params
       @params ||= modules.map(&:params).flatten
-    rescue ModuleName => e
+    rescue KafoParsers::ModuleName => e
       puts e
       exit(:unknown_module)
     end

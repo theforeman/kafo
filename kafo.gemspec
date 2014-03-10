@@ -17,15 +17,16 @@ Gem::Specification.new do |spec|
   spec.test_files    = spec.files.grep(%r{^(test|spec|features)/})
   spec.require_paths = ["lib"]
 
-  spec.add_development_dependency "bundler", "~> 1.3"
-  spec.add_development_dependency "rake"
-  spec.add_development_dependency "minitest", "~> 4.0"
-  spec.add_development_dependency "simplecov"
-  spec.add_development_dependency "ci_reporter"
+  spec.add_development_dependency 'bundler', '~> 1.3'
+  spec.add_development_dependency 'rake'
+  spec.add_development_dependency 'kafo_parsers'
+  spec.add_development_dependency 'minitest', '~> 4.0'
+  spec.add_development_dependency 'simplecov'
+  spec.add_development_dependency 'ci_reporter'
 
-  # puppet manifests parsing
+  # puppet module parsing
+  spec.add_dependency 'kafo_parsers'
   spec.add_dependency 'puppet'
-  spec.add_dependency 'rdoc', '>= 3.9.0'
   # better logging
   spec.add_dependency 'logging'
   # CLI interface
