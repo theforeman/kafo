@@ -1,7 +1,7 @@
 # encoding: UTF-8
 require 'kafo/param'
 require 'kafo/param_builder'
-require 'kafo/puppet_module_parser'
+require 'kafo_parsers/puppet_module_parser'
 require 'kafo/validator'
 
 module Kafo
@@ -11,7 +11,7 @@ module Kafo
     attr_reader :name, :identifier, :params, :dir_name, :class_name, :manifest_name, :manifest_path,
                 :groups
 
-    def initialize(identifier, parser = PuppetModuleParser)
+    def initialize(identifier, parser = KafoParsers::PuppetModuleParser)
       @identifier    = identifier
       @name          = get_name
       @dir_name      = get_dir_name
