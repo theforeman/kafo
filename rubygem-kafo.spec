@@ -8,7 +8,7 @@
 
 Summary: A gem for making installations based on puppet user friendly
 Name: %{?scl_prefix}rubygem-%{gem_name}
-Version: 0.3.16
+Version: 0.4.0
 Release: 1%{?dist}
 Group: Development/Libraries
 License: GPLv3+
@@ -96,6 +96,17 @@ cp -a .%{gem_dir}/* \
 %doc %{gem_instdir}/README.md
 
 %changelog
+* Tue Mar 11 2014 Marek Hulan <mhulan@redhat.com> 0.4.0-1
+- Version bump to 0.4.0 (mhulan@redhat.com)
+- Fix #3053 - Extracted parsers to extra gem (mhulan@redhat.com)
+- Refs #4281 - use utf only if supported (mhulan@redhat.com)
+- add dynamic path for the default config file (kvedulv@kvedulv.de)
+- Refs #4281 - Bright and dark background colors (mhulan@redhat.com)
+- Fix #4281 - improve kafo output in interactive mode (mhulan@redhat.com)
+- Fix #4177 - Help output is sorted correctly on 1.8 (mhulan@redhat.com)
+- Make kafofy more consistent and user friendly (mhulan@redhat.com)
+- Improved kafofy usability and out of the box experience (nils@domrose.net)
+
 * Thu Feb 20 2014 Marek Hulan <mhulan@redhat.com> 0.3.16-1
 - Fix #4402 - remove definition support (mhulan@redhat.com)
 
