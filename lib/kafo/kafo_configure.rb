@@ -9,6 +9,7 @@ end
 
 require 'pty'
 require 'clamp'
+require 'kafo_parsers/exceptions'
 require 'kafo/exceptions'
 require 'kafo/configuration'
 require 'kafo/logger'

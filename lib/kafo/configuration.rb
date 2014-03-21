@@ -117,7 +117,10 @@ module Kafo
     private
 
     def includes
-      modules.map { |mod| "include #{mod.dir_name}::params" }.join(' ')
+      modules.map do |mod|
+        params_file = File.join(KafoConfigure.modules_dir, modules.first.dir_name, 'params.pp')
+        File.exist?(params_file) ? "include #{mod.dir_name}::params" : nil
+      end.compact.join(' ')
     end
 
     def params
