@@ -22,10 +22,10 @@ end
 module Kafo
   describe Hooking do
     let(:hooking) { Hooking.new }
-    let(:logger) { DummyLogger.new }
+    let(:dummy_logger) { DummyLogger.new }
 
     describe "#register_pre" do
-      before { hooking.register_pre(:no1) { |kafo| 'got executed' } }
+      before { hooking.register_pre(:no1) { 'got executed' } }
 
       let(:pre_hooks) { hooking.hooks[:pre] }
       specify { pre_hooks.keys.must_include(:no1) }
@@ -34,32 +34,24 @@ module Kafo
       specify { pre_hook_no1.call.must_equal 'got executed' }
     end
 
-    describe "#register_post" do
-      before { hooking.register_post(:no1) { |kafo| 'got executed' } }
-
-      let(:post_hooks) { hooking.hooks[:post] }
-      specify { post_hooks.keys.must_include(:no1) }
-
-      let(:post_hook_no1) { post_hooks[:no1] }
-      specify { post_hook_no1.call.must_equal 'got executed' }
-    end
-
     describe "#execute" do
       before do
-        KafoConfigure.logger = logger
-        hooking.register_pre(:no1) { |kafo| logger.error 's1' }
-        hooking.register_pre(:no2) { |kafo| logger.error 's2' }
+        KafoConfigure.logger = dummy_logger
+        hooking.kafo = OpenStruct.new(:logger => dummy_logger)
+        hooking.register_pre(:no1) { logger.error 's1' }
+        hooking.register_pre(:no2) { logger.error 's2' }
       end
 
+      # it runs in HookContext context so it has access to logger
       describe "#execute(:pre)" do
-        before { hooking.execute(:pre); logger.rewind }
-        specify { logger.error.read.must_include 's1' }
-        specify { logger.error.read.must_include 's2' }
+        before { hooking.execute(:pre); dummy_logger.rewind }
+        specify { dummy_logger.error.read.must_include 's2' }
+        specify { dummy_logger.error.read.must_include 's1' }
       end
 
       describe "#execute(:post)" do
-        before { hooking.execute(:post); logger.rewind }
-        specify { logger.error.read.must_be_empty }
+        before { hooking.execute(:post); dummy_logger.rewind }
+        specify { dummy_logger.error.read.must_be_empty }
       end
     end
   end
