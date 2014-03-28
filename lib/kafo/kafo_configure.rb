@@ -32,7 +32,11 @@ module Kafo
       attr_writer :hooking
 
       def hooking
-        @hooking ||= Hooking.new
+        @hooking ||= begin
+          hooking = Hooking.new
+          hooking.kafo = self
+          hooking.load
+        end
       end
     end
 
@@ -46,10 +50,10 @@ module Kafo
       self.class.gem_root         = File.join(File.dirname(__FILE__), '../../')
       self.class.kafo_modules_dir = self.class.config.app[:kafo_modules_dir] || (self.class.gem_root + '/modules')
       @progress_bar               = nil
-      self.class.hooking.kafo     = self
 
       super
 
+      self.class.hooking.execute(:boot) if self.class.hooking
       set_app_options
       # we need to parse app config params using clamp even before run method does it
       # so we limit parsing only to app config options (because of --help and later defined params)
@@ -58,6 +62,7 @@ module Kafo
       Logger.setup
       ColorScheme.new(config).setup
 
+      self.class.hooking.execute(:init) if self.class.hooking
       set_parameters # here the params gets parsed and we need app config populated
       set_options
     end
@@ -184,10 +189,14 @@ module Kafo
     end
 
     def set_parameters
+      # set values based on default_values
       params.each do |param|
-        # set values based on default_values
         param.set_default(config.params_default_values)
-        # set values based on YAML
+      end
+
+      self.class.hooking.execute(:pre_value) if self.class.hooking
+      # set values based on YAML
+      params.each do |param|
         param.set_value_by_config(config)
       end
     end

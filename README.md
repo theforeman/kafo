@@ -488,17 +488,29 @@ It also works in interactive mode.
 ## Hooks
 
 You may need to add new features to the installer. Kafo provides simple hook
-mechanism that allows you to run custom code just before and after the puppet
-is ran. Let's assume we want to add --reset-foreman-db option to our
-foreman-installer. We add following lines to generated installer script
+mechanism that allows you to run custom code at various time. We support
+several hooks.
+
+* boot - before kafo is ready to work, useful for adding new app arguments, logger won't work yet
+* init - just after hooking is initialized and kafo is configured, parameters have no values yet
+* pre_values - just before value from CLI is set to parameters (they already have default values)
+* pre  - just before puppet is executed to converge system
+* post  - just after puppet is executed to converge system
+
+Let's assume we want to add --reset-foreman-db option to our
+foreman-installer. We could either add following lines to generated
+installer script
 
 ```ruby
 require 'kafo/hooking'
 
-# functions specific to foreman installer
-KafoConfigure.app_option '--reset-foreman-db',
-  :flag, 'Drop foreman database first? You will lose all data!', :default => false
+# first hook that creates new app option --reset-foreman-db
+KafoConfigure.hooking.register_boot(:add_reset_option) do |kafo|
+  kafo.app_option '--reset-foreman-db',
+    :flag, 'Drop foreman database first? You will lose all data!', :default => false
+end
 
+# second hook which resets the db if value was set to true
 KafoConfigure.hooking.register_pre(:reset_db) do |kafo|
   if kafo.config.app[:reset_foreman_db] && !kafo.config.app[:noop]
     `which foreman-rake > /dev/null 2>&1`
@@ -520,9 +532,21 @@ Note that we can access other installer options using ```kafo.config.app```. Sin
 KafoConfigure instance, you can even access puppet params values. Last but not least you have
 access to logger.
 
+If you don't want to modify you installer script you can place your hooks into
+hooks directory. By default hooks dir is searched for ruby files in subdirectories
+based on hook type. For example pre hooks are searched for in ```$installer_dir/hooks/pre/*.rb```
+
+If you want to add more directories to be search you can use hook_dirs option
+in installer configuration file.
+
+```yaml
+:hook_dirs:
+- /opt/hooks
+- /my/plugin/hooks
+```
+
 You can register as many hooks as you need. They are executed in unspecified order. Every hook
-must have a unique name. In a very similar way you can register :post hooks that are executed
-right after puppet run is over.
+must have a unique name.
 
 ## Colors
 

@@ -30,7 +30,7 @@ options[:name] ||= "kafo-configure"
 options[:config_file] ||= "./config/#{options[:name]}.yaml"
 
 # Create directory structure
-%w(bin config modules).each do |dir|
+%w(bin config modules hooks).each do |dir|
   FileUtils.mkdir_p dir
 end
 
