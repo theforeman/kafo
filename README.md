@@ -505,32 +505,34 @@ installer script
 require 'kafo/hooking'
 
 # first hook that creates new app option --reset-foreman-db
-KafoConfigure.hooking.register_boot(:add_reset_option) do |kafo|
-  kafo.app_option '--reset-foreman-db',
+KafoConfigure.hooking.register_boot(:add_reset_option) do
+  app_option '--reset-foreman-db',
     :flag, 'Drop foreman database first? You will lose all data!', :default => false
 end
 
 # second hook which resets the db if value was set to true
-KafoConfigure.hooking.register_pre(:reset_db) do |kafo|
+KafoConfigure.hooking.register_pre(:reset_db) do
   if kafo.config.app[:reset_foreman_db] && !kafo.config.app[:noop]
     `which foreman-rake > /dev/null 2>&1`
     if $?.success?
-      KafoConfigure.logger.info 'Dropping database!'
+      logger.info 'Dropping database!'
       output = `foreman-rake db:drop 2>&1`
-      KafoConfigure.logger.debug output.to_s
+      logger.debug output.to_s
       unless $?.success?
-        KafoConfigure.logger.warn "Unable to drop DB, ignoring since it's not fatal, output was: '#{output}''"
+        logger.warn "Unable to drop DB, ignoring since it's not fatal, output was: '#{output}''"
       end
     else
-      KafoConfigure.logger.warn 'Foreman not installed yet, can not drop database!'
+      logger.warn 'Foreman not installed yet, can not drop database!'
     end
   end
 end
 ```
 
-Note that we can access other installer options using ```kafo.config.app```. Since ```kafo``` is
-KafoConfigure instance, you can even access puppet params values. Last but not least you have
-access to logger.
+Note that the hook is evaluated in HookContext object which provides some DSL. We can create
+new installer option using ```app_option```. These option values can be accessed by using
+```app_value(:reset_foreman_db)```. You can modify parameters (if they are already defined)
+using ```param('module name', 'parameter name')``` accessor. Last but not least you have
+access to logger. For more details, see hook_context.rb.
 
 If you don't want to modify you installer script you can place your hooks into
 hooks directory. By default hooks dir is searched for ruby files in subdirectories

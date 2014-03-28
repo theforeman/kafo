@@ -1,3 +1,5 @@
+require 'kafo/hook_context'
+
 module Kafo
   class Hooking
     # boot - before kafo is ready to work, useful for adding new app arguments, logger won't work yet
@@ -21,11 +23,13 @@ module Kafo
     def load
       base_dirs = [File.join([KafoConfigure.root_dir, 'hooks']), KafoConfigure.config.app[:hook_dirs]]
       base_dirs.each do |base_dir|
-        TYPES.each do |hook_dir|
-          dir = File.join([base_dir, hook_dir.to_s])
+        TYPES.each do |hook_type|
+          dir = File.join([base_dir, hook_type.to_s])
           Dir.glob(dir + "/*.rb").sort.each do |file|
             logger.debug "Loading hook #{file}"
-            require file
+            hook = File.read(file)
+            hook_block = Proc.new { instance_eval(hook, file, 1) }
+            register(hook_type, file, &hook_block)
           end
         end
         @loaded = true
@@ -40,7 +44,14 @@ module Kafo
     def execute(group)
       logger.info "Executing hooks in group #{group}"
       self.hooks[group].each_pair do |name, hook|
-        result = hook.call(kafo)
+        # TODO can be removed in 0.6, is DEPRECATED since 0.5
+        # instance_exec can be later changed to instance eval when people stop using |kafo| in their hooks
+        # and rely only on hook context DSL
+        if hook.arity > 0
+          logger.warn "Hook '#{name}' is using block with arguments which is DEPRECATED, access to kafo instance is " +
+            "provided by hook DSL, please remove |kafo| from your hook block"
+        end
+        result = HookContext.new(self.kafo).instance_exec(self.kafo, &hook)
         logger.debug "Hook #{name} returned #{result.inspect}"
       end
       logger.info "All hooks in group #{group} finished"

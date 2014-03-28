@@ -32,11 +32,7 @@ module Kafo
       attr_writer :hooking
 
       def hooking
-        @hooking ||= begin
-          hooking = Hooking.new
-          hooking.kafo = self
-          hooking.load
-        end
+        @hooking ||= Hooking.new
       end
     end
 
@@ -50,10 +46,12 @@ module Kafo
       self.class.gem_root         = File.join(File.dirname(__FILE__), '../../')
       self.class.kafo_modules_dir = self.class.config.app[:kafo_modules_dir] || (self.class.gem_root + '/modules')
       @progress_bar               = nil
+      self.class.hooking.load
+      self.class.hooking.kafo     = self
 
       super
 
-      self.class.hooking.execute(:boot) if self.class.hooking
+      self.class.hooking.execute(:boot)
       set_app_options
       # we need to parse app config params using clamp even before run method does it
       # so we limit parsing only to app config options (because of --help and later defined params)
@@ -62,13 +60,17 @@ module Kafo
       Logger.setup
       ColorScheme.new(config).setup
 
-      self.class.hooking.execute(:init) if self.class.hooking
+      self.class.hooking.execute(:init)
       set_parameters # here the params gets parsed and we need app config populated
       set_options
     end
 
     def config
       self.class.config
+    end
+
+    def logger
+      self.class.logger
     end
 
     def execute
@@ -180,10 +182,6 @@ module Kafo
 
     private
 
-    def logger
-      self.class.logger
-    end
-
     def exit(code)
       self.class.exit(code)
     end
@@ -194,7 +192,7 @@ module Kafo
         param.set_default(config.params_default_values)
       end
 
-      self.class.hooking.execute(:pre_value) if self.class.hooking
+      self.class.hooking.execute(:pre_values)
       # set values based on YAML
       params.each do |param|
         param.set_value_by_config(config)
@@ -306,7 +304,7 @@ module Kafo
     end
 
     def run_installation
-      self.class.hooking.execute(:pre) if self.class.hooking
+      self.class.hooking.execute(:pre)
       exit_code   = 0
       exit_status = nil
       options     = [
@@ -343,7 +341,7 @@ module Kafo
       @progress_bar.close if @progress_bar
       logger.info "Puppet has finished, bye!"
       FileUtils.rm(temp_config_file, :force => true)
-      self.class.hooking.execute(:post) if self.class.hooking
+      self.class.hooking.execute(:post)
       exit(exit_code)
     end
 
