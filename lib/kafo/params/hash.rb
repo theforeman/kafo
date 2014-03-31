@@ -25,6 +25,9 @@ module Kafo
           value = [value].flatten
           ::Hash[value.map { |v| v.split(':', 2) }]
         end
+      rescue NoMethodError => e
+        KafoConfigure.logger.warn "Could not typecast #{value} for parameter #{name}, defaulting to {}"
+        return {}
       end
     end
   end
