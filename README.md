@@ -512,7 +512,7 @@ end
 
 # second hook which resets the db if value was set to true
 KafoConfigure.hooking.register_pre(:reset_db) do
-  if kafo.config.app[:reset_foreman_db] && !kafo.config.app[:noop]
+  if app_value(:reset_foreman_db) && !app_value(:noop)
     `which foreman-rake > /dev/null 2>&1`
     if $?.success?
       logger.info 'Dropping database!'
@@ -537,6 +537,31 @@ access to logger. For more details, see hook_context.rb.
 If you don't want to modify you installer script you can place your hooks into
 hooks directory. By default hooks dir is searched for ruby files in subdirectories
 based on hook type. For example pre hooks are searched for in ```$installer_dir/hooks/pre/*.rb```
+Hooks from previous example would look like this. The only change to the code is 
+that you don't explicitely register hooks, it's done automatically for you.
+
+```ruby
+# hooks/boot/10-add_reset_option.rb
+app_option '--reset-foreman-db', :flag, 'Drop foreman database first? You will lose all data!', :default => false
+```
+
+```ruby
+# hooks/pre/10-reset_option_feature.rb
+if app_value(:reset_foreman_db) && !app_value(:noop)
+  `which foreman-rake > /dev/null 2>&1`
+  if $?.success?
+    logger.info 'Dropping database!'
+    output = `foreman-rake db:drop 2>&1`
+    logger.debug output.to_s
+    unless $?.success?
+      logger.warn "Unable to drop DB, ignoring since it's not fatal, output was: '#{output}''"
+    end
+  else
+    logger.warn 'Foreman not installed yet, can not drop database!'
+  end
+end
+```
+
 
 If you want to add more directories to be search you can use hook_dirs option
 in installer configuration file.
@@ -547,8 +572,8 @@ in installer configuration file.
 - /my/plugin/hooks
 ```
 
-You can register as many hooks as you need. They are executed in unspecified order. Every hook
-must have a unique name.
+You can register as many hooks as you need. The order of execution for particular hook type 
+is based on hook file name.
 
 ## Colors
 
