@@ -22,7 +22,8 @@ module Kafo
         :modules_dir         => './modules',
         :default_values_dir  => '/tmp',
         :colors              => Configuration.colors_possible?,
-        :color_of_background => :dark
+        :color_of_background => :dark,
+        :hook_dirs           => []
     }
 
     def initialize(file, persist = true)
@@ -117,7 +118,11 @@ module Kafo
     private
 
     def includes
-      modules.map { |mod| "include #{mod.dir_name}::params" }.join(' ')
+      modules.map do |mod|
+        params_file = File.join(KafoConfigure.modules_dir, modules.first.dir_name, 'manifests', 'params.pp')
+        @logger.debug "checking presence of #{params_file}"
+        File.exist?(params_file) ? "include #{mod.dir_name}::params" : nil
+      end.compact.join(' ')
     end
 
     def params

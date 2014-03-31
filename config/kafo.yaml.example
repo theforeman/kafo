@@ -36,3 +36,9 @@
 # :log_group: root
 # :config_header_file:
 # :dont_save_answers:
+
+## Hooks - hooks in these extra directories will be loaded,
+# by default they are loaded from $installer_dir/hooks/$type
+# when you specify your directory, it will be search for $yourdir/$type/*.rb
+# :hooks_dir:
+# - /opt/hooks

@@ -10,6 +10,9 @@ module Kafo
 
       def typecast(value)
         value.nil? ? nil : value.to_i
+      rescue NoMethodError => e
+        KafoConfigure.logger.warn "Could not typecast #{value} for parameter #{name}, defaulting to 0"
+        return 0
       end
     end
   end

@@ -5,7 +5,11 @@ require 'logging'
 module Kafo
   class Logger
     class << self
-      attr_accessor :loggers
+      attr_writer :loggers
+
+      def loggers
+        @loggers || []
+      end
     end
 
     PATTERN = "[%5l %d %c] %m\n"
