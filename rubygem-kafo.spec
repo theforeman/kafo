@@ -8,8 +8,8 @@
 
 Summary: A gem for making installations based on puppet user friendly
 Name: %{?scl_prefix}rubygem-%{gem_name}
-Version: 0.4.0
-Release: 2%{?dist}
+Version: 0.5.0
+Release: 1%{?dist}
 Group: Development/Libraries
 License: GPLv3+
 URL: https://github.com/theforeman/kafo
@@ -96,6 +96,10 @@ cp -a .%{gem_dir}/* \
 %doc %{gem_instdir}/README.md
 
 %changelog
+* Mon Mar 31 2014 Marek Hulan <mhulan@redhat.com> 0.5.0-1
+- Improved hooks (mhulan@redhat.com)
+- Support classes without param.pp defined (mhulan@redhat.com)
+
 * Tue Mar 11 2014 Marek Hulan <mhulan@redhat.com> 0.4.0-2
 - Fixed package dependencies
 
