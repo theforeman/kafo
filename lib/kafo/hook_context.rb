@@ -1,9 +1,20 @@
 module Kafo
   class HookContext
-    attr_accessor :kafo
+    attr_reader :kafo
+
+    def self.execute(kafo, &hook)
+      # TODO can be removed in 0.6, is DEPRECATED since 0.5
+      # instance_exec can be later changed to instance eval when people stop using |kafo| in their hooks
+      # and rely only on hook context DSL
+      if hook.arity > 0
+        logger.warn "Hook '#{name}' is using block with arguments which is DEPRECATED, access to kafo instance is " +
+                        "provided by hook DSL, please remove |kafo| from your hook block"
+      end
+      new(kafo).instance_exec(kafo, &hook)
+    end
 
     def initialize(kafo)
-      self.kafo = kafo
+      @kafo = kafo
     end
 
     # some of hooks won't print any message because logger is not yet configured

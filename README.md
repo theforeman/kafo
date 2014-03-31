@@ -491,7 +491,7 @@ You may need to add new features to the installer. Kafo provides simple hook
 mechanism that allows you to run custom code at various time. We support
 several hooks.
 
-* boot - before kafo is ready to work, useful for adding new app arguments, logger won't work yet
+* boot - before kafo is ready to work, useful for adding new installer arguments, logger won't work yet
 * init - just after hooking is initialized and kafo is configured, parameters have no values yet
 * pre_values - just before value from CLI is set to parameters (they already have default values)
 * pre  - just before puppet is executed to converge system
@@ -499,7 +499,7 @@ several hooks.
 
 Let's assume we want to add --reset-foreman-db option to our
 foreman-installer. We could either add following lines to generated
-installer script
+installer script.
 
 ```ruby
 require 'kafo/hooking'
