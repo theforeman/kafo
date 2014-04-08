@@ -21,7 +21,6 @@ module Kafo
 
     def run
       message = "Welcome to the #{@name} installer!"
-      HighLine.color(message, :important)
       say(HighLine.color(message, :headline))
       say(HighLine.color('-' * message.size, :horizontal_line))
       say(<<END)
