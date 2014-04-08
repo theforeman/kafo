@@ -8,7 +8,7 @@
 
 Summary: A gem for making installations based on puppet user friendly
 Name: %{?scl_prefix}rubygem-%{gem_name}
-Version: 0.3.16
+Version: 0.3.17
 Release: 1%{?dist}
 Group: Development/Libraries
 License: GPLv3+
@@ -96,6 +96,9 @@ cp -a .%{gem_dir}/* \
 %doc %{gem_instdir}/README.md
 
 %changelog
+* Tue Apr 08 2014 Marek Hulan <mhulan@redhat.com> 0.3.17-1
+- Fixes #4648 - make sure default password are not exposed (mhulan@redhat.com)
+
 * Thu Feb 20 2014 Marek Hulan <mhulan@redhat.com> 0.3.16-1
 - Fix #4402 - remove definition support (mhulan@redhat.com)
 
