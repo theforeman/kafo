@@ -8,7 +8,7 @@
 
 Summary: A gem for making installations based on puppet user friendly
 Name: %{?scl_prefix}rubygem-%{gem_name}
-Version: 0.5.0
+Version: 0.5.2
 Release: 1%{?dist}
 Group: Development/Libraries
 License: GPLv3+
@@ -96,6 +96,12 @@ cp -a .%{gem_dir}/* \
 %doc %{gem_instdir}/README.md
 
 %changelog
+* Tue Apr 08 2014 Marek Hulan <mhulan@redhat.com> 0.5.2-1
+- Fixes #4648 - make sure default password are not exposed (mhulan@redhat.com)
+- Fixes #5112: Show actual answers file in '-d' output. (ericdhelms@gmail.com)
+- Removed silent code (mhulan@redhat.com)
+- Add progressbar support for puppet 3.5 (mhulan@redhat.com)
+
 * Mon Mar 31 2014 Marek Hulan <mhulan@redhat.com> 0.5.0-1
 - Improved hooks (mhulan@redhat.com)
 - Support classes without param.pp defined (mhulan@redhat.com)
