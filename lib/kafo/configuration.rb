@@ -1,5 +1,6 @@
 # encoding: UTF-8
 require 'yaml'
+require 'tmpdir'
 require 'kafo/puppet_module'
 require 'kafo/password_manager'
 
@@ -74,8 +75,11 @@ module Kafo
 
     def params_default_values
       @params_default_values ||= begin
+        @logger.debug "Creating tmp dir within #{app[:default_values_dir]}..."
+        temp_dir = Dir.mktmpdir(nil, app[:default_values_dir])
+        KafoConfigure.register_cleanup_path temp_dir
         @logger.info "Parsing default values from puppet modules..."
-        command = PuppetCommand.new("#{includes} dump_values(#{params})").append('2>&1').command
+        command = PuppetCommand.new("$temp_dir=\"#{temp_dir}\" #{includes} dump_values(#{params})").append('2>&1').command
         @logger.debug `#{command}`
         unless $?.exitstatus == 0
           log = app[:log_dir] + '/' + app[:log_name]
@@ -84,7 +88,7 @@ module Kafo
           KafoConfigure.exit(:defaults_error)
         end
         @logger.info "... finished"
-        YAML.load_file(File.join(KafoConfigure.config.app[:default_values_dir], 'default_values.yaml'))
+        YAML.load_file(File.join(temp_dir, 'default_values.yaml'))
       end
     end
 
