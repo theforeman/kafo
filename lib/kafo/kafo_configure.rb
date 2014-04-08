@@ -25,11 +25,14 @@ module Kafo
   class KafoConfigure < Clamp::Command
     include StringHelper
 
-
     class << self
       attr_accessor :config, :root_dir, :config_file, :gem_root, :temp_config_file,
                     :modules_dir, :kafo_modules_dir, :verbose, :app_options, :logger
       attr_writer :hooking
+
+      def cleanup_paths
+        @cleanup_paths ||= []
+      end
 
       def hooking
         @hooking ||= Hooking.new
@@ -121,6 +124,7 @@ module Kafo
     end
 
     def self.exit(code)
+      cleanup
       @exit_code = translate_exit_code(code)
       throw :exit
     end
@@ -142,6 +146,26 @@ module Kafo
       else
         raise "Unknown code #{code}"
       end
+    end
+
+    def self.cleanup
+      # make sure default values are removed from /tmp
+      (self.cleanup_paths + ['/tmp/default_values.yaml']).each do |file|
+        logger.debug "Cleaning #{file}"
+        FileUtils.rm_rf(file)
+      end
+    end
+
+    def self.register_cleanup_path(path)
+      self.cleanup_paths<< path
+    end
+
+    def register_cleanup_path(path)
+      self.class.register_cleanup_path(path)
+    end
+
+    def cleanup_paths
+      self.class.cleanup_paths
     end
 
     def help
