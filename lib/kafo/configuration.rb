@@ -123,7 +123,7 @@ module Kafo
 
     def includes
       modules.map do |mod|
-        params_file = File.join(KafoConfigure.modules_dir, modules.first.dir_name, 'manifests', 'params.pp')
+        params_file = File.join(KafoConfigure.modules_dir, mod.params_path)
         @logger.debug "checking presence of #{params_file}"
         File.exist?(params_file) ? "include #{mod.dir_name}::params" : nil
       end.compact.join(' ')

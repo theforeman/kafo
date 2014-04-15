@@ -9,7 +9,7 @@ module Kafo
     PRIMARY_GROUP_NAME = 'Parameters'
 
     attr_reader :name, :identifier, :params, :dir_name, :class_name, :manifest_name, :manifest_path,
-                :groups
+                :groups, :params_path
 
     def initialize(identifier, parser = KafoParsers::PuppetModuleParser)
       @identifier    = identifier
@@ -23,6 +23,7 @@ module Kafo
       @validations   = []
       @logger        = KafoConfigure.logger
       @groups        = {}
+      @params_path   = get_params_path
     end
 
     def enabled?
@@ -107,11 +108,24 @@ module Kafo
     end
 
     def get_class_name
-      manifest_name == 'init' ? name : "#{dir_name}::#{manifest_name.gsub('_', '::')}"
+      manifest_name == 'init' ? name : "#{dir_name}::#{manifest_name.gsub('/', '::')}"
+    end
+
+    def get_params_path
+      mapping[identifier].nil? ? default_params_path : (mapping[identifier][:params_path] || default_params_path)
+    end
+
+    def get_params_name
+      default = 'params'
+      mapping[identifier].nil? ? default : (mapping[identifier][:params_name] || default)
     end
 
     def module_manifest_path
       "#{dir_name}/manifests/#{manifest_name}.pp"
+    end
+
+    def default_params_path
+      "#{dir_name}/manifests/#{get_params_name}.pp"
     end
 
     def get_name

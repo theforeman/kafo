@@ -451,10 +451,14 @@ to kafo.yaml
   :puppetmaster:                # a module name, so we'll have puppetmaster: true in answer file
     :dir_name: 'puppet'         # the subdirectory in modules/
     :manifest_name: 'server'    # manifest filename without .pp extension
+    :params_path: ...           # params manifest full path, overriding params_name, must be with .pp extension
+    :params_name: 'params'      # name of manifest holding the params class without .pp extension
 ```
 
 Note that if you add mapping you must enter both dir_name and manifest_name even
-if one of them is default.
+if one of them is default. Arguments params_path and params_name are optional. You can
+use just params_name or override not just file name but complete path using params_path.
+If you use params_path for this purpose, params_name is ignored.
 
 ## Validations
 
