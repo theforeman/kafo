@@ -28,7 +28,16 @@ BASIC_CONFIGURATION = <<EOS
 :dont_save_answers: true
 :ignore_undocumented: true
 
-:mapping: []
+:mapping:
+  :foreman::plugin::default_hostgroup:
+    :dir_name: foreman
+    :manifest_name: plugin/default_hostgroup
+    :params_name: plugin/default_hostgroup/params
+  :foreman::plugin::chef:
+    :dir_name: foreman
+    :manifest_name: plugin/chef
+    :params_path: plugin/chef/params.pp
+
 :password: secret
 EOS
 

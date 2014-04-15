@@ -22,6 +22,35 @@ module Kafo
       specify { mod.enabled?.must_equal true }
     end
 
+    # BASIC_CONFIGURATION has mapping configured for this module
+    let(:plugin1_mod) { PuppetModule.new 'foreman::plugin::default_hostgroup', TestParser.new(BASIC_MANIFEST) }
+    let(:plugin2_mod) { PuppetModule.new 'foreman::plugin::chef', TestParser.new(BASIC_MANIFEST) }
+
+    describe "#dir_name" do
+      specify { mod.dir_name.must_equal 'puppet' }
+      specify { plugin1_mod.dir_name.must_equal 'foreman' }
+    end
+
+    describe "#manifest_name" do
+      specify { mod.manifest_name.must_equal 'init' }
+      specify { plugin1_mod.manifest_name.must_equal 'plugin/default_hostgroup' }
+    end
+
+    describe "#class_name" do
+      specify { mod.class_name.must_equal 'puppet' }
+      specify { plugin1_mod.class_name.must_equal 'foreman::plugin::default_hostgroup' }
+    end
+
+    describe "#manifest_path" do
+      specify { mod.manifest_path.must_equal 'test/fixtures/modules/puppet/manifests/init.pp' }
+      specify { plugin1_mod.manifest_path.must_equal 'test/fixtures/modules/foreman/manifests/plugin/default_hostgroup.pp' }
+    end
+
+    describe "#params_path" do
+      specify { mod.params_path.must_equal 'puppet/manifests/params.pp' }
+      specify { plugin1_mod.params_path.must_equal 'foreman/manifests/plugin/default_hostgroup/params.pp' }
+    end
+
     let(:parsed) { mod.parse }
 
     describe "#parse(builder)" do
