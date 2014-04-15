@@ -49,6 +49,13 @@ module Kafo
     describe "#params_path" do
       specify { mod.params_path.must_equal 'puppet/manifests/params.pp' }
       specify { plugin1_mod.params_path.must_equal 'foreman/manifests/plugin/default_hostgroup/params.pp' }
+      specify { plugin2_mod.params_path.must_equal 'custom/plugin/chef/params.pp' }
+    end
+
+    describe "#params_class_name" do
+      specify { mod.params_class_name.must_equal 'params' }
+      specify { plugin1_mod.params_class_name.must_equal 'plugin::default_hostgroup::params' }
+      specify { plugin2_mod.params_class_name.must_equal 'params' }
     end
 
     let(:parsed) { mod.parse }

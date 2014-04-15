@@ -36,7 +36,7 @@ BASIC_CONFIGURATION = <<EOS
   :foreman::plugin::chef:
     :dir_name: foreman
     :manifest_name: plugin/chef
-    :params_path: plugin/chef/params.pp
+    :params_path: custom/plugin/chef/params.pp
 
 :password: secret
 EOS
