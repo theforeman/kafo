@@ -125,8 +125,8 @@ module Kafo
       modules.map do |mod|
         params_file = File.join(KafoConfigure.modules_dir, mod.params_path)
         @logger.debug "checking presence of #{params_file}"
-        File.exist?(params_file) ? "include #{mod.dir_name}::params" : nil
-      end.compact.join(' ')
+        File.exist?(params_file) ? "include #{mod.dir_name}::#{mod.params_class_name}" : nil
+      end.uniq.compact.join(' ')
     end
 
     def params

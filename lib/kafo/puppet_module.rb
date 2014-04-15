@@ -9,21 +9,22 @@ module Kafo
     PRIMARY_GROUP_NAME = 'Parameters'
 
     attr_reader :name, :identifier, :params, :dir_name, :class_name, :manifest_name, :manifest_path,
-                :groups, :params_path
+                :groups, :params_path, :params_class_name
 
     def initialize(identifier, parser = KafoParsers::PuppetModuleParser)
-      @identifier    = identifier
-      @name          = get_name
-      @dir_name      = get_dir_name
-      @manifest_name = get_manifest_name
-      @class_name    = get_class_name
-      @params        = []
-      @manifest_path = File.join(KafoConfigure.modules_dir, module_manifest_path)
-      @parser        = parser
-      @validations   = []
-      @logger        = KafoConfigure.logger
-      @groups        = {}
-      @params_path   = get_params_path
+      @identifier        = identifier
+      @name              = get_name
+      @dir_name          = get_dir_name
+      @manifest_name     = get_manifest_name
+      @class_name        = get_class_name
+      @params            = []
+      @manifest_path     = File.join(KafoConfigure.modules_dir, module_manifest_path)
+      @parser            = parser
+      @validations       = []
+      @logger            = KafoConfigure.logger
+      @groups            = {}
+      @params_path       = get_params_path
+      @params_class_name = get_params_class_name
     end
 
     def enabled?
@@ -120,6 +121,10 @@ module Kafo
       mapping[identifier].nil? ? default : (mapping[identifier][:params_name] || default)
     end
 
+    def get_params_class_name
+      name_to_class_name(get_params_name)
+    end
+
     def module_manifest_path
       "#{dir_name}/manifests/#{manifest_name}.pp"
     end
@@ -130,6 +135,10 @@ module Kafo
 
     def get_name
       identifier.gsub('::', '_')
+    end
+
+    def name_to_class_name(name)
+      name.gsub('/', '::')
     end
 
   end
