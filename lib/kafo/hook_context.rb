@@ -47,5 +47,18 @@ module Kafo
     def param(module_name, parameter_name)
       self.kafo.param(module_name, parameter_name)
     end
+
+    # You can add custom modules not explicitly enabled in answer file. This is especially
+    # useful if you want to add your plugin to existing installer. This module will become
+    # part of answer file so it also preserves parameter values between runs. It also list
+    # its options in help output. You can also specify mapping for this module as a second
+    # parameter.
+    # examples:
+    #   add_module('my_module')
+    #   add_module('foreman::plugin::staypuft', {:dir_name => 'foreman', :manifest_name => 'plugin/staypuft'})
+    def add_module(module_name, mapping = nil)
+      self.kafo.config.add_mapping(module_name, mapping) if mapping
+      self.kafo.add_module(module_name)
+    end
   end
 end

@@ -9,6 +9,7 @@ module Kafo
       specify { context.respond_to?(:app_option) }
       specify { context.respond_to?(:app_value) }
       specify { context.respond_to?(:param) }
+      specify { context.respond_to?(:add_module) }
     end
   end
 end

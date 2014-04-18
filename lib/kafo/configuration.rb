@@ -75,6 +75,19 @@ module Kafo
       @modules ||= @data.keys.map { |mod| PuppetModule.new(mod).parse }
     end
 
+    def add_module(name)
+      mod = PuppetModule.new(name).parse
+      unless modules.map(&:name).include?(mod.name)
+        mod.enable
+        @modules << mod
+      end
+    end
+
+    def add_mapping(module_name, mapping)
+      app[:mapping][module_name] = mapping
+      save_configuration(app)
+    end
+
     def params_default_values
       @params_default_values ||= begin
         @logger.debug "Creating tmp dir within #{app[:default_values_dir]}..."
