@@ -192,6 +192,17 @@ module Kafo
       exit(:unknown_module)
     end
 
+    def reset_params_cache
+      @params = nil
+      params
+    end
+
+    def add_module(name)
+      config.add_module(name)
+      reset_params_cache
+      self.module(name)
+    end
+
     def modules
       config.modules.sort
     end
