@@ -8,7 +8,7 @@
 
 Summary: A gem for making installations based on puppet user friendly
 Name: %{?scl_prefix}rubygem-%{gem_name}
-Version: 0.5.3
+Version: 0.5.4
 Release: 1%{?dist}
 Group: Development/Libraries
 License: GPLv3+
@@ -96,6 +96,9 @@ cp -a .%{gem_dir}/* \
 %doc %{gem_instdir}/README.md
 
 %changelog
+* Wed Apr 23 2014 Marek Hulan <mhulan@redhat.com> 0.5.4-1
+- Allow adding custom modules in hooks (mhulan@redhat.com)
+
 * Tue Apr 15 2014 Marek Hulan <mhulan@redhat.com> 0.5.3-1
 - Include custom params classes (mhulan@redhat.com)
 - Allow custom params_path configuration using mapping (mhulan@redhat.com)
