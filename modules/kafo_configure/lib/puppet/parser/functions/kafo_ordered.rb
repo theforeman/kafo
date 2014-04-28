@@ -14,7 +14,7 @@ module Puppet::Parser::Functions
       order.each do |name|
         result<< base.delete(name)
       end
-      result + base
+      (result + base).compact
     end
   end
 end
