@@ -8,7 +8,7 @@
 
 Summary: A gem for making installations based on puppet user friendly
 Name: %{?scl_prefix}rubygem-%{gem_name}
-Version: 0.5.4
+Version: 0.5.5
 Release: 1%{?dist}
 Group: Development/Libraries
 License: GPLv3+
@@ -96,6 +96,13 @@ cp -a .%{gem_dir}/* \
 %doc %{gem_instdir}/README.md
 
 %changelog
+* Tue May 13 2014 Marek Hulan <mhulan@redhat.com> 0.5.5-1
+- Fixes #5582 - make the Kafo.exit_code set properly in post hooks
+  (inecas@redhat.com)
+- s/hooks_dir/hook_dirs/ (inecas@redhat.com)
+- Fixes #5452 - Make sure nil is not part of the keys in Puppet resource
+  (inecas@redhat.com)
+
 * Wed Apr 23 2014 Marek Hulan <mhulan@redhat.com> 0.5.4-1
 - Allow adding custom modules in hooks (mhulan@redhat.com)
 
