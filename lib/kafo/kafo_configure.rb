@@ -123,9 +123,10 @@ module Kafo
       self.class.exit_code
     end
 
-    def self.exit(code)
-      cleanup
+    def self.exit(code, &block)
       @exit_code = translate_exit_code(code)
+      block.call if block
+      cleanup
       throw :exit
     end
 
@@ -217,8 +218,8 @@ module Kafo
 
     private
 
-    def exit(code)
-      self.class.exit(code)
+    def exit(code, &block)
+      self.class.exit(code, &block)
     end
 
     def set_parameters
@@ -376,8 +377,9 @@ module Kafo
       @progress_bar.close if @progress_bar
       logger.info "Puppet has finished, bye!"
       FileUtils.rm(temp_config_file, :force => true)
-      self.class.hooking.execute(:post)
-      exit(exit_code)
+      exit(exit_code) do
+        self.class.hooking.execute(:post)
+      end
     end
 
     def progress_log(method, message)

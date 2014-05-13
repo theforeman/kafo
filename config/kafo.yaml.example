@@ -40,5 +40,5 @@
 ## Hooks - hooks in these extra directories will be loaded,
 # by default they are loaded from $installer_dir/hooks/$type
 # when you specify your directory, it will be search for $yourdir/$type/*.rb
-# :hooks_dir:
+# :hook_dirs:
 # - /opt/hooks
