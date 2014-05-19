@@ -583,6 +583,8 @@ in installer configuration file.
 You can register as many hooks as you need. The order of execution for particular hook type 
 is based on hook file name.
 
+If you want to cancel installation you can use ```exit``` method and specify an exit code.
+
 ## Colors
 
 Everybody loves colors right? In case you don't you can disable them using ```--no-colors``` 

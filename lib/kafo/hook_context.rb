@@ -60,5 +60,15 @@ module Kafo
       self.kafo.config.add_mapping(module_name, mapping) if mapping
       self.kafo.add_module(module_name)
     end
+
+    # You can trigger installer exit by this method. You must specify exit code as a first
+    # argument. You can also specify a symbol alias which is built-in (see exit_handler.rb
+    # for more details).
+    # examples:
+    #   exit(0)
+    #   exit(:manifest_error)
+    def exit(code)
+      self.kafo.exit(code)
+    end
   end
 end

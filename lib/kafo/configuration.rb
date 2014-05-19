@@ -92,7 +92,7 @@ module Kafo
       @params_default_values ||= begin
         @logger.debug "Creating tmp dir within #{app[:default_values_dir]}..."
         temp_dir = Dir.mktmpdir(nil, app[:default_values_dir])
-        KafoConfigure.register_cleanup_path temp_dir
+        KafoConfigure.exit_handler.register_cleanup_path temp_dir
         @logger.info "Parsing default values from puppet modules..."
         command = PuppetCommand.new("$temp_dir=\"#{temp_dir}\" #{includes} dump_values(#{params})").append('2>&1').command
         @logger.debug `#{command}`
