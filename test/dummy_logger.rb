@@ -1,5 +1,5 @@
 class DummyLogger
-  LEVELS = %w(error info debug)
+  LEVELS = %w(fatal error warn info debug)
 
   def initialize
     LEVELS.each { |l| instance_variable_set("@#{l}", StringIO.new) }
@@ -14,5 +14,9 @@ class DummyLogger
 
   def rewind
     LEVELS.each { |l| instance_variable_get("@#{l}").rewind }
+  end
+
+  def dump_errors
+    true
   end
 end

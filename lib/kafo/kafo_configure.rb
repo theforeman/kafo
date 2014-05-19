@@ -78,7 +78,7 @@ module Kafo
     def execute
       parse_cli_arguments
 
-      if (self.class.verbose = verbose?)
+      if (self.class.verbose = !!verbose?)
         Logger.setup_verbose
       else
         @progress_bar = self.class.config.app[:colors] ? ProgressBars::Colored.new : ProgressBars::BlackWhite.new
