@@ -91,6 +91,7 @@ module Kafo
           exit(:invalid_system)
         end
 
+        self.class.hooking.execute(:pre_validations)
         if interactive?
           wizard = Wizard.new(self)
           wizard.run

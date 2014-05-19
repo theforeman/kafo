@@ -5,9 +5,10 @@ module Kafo
     # boot - before kafo is ready to work, useful for adding new app arguments, logger won't work yet
     # init - just after hooking is initialized and kafo is configured, parameters have no values yet
     # pre_values - just before value from CLI is set to parameters (they already have default values)
+    # pre_validations - just after system checks and before validations are executed (and before interactive wizard is started), at this point all parameter values are already set but not yet stored in answer file
     # pre - just before puppet is executed to converge system
     # post - just after puppet is executed to converge system
-    TYPES = [:boot, :init, :pre, :post, :pre_values]
+    TYPES = [:boot, :init, :pre, :post, :pre_values, :pre_validations]
 
     attr_accessor :hooks, :kafo
 
@@ -60,6 +61,10 @@ module Kafo
 
     def register_pre_values(name, &block)
       register(:pre_values, name, &block)
+    end
+
+    def register_pre_validations(name, &block)
+      register(:pre_validations, name, &block)
     end
 
     def register_pre(name, &block)

@@ -42,12 +42,19 @@ module Kafo
       if default == 'UNSET'
         self.value = nil
       else
-        self.value = (value = defaults[default]) == :undef ? nil : value
+        # if we don't have default value from dump (can happen for modules added from hooks)
+        # we fallback to their own default values
+        if defaults.has_key?(default)
+          value = defaults[default]
+          self.value = (value == :undef ? nil : value)
+        else
+          self.value = self.default
+        end
       end
     end
 
     def set_value_by_config(config)
-      base       = config[module_name]
+      base       = config[self.module.class_name]
       self.value = base[name] if base.has_key?(name)
     end
 
