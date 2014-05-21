@@ -24,7 +24,8 @@ module Kafo
         :default_values_dir  => '/tmp',
         :colors              => Configuration.colors_possible?,
         :color_of_background => :dark,
-        :hook_dirs           => []
+        :hook_dirs           => [],
+        :custom              => {}
     }
 
     def initialize(file, persist = true)
@@ -69,6 +70,14 @@ module Kafo
         result[:password] ||= PasswordManager.new.password
         result
       end
+    end
+
+    def get_custom(key)
+      custom_storage[key.to_sym]
+    end
+
+    def set_custom(key, value)
+      custom_storage[key.to_sym] = value
     end
 
     def modules
@@ -133,6 +142,10 @@ module Kafo
     end
 
     private
+
+    def custom_storage
+      app[:custom]
+    end
 
     def includes
       modules.map do |mod|

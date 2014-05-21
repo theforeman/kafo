@@ -539,8 +539,10 @@ new installer option using ```app_option```. These option values can be accessed
 using ```param('module name', 'parameter name')``` accessor. You can register your own module
 that is not specified in answer file using ```add_module```. Custom mapping is also supported.
 This is useful if you need to add some module to existing installer based on kafo but you don't
-have control over it's source code. Last but not least you have access to logger.
-For more details, see [hook_context.rb](https://github.com/theforeman/kafo/blob/master/lib/kafo/hook_context.rb).
+have control over its source code. You can use custom config storage which persists among
+kafo runs using ```get_custom_config``` and ```store_custom_config```.
+Last but not least you have access to logger. For more details, see
+[hook_context.rb](https://github.com/theforeman/kafo/blob/master/lib/kafo/hook_context.rb).
 
 If you don't want to modify you installer script you can place your hooks into
 hooks directory. By default hooks dir is searched for ruby files in subdirectories

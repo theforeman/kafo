@@ -70,5 +70,16 @@ module Kafo
     def exit(code)
       self.kafo.exit(code)
     end
+
+    # You can load a custom config value that has been saved using store_custom_config
+    def get_custom_config(key)
+      self.kafo.config.get_custom(key)
+    end
+
+    # You can save any value into kafo configuration file, this is useful if you need to
+    # share a value between more hooks and persist the values for next run
+    def store_custom_config(key, value)
+      self.kafo.config.set_custom(key, value)
+    end
   end
 end

@@ -42,3 +42,8 @@
 # when you specify your directory, it will be search for $yourdir/$type/*.rb
 # :hook_dirs:
 # - /opt/hooks
+
+# custom storage is handy if you use hooks and you must store some configuration
+# which should persist among installer runs. It can be also used for passing
+# value from one hook to another.
+# :custom: {}
