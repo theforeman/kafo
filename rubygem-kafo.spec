@@ -96,6 +96,13 @@ cp -a .%{gem_dir}/* \
 %doc %{gem_instdir}/README.md
 
 %changelog
+* Fri May 23 2014 Marek Hulan <mhulan@redhat.com> 0.6.0-1
+- Enable progress bar with Puppet 3.6 (mhulan@redhat.com)
+- Add custom configuration storage (mhulan@redhat.com)
+- Fix #4959 and fix #3224 (mhulan@redhat.com)
+- Fix #5732 - Refactoring of exit code (mhulan@redhat.com)
+- Add new type of hooks (mhulan@redhat.com)
+
 * Tue May 13 2014 Marek Hulan <mhulan@redhat.com> 0.5.5-1
 - Fixes #5582 - make the Kafo.exit_code set properly in post hooks
   (inecas@redhat.com)
