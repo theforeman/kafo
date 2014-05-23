@@ -34,7 +34,7 @@ END
       main_menu
     rescue Interrupt
       puts "Got interrupt, exiting"
-      exit(0)
+      KafoConfigure.exit(0)
     end
 
     private
@@ -60,7 +60,8 @@ END
             finished = true
           end
           menu.choice HighLine.color('Cancel run without Saving', :cancel) do
-            say("Bye!"); exit 0
+            say("Bye!")
+            KafoConfigure.exit(0)
           end
         end
       end

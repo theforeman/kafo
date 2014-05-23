@@ -20,6 +20,7 @@ require 'kafo/system_checker'
 require 'kafo/puppet_command'
 require 'kafo/progress_bar'
 require 'kafo/hooking'
+require 'kafo/exit_handler'
 
 module Kafo
   class KafoConfigure < Clamp::Command
@@ -27,12 +28,9 @@ module Kafo
 
     class << self
       attr_accessor :config, :root_dir, :config_file, :gem_root, :temp_config_file,
-                    :modules_dir, :kafo_modules_dir, :verbose, :app_options, :logger
+                    :modules_dir, :kafo_modules_dir, :verbose, :app_options, :logger,
+                    :exit_handler
       attr_writer :hooking
-
-      def cleanup_paths
-        @cleanup_paths ||= []
-      end
 
       def hooking
         @hooking ||= Hooking.new
@@ -41,6 +39,7 @@ module Kafo
 
     def initialize(*args)
       self.class.logger           = Logger.new
+      self.class.exit_handler     = ExitHandler.new
       self.class.config_file      = config_file
       self.class.config           = Configuration.new(self.class.config_file)
       self.class.root_dir         = File.expand_path(self.class.config.app[:installer_dir])
@@ -77,97 +76,60 @@ module Kafo
     end
 
     def execute
-      catch :exit do
-        parse_cli_arguments
+      parse_cli_arguments
 
-        if (self.class.verbose = verbose?)
-          Logger.setup_verbose
-        else
-          @progress_bar = self.class.config.app[:colors] ? ProgressBars::Colored.new : ProgressBars::BlackWhite.new
-        end
-
-        unless SystemChecker.check
-          puts "Your system does not meet configuration criteria"
-          exit(:invalid_system)
-        end
-
-        if interactive?
-          wizard = Wizard.new(self)
-          wizard.run
-        else
-          unless validate_all
-            puts "Error during configuration, exiting"
-            exit(:invalid_values)
-          end
-        end
-
-        if dont_save_answers?
-          self.class.temp_config_file = temp_config_file
-          store_params(temp_config_file)
-        else
-          store_params
-        end
-        run_installation
+      if (self.class.verbose = !!verbose?)
+        Logger.setup_verbose
+      else
+        @progress_bar = self.class.config.app[:colors] ? ProgressBars::Colored.new : ProgressBars::BlackWhite.new
       end
+
+      unless SystemChecker.check
+        puts "Your system does not meet configuration criteria"
+        self.class.exit(:invalid_system)
+      end
+
+      self.class.hooking.execute(:pre_validations)
+      if interactive?
+        wizard = Wizard.new(self)
+        wizard.run
+      else
+        unless validate_all
+          puts "Error during configuration, exiting"
+          self.class.exit(:invalid_values)
+        end
+      end
+
+      if dont_save_answers?
+        self.class.temp_config_file = temp_config_file
+        store_params(temp_config_file)
+      else
+        store_params
+      end
+      run_installation
+      return self
+    rescue SystemExit
       return self
     end
 
     def self.run
-      catch :exit do
-        return super
-      end
-      Kernel.exit(self.exit_code) # fail in initialize
+      return super
+    rescue SystemExit => e
+      self.exit_handler.exit(self.exit_code) # fail in initialize
+    end
+
+    def self.exit(code, &block)
+      exit_handler.exit(code, &block)
+    end
+
+    def self.exit_code
+      self.exit_handler.exit_code
     end
 
     def exit_code
       self.class.exit_code
     end
 
-    def self.exit(code, &block)
-      @exit_code = translate_exit_code(code)
-      block.call if block
-      cleanup
-      throw :exit
-    end
-
-    def self.exit_code
-      @exit_code ||= 0
-    end
-
-    def self.translate_exit_code(code)
-      return code if code.is_a? Fixnum
-      error_codes = { :invalid_system => 20,
-                      :invalid_values => 21,
-                      :manifest_error => 22,
-                      :no_answer_file => 23,
-                      :unknown_module => 24,
-                      :defaults_error => 25 }
-      if error_codes.has_key? code
-        return error_codes[code]
-      else
-        raise "Unknown code #{code}"
-      end
-    end
-
-    def self.cleanup
-      # make sure default values are removed from /tmp
-      (self.cleanup_paths + ['/tmp/default_values.yaml']).each do |file|
-        logger.debug "Cleaning #{file}"
-        FileUtils.rm_rf(file)
-      end
-    end
-
-    def self.register_cleanup_path(path)
-      self.cleanup_paths<< path
-    end
-
-    def register_cleanup_path(path)
-      self.class.register_cleanup_path(path)
-    end
-
-    def cleanup_paths
-      self.class.cleanup_paths
-    end
 
     def help
       self.class.help(invocation_path, self)
@@ -190,7 +152,7 @@ module Kafo
       @params ||= modules.map(&:params).flatten
     rescue KafoParsers::ModuleName => e
       puts e
-      exit(:unknown_module)
+      self.class.exit(:unknown_module)
     end
 
     def reset_params_cache
@@ -217,10 +179,6 @@ module Kafo
     end
 
     private
-
-    def exit(code, &block)
-      self.class.exit(code, &block)
-    end
 
     def set_parameters
       # set values based on default_values
@@ -377,7 +335,7 @@ module Kafo
       @progress_bar.close if @progress_bar
       logger.info "Puppet has finished, bye!"
       FileUtils.rm(temp_config_file, :force => true)
-      exit(exit_code) do
+      self.class.exit(exit_code) do
         self.class.hooking.execute(:post)
       end
     end

@@ -24,7 +24,8 @@ module Kafo
         :default_values_dir  => '/tmp',
         :colors              => Configuration.colors_possible?,
         :color_of_background => :dark,
-        :hook_dirs           => []
+        :hook_dirs           => [],
+        :custom              => {}
     }
 
     def initialize(file, persist = true)
@@ -71,6 +72,14 @@ module Kafo
       end
     end
 
+    def get_custom(key)
+      custom_storage[key.to_sym]
+    end
+
+    def set_custom(key, value)
+      custom_storage[key.to_sym] = value
+    end
+
     def modules
       @modules ||= @data.keys.map { |mod| PuppetModule.new(mod).parse }
     end
@@ -92,7 +101,7 @@ module Kafo
       @params_default_values ||= begin
         @logger.debug "Creating tmp dir within #{app[:default_values_dir]}..."
         temp_dir = Dir.mktmpdir(nil, app[:default_values_dir])
-        KafoConfigure.register_cleanup_path temp_dir
+        KafoConfigure.exit_handler.register_cleanup_path temp_dir
         @logger.info "Parsing default values from puppet modules..."
         command = PuppetCommand.new("$temp_dir=\"#{temp_dir}\" #{includes} dump_values(#{params})").append('2>&1').command
         @logger.debug `#{command}`
@@ -133,6 +142,10 @@ module Kafo
     end
 
     private
+
+    def custom_storage
+      app[:custom]
+    end
 
     def includes
       modules.map do |mod|

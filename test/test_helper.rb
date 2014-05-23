@@ -12,6 +12,7 @@ require 'test_parser'
 require 'kafo'
 
 require 'ostruct'
+require 'dummy_logger'
 
 
 BASIC_CONFIGURATION = <<EOS

@@ -8,7 +8,15 @@ module Kafo
       attr_writer :loggers
 
       def loggers
-        @loggers || []
+        @loggers ||= []
+      end
+
+      def buffer
+        @buffer ||= []
+      end
+
+      def error_buffer
+        @error_buffer ||= []
       end
     end
 
@@ -68,9 +76,55 @@ module Kafo
       self.loggers<< logger
     end
 
-    %w(fatal error warn info debug).each do |name|
-      define_method(name) do |*args, &block|
+    def self.buffering?
+      KafoConfigure.verbose.nil? || ((KafoConfigure.verbose && !loggers.detect {|l| l.name == 'verbose'}) || self.loggers.empty?)
+    end
+
+    def self.dump_needed?
+      !self.buffer.empty?
+    end
+
+    def self.to_buffer(buffer, *args)
+      buffer << args
+    end
+
+    def self.dump_errors
+      unless self.error_buffer.empty?
+        loggers.each { |logger| logger.error 'Repeating errors encountered during run:' }
+        self.dump_buffer(self.error_buffer)
+      end
+    end
+
+    def dump_errors
+      self.class.dump_errors
+    end
+
+    def self.dump_buffer(buffer)
+      buffer.each do |log|
+        self.loggers.each { |logger| logger.send log[0], *log[1], &log[2] }
+      end
+      buffer.clear
+    end
+
+    def log(name, *args, &block)
+      if self.class.buffering?
+        self.class.to_buffer(self.class.buffer, name, args, &block)
+      else
+        self.class.dump_buffer(self.class.buffer) if self.class.dump_needed?
         self.class.loggers.each { |logger| logger.send name, *args, &block }
+      end
+    end
+
+    %w(warn info debug).each do |name|
+      define_method(name) do |*args, &block|
+        self.log(name, *args, &block)
+      end
+    end
+
+    %w(fatal error).each do |name|
+      define_method(name) do |*args, &block|
+        self.class.to_buffer(self.class.error_buffer, name, *args, &block)
+        self.log(name, *args, &block)
       end
     end
   end
