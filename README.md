@@ -71,13 +71,13 @@ argument --name (or -n for short, foreman-installer in this case) a script in
 bin is created.
 
 It's the script you can use to run installer. If you did not specify any
-you can run your installer by ```kafo-configure``` which is the default.
+you can run your installer by `kafo-configure` which is the default.
 All configuration related files are to be found in config directory.
 
 You can supply custom locations for you configuration and answers files using
 options:
-
-```kafofy --help
+```
+kafofy --help
 Usage: kafofy [options]
     -a, --answer_file FILE           location of the answer file
     -c, --config_file FILE           location of the configuration file
