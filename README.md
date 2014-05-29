@@ -141,6 +141,24 @@ the lower the item is the higher precedence it has:
   * values specified on CLI
   * interactive mode arguments
 
+## How do I report bugs or contribute?
+
+You can find our redmine issue tracker [here](http://projects.theforeman.org/projects/kafo),
+you can use your github account for logging in. When reporting new issue please 
+don't forget to specify your:
+  * puppet version
+  * installation options (GEM/RPM/DEB)
+  * error trace (if any) or log with debug level
+  * reproducing steps
+
+Since Kafo is a side project of Foreman you can use its IRC channels to 
+contact us on freenode. #theforeman is channel for generic discussions
+and #theforeman-dev is for technical topics. Likewise you can use Foreman
+mailing lists on googlegroups. For more information see [this page](http://theforeman.org/support.html)
+
+Patches are always welcome. You can use instructions for Foreman, just
+substitute Foreman with Kafo. More details are [here](http://projects.theforeman.org/projects/foreman/wiki/Contribute#New-Way-github)
+
 # Advanced topics
 
 ## Testing aka noop etc
