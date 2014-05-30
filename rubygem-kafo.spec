@@ -6,7 +6,7 @@
 Summary: A gem for making installations based on puppet user friendly
 Name: %{?scl_prefix}rubygem-%{gem_name}
 Version: 0.6.0
-Release: 1%{?dist}
+Release: 2%{?dist}
 Group: Development/Libraries
 License: GPLv3+
 URL: https://github.com/theforeman/kafo
@@ -87,6 +87,9 @@ cp -a .%{gem_dir}/* \
 %doc %{gem_instdir}/README.md
 
 %changelog
+* Fri May 30 2014 Marek Hulan <mhulan@redhat.com> 0.6.0-2
+- Modernise and update spec file for EL7 (dcleal@redhat.com)
+
 * Fri May 23 2014 Marek Hulan <mhulan@redhat.com> 0.6.0-1
 - Enable progress bar with Puppet 3.6 (mhulan@redhat.com)
 - Add custom configuration storage (mhulan@redhat.com)
