@@ -7,6 +7,9 @@ changelog_format = %s (%ae)
 [foreman-nightly-nonscl-rhel6]
 disttag = .el6
 
+[foreman-nightly-nonscl-rhel7]
+disttag = .el7
+
 [foreman-nightly-fedora19]
 disttag = .fc19
 
