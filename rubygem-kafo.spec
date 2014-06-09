@@ -5,8 +5,8 @@
 
 Summary: A gem for making installations based on puppet user friendly
 Name: %{?scl_prefix}rubygem-%{gem_name}
-Version: 0.6.0
-Release: 2%{?dist}
+Version: 0.6.1
+Release: 1%{?dist}
 Group: Development/Libraries
 License: GPLv3+
 URL: https://github.com/theforeman/kafo
@@ -87,6 +87,11 @@ cp -a .%{gem_dir}/* \
 %doc %{gem_instdir}/README.md
 
 %changelog
+* Mon Jun 09 2014 Marek Hulan <mhulan@redhat.com> 0.6.1-1
+- Add contribute information to README (mhulan@redhat.com)
+- Fixes Markdown typo in README.md (owenspencer@gmail.com)
+- Improve default values support for puppet 2.7 (mhulan@redhat.com)
+
 * Fri May 30 2014 Marek Hulan <mhulan@redhat.com> 0.6.0-2
 - Modernise and update spec file for EL7 (dcleal@redhat.com)
 
