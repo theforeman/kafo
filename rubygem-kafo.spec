@@ -5,7 +5,7 @@
 
 Summary: A gem for making installations based on puppet user friendly
 Name: %{?scl_prefix}rubygem-%{gem_name}
-Version: 0.6.1
+Version: 0.6.2
 Release: 1%{?dist}
 Group: Development/Libraries
 License: GPLv3+
@@ -87,6 +87,9 @@ cp -a .%{gem_dir}/* \
 %doc %{gem_instdir}/README.md
 
 %changelog
+* Tue Jun 10 2014 Marek Hulan <mhulan@redhat.com> 0.6.2-1
+- Fix default value setting (mhulan@redhat.com)
+
 * Mon Jun 09 2014 Marek Hulan <mhulan@redhat.com> 0.6.1-1
 - Add contribute information to README (mhulan@redhat.com)
 - Fixes Markdown typo in README.md (owenspencer@gmail.com)
