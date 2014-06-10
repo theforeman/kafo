@@ -46,7 +46,7 @@ module Kafo
         # we fallback to their own default values
         if defaults.has_key?(default)
           value = defaults[default]
-          self.value = ([:undef, :undefined].include?(value) ? nil : value)
+          self.value = ([:undef, :undefined].include?(value) ? self.default : value)
         else
           self.value = self.default
         end
