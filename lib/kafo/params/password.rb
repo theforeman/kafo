@@ -20,7 +20,11 @@ module Kafo
       end
 
       def condition_value
-        "\"#{value}\""
+        %{"#{value}"}
+      end
+
+      def dump_default
+        %{"#{super}"}
       end
 
       private
