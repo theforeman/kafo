@@ -25,7 +25,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'ci_reporter'
 
   # puppet module parsing
-  spec.add_dependency 'kafo_parsers'
+  spec.add_runtime_dependency 'kafo_parsers'
   spec.add_dependency 'puppet'
   # better logging
   spec.add_dependency 'logging'
