@@ -2,7 +2,7 @@ require 'kafo_configure/lib/kafo/puppet/report_wrapper'
 
 module Puppet::Parser::Functions
   newfunction(:add_progress) do |args|
-    supported = %w(2.6. 2.7. 3.0. 3.1. 3.2. 3.3. 3.4. 3.5. 3.6.)
+    supported = %w(2.6. 2.7. 3.0. 3.1. 3.2. 3.3. 3.4. 3.5. 3.6. 3.7.)
     if supported.any? { |version| Puppet::PUPPETVERSION.start_with?(version) }
       # Monkey patch the transaction to put our wrapper around the report object
       require 'puppet/transaction'
