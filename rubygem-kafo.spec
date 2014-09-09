@@ -5,7 +5,7 @@
 
 Summary: A gem for making installations based on puppet user friendly
 Name: %{?scl_prefix}rubygem-%{gem_name}
-Version: 0.6.4
+Version: 0.6.5
 Release: 1%{?dist}
 Group: Development/Libraries
 License: GPLv3+
@@ -87,6 +87,10 @@ cp -a .%{gem_dir}/* \
 %doc %{gem_instdir}/README.md
 
 %changelog
+* Tue Sep 09 2014 Marek Hulan <mhulan@redhat.com> 0.6.5-1
+- Pinning test gems (mhulan@redhat.com)
+- Enable progress bar with Puppet 3.7 (kvedulv@kvedulv.de)
+
 * Wed Jul 02 2014 Marek Hulan <mhulan@redhat.com> 0.6.4-1
 - Fix default values dump for passwords without default values
   (mhulan@redhat.com)
