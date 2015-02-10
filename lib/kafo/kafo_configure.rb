@@ -65,6 +65,9 @@ module Kafo
       self.class.hooking.execute(:init)
       set_parameters # here the params gets parsed and we need app config populated
       set_options
+
+      # print complete command line into the log file
+      logger.info args.inspect
     end
 
     def config
