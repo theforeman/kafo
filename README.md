@@ -507,6 +507,10 @@ bin/foreman-installer --foreman-db-password=UNDEF
 
 It also works in interactive mode.
 
+You may also need to override array parameter with empty array value. For this
+purpose you can use `EMPTY_ARRAY` string as a value. Similarly you can use
+`EMPTY_HASH` for hash parameters.
+
 ## Hooks
 
 You may need to add new features to the installer. Kafo provides simple hook
