@@ -13,19 +13,20 @@ module Kafo
     end
 
     DEFAULT = {
-        :log_dir             => '/var/log/kafo',
-        :log_name            => 'configuration.log',
-        :log_level           => 'info',
-        :no_prefix           => false,
-        :mapping             => {},
-        :answer_file         => './config/answers.yaml',
-        :installer_dir       => '.',
-        :modules_dir         => './modules',
-        :default_values_dir  => '/tmp',
-        :colors              => Configuration.colors_possible?,
-        :color_of_background => :dark,
-        :hook_dirs           => [],
-        :custom              => {}
+        :log_dir              => '/var/log/kafo',
+        :log_name             => 'configuration.log',
+        :log_level            => 'info',
+        :no_prefix            => false,
+        :mapping              => {},
+        :answer_file          => './config/answers.yaml',
+        :installer_dir        => '.',
+        :modules_dir          => './modules',
+        :default_values_dir   => '/tmp',
+        :colors               => Configuration.colors_possible?,
+        :color_of_background  => :dark,
+        :hook_dirs            => [],
+        :custom               => {},
+        :low_priority_modules => [],
     }
 
     def initialize(file, persist = true)
@@ -81,7 +82,7 @@ module Kafo
     end
 
     def modules
-      @modules ||= @data.keys.map { |mod| PuppetModule.new(mod).parse }
+      @modules ||= @data.keys.map { |mod| PuppetModule.new(mod).parse }.sort
     end
 
     def add_module(name)

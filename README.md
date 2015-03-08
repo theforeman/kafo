@@ -690,6 +690,25 @@ order:
 If you have other modules in your answer file they will be executed after
 those that have explicit order. Their order is not be specified.
 
+## Changing the order of module appearance in interactive mode
+
+We sort our module alphabetically. Sometimes you may want to reorder
+module, e.g. display plugin modules last. For this you can use ```low_priority_modules```
+configuration option. It accepts an array of patterns considering the
+first to have the lowest priority. So in follwing example
+
+```yaml
+low_priority_modules:
+  - compute
+  - plugin
+```
+
+all modules containing a word compute in their name would be listed
+at the end. If there are two modules containing compute, their order
+is alphabetical on suffix after compute word. If there are some modules
+containing word plugin, they will be above compute modules as they
+were mentioned later.
+
 ## Changing of log directory and user/group
 
 By default kafo logs every run to a separate file in /var/log/kafo.
