@@ -171,6 +171,8 @@ false!
 Sometimes you may want kafo not to store answers from current run. You can
 disable saving by passing a ```--dont-save-answers``` argument (or -d for short).
 
+Note that running ```--noop``` implies ```--dont-save-answers```.
+
 ## Parameters prefixes
 
 You probably noticed that every module parameter is prefixed by module name
