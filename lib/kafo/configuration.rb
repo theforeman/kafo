@@ -102,13 +102,16 @@ module Kafo
         @logger.debug "Creating tmp dir within #{app[:default_values_dir]}..."
         temp_dir = Dir.mktmpdir(nil, app[:default_values_dir])
         KafoConfigure.exit_handler.register_cleanup_path temp_dir
-        @logger.info "Parsing default values from puppet modules..."
+        @logger.info 'Loading default values from puppet modules...'
         command = PuppetCommand.new("$temp_dir=\"#{temp_dir}\" #{includes} dump_values(#{params})").append('2>&1').command
-        @logger.debug `#{command}`
+        result = `#{command}`
+        @logger.debug result
         unless $?.exitstatus == 0
           log = app[:log_dir] + '/' + app[:log_name]
           puts "Could not get default values, check log file at #{log} for more information"
-          @logger.error "Could not get default values, cannot continue"
+          @logger.error command
+          @logger.error result
+          @logger.error 'Could not get default values, cannot continue'
           KafoConfigure.exit(:defaults_error)
         end
         @logger.info "... finished"
