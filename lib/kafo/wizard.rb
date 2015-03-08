@@ -34,7 +34,7 @@ END
       main_menu
     rescue Interrupt
       puts "Got interrupt, exiting"
-      KafoConfigure.exit(0)
+      KafoConfigure.exit(130)
     end
 
     private
