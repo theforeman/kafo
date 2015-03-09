@@ -84,9 +84,11 @@ module Kafo
         @progress_bar = self.class.config.app[:colors] ? ProgressBars::Colored.new : ProgressBars::BlackWhite.new
       end
 
-      unless SystemChecker.check
-        puts "Your system does not meet configuration criteria"
-        self.class.exit(:invalid_system)
+      unless skip_checks_i_know_better?
+        unless SystemChecker.check
+          puts "Your system does not meet configuration criteria"
+          self.class.exit(:invalid_system)
+        end
       end
 
       self.class.hooking.execute(:pre_validations)
@@ -207,6 +209,7 @@ module Kafo
                             :default => config.app[:log_level]
       self.class.app_option ['-n', '--noop'], :flag, 'Run puppet in noop mode?',
                             :default => false
+      self.class.app_option ['-s', '--skip-checks-i-know-better'], :flag, 'Skip all system checks', :default => false
       self.class.app_option ['-v', '--verbose'], :flag, 'Display log on STDOUT instead of progressbar'
       self.class.app_option ['-l', '--verbose-log-level'], 'LEVEL', 'Log level for verbose mode output',
                             :default => 'info'
