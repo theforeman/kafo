@@ -84,7 +84,7 @@ END
           if mod.enabled?
             render_params(mod.primary_parameter_group.params, menu)
 
-            others = mod.primary_parameter_group.children + mod.other_parameter_groups
+            others = (mod.primary_parameter_group.children + mod.other_parameter_groups).uniq
             others.each do |group|
               menu.choice("Configure #{group.formatted_name}") { configure_group(group) }
             end
