@@ -40,7 +40,7 @@ module Puppet::Parser::Functions
         alias_method :report, :report_with_wrapper
       end
     else
-      ::Puppet.err 'Your puppet version does not support progress bar'
+      ::Puppet.warning 'Your puppet version does not support progress bar'
     end
   end
 end
