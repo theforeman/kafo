@@ -100,7 +100,7 @@ module Kafo
         end
       end
 
-      if dont_save_answers?
+      if dont_save_answers? || noop?
         self.class.temp_config_file = temp_config_file
         store_params(temp_config_file)
       else
