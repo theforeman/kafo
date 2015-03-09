@@ -22,6 +22,7 @@
 # :no_prefix: false
 # :mapping: {}
 # :order:
+# :low_priority_modules:
 
 ## Useful for development, e.g. when you want to move log files to local directory
 # :log_dir: /var/log/kafo
