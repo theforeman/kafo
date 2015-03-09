@@ -3,7 +3,11 @@ module Kafo
     class Hash < Param
       def value=(value)
         super
-        @value = typecast(@value)
+        if @value == ['EMPTY_HASH']
+          @value = {}
+        else
+          @value = typecast(@value)
+        end
       end
 
       def multivalued?

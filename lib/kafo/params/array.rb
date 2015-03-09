@@ -3,7 +3,11 @@ module Kafo
     class Array < Param
       def value=(value)
         super
-        @value = typecast(@value)
+        if @value == ['EMPTY_ARRAY']
+          @value = []
+        else
+          @value = typecast(@value)
+        end
       end
 
       def multivalued?
