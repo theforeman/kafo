@@ -735,8 +735,9 @@ but you want the logs to be readable by specific users.
 
 When you want to make sure that user has some software installed or has the
 right version you can write a simple script and put it into checks directory.
-All files found there will be ran and if any has non-zero exit code, kafo
-wont execute puppet.
+All files found there will be executed and if any of these exits with an non-zero
+exit code, kafo won't execute puppet but print an error message 
+`Your system does not meet configuration criteria.`
 
 Everything on STDOUT and STDERR is logged in error level.
 
@@ -747,6 +748,11 @@ Example shell script which checks java version
 java -version 2>&1 | grep OpenJDK
 exit $?
 ```
+
+If you want to ignore results of check scripts, you can use the builtin
+parameter `--skip-checks-i-know-better` (or `-s`). This will completely
+disable running all system check scripts. Note that this option is
+not persisted between runs.
 
 ## Exit code
 
