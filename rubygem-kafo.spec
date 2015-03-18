@@ -5,7 +5,7 @@
 
 Summary: A gem for making installations based on puppet user friendly
 Name: %{?scl_prefix}rubygem-%{gem_name}
-Version: 0.6.5
+Version: 0.6.6
 Release: 1%{?dist}
 Group: Development/Libraries
 License: GPLv3+
@@ -87,6 +87,18 @@ cp -a .%{gem_dir}/* \
 %doc %{gem_instdir}/README.md
 
 %changelog
+* Wed Mar 18 2015 Marek Hulan <mhulan@redhat.com> 0.6.6-1
+- Fixes 6279 - add skip system checks option (mhulan@redhat.com)
+- Fixes #6904 - never duplicate param groups (mhulan@redhat.com)
+- Fixes #6911 - unsupported puppet version is reported as warn
+  (mhulan@redhat.com)
+- Fixes #7529 - Makes order of module configurable (mhulan@redhat.com)
+- Fixes #7881 - add logs when default values fetching fails (mhulan@redhat.com)
+- Fixes #8403 - report interrupt error code on interrupt (mhulan@redhat.com)
+- Fixes #8750 - noop implies not saving answer file (mhulan@redhat.com)
+- Fixes #9509 - allow overriding by empty values (mhulan@redhat.com)
+- limit highline version to ruby 1.8 compatible one (kvedulv@kvedulv.de)
+
 * Tue Sep 09 2014 Marek Hulan <mhulan@redhat.com> 0.6.5-1
 - Pinning test gems (mhulan@redhat.com)
 - Enable progress bar with Puppet 3.7 (kvedulv@kvedulv.de)
