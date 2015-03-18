@@ -6,7 +6,7 @@
 Summary: A gem for making installations based on puppet user friendly
 Name: %{?scl_prefix}rubygem-%{gem_name}
 Version: 0.6.6
-Release: 1%{?dist}
+Release: 2%{?dist}
 Group: Development/Libraries
 License: GPLv3+
 URL: https://github.com/theforeman/kafo
@@ -19,7 +19,7 @@ Requires: %{?scl_prefix}ruby(release)
 Requires: %{?scl_prefix}puppet
 Requires: %{?scl_prefix}rubygem(logging)
 Requires: %{?scl_prefix}rubygem(clamp) >= 0.6.2
-Requires: %{?scl_prefix}rubygem(highline)
+Requires: %{?scl_prefix}rubygem(highline) < 1.7
 Requires: %{?scl_prefix}rubygem(kafo_parsers)
 Requires: %{?scl_prefix}rubygem(powerbar)
 Requires: %{?scl_prefix}rubygems
@@ -87,6 +87,9 @@ cp -a .%{gem_dir}/* \
 %doc %{gem_instdir}/README.md
 
 %changelog
+* Wed Mar 18 2015 Marek Hulan <mhulan@redhat.com> 0.6.6-2
+- Fixed spec to reflect pinned highline
+
 * Wed Mar 18 2015 Marek Hulan <mhulan@redhat.com> 0.6.6-1
 - Fixes 6279 - add skip system checks option (mhulan@redhat.com)
 - Fixes #6904 - never duplicate param groups (mhulan@redhat.com)
