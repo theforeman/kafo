@@ -27,7 +27,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'kafo_parsers'
   spec.add_dependency 'puppet'
   # better logging
-  spec.add_dependency 'logging'
+  spec.add_dependency 'logging', '< 2.0.0'
   # CLI interface
   spec.add_dependency 'clamp', '>= 0.6.2'
   # interactive mode
