@@ -774,6 +774,10 @@ Other exit codes that can be returned:
 * '25' means that kafo could not get default values from puppet
 * '130' user interrupt (^C)
 
+## Running Puppet Profiling
+
+As of Puppet 3.2, performance data can be gathered during a puppet run by assing the `--profile` option. See [Tune Puppet for Performance with Profiler](https://puppetlabs.com/blog/tune-puppet-performance-profiler) for more information from the Puppet team. Users who wish to perform a Kafo run and gather this type of profiling data to analyze can pass the same option to their installer. The profiling data will then be present in the normal Kafo logs.
+
 # License
 
 This project is licensed under the GPLv3+.

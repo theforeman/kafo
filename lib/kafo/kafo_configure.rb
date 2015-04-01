@@ -209,6 +209,8 @@ module Kafo
                             :default => config.app[:log_level]
       self.class.app_option ['-n', '--noop'], :flag, 'Run puppet in noop mode?',
                             :default => false
+      self.class.app_option ['-p', '--profile'], :flag, 'Run puppet in profile mode?',
+                            :default => false
       self.class.app_option ['-s', '--skip-checks-i-know-better'], :flag, 'Skip all system checks', :default => false
       self.class.app_option ['-v', '--verbose'], :flag, 'Display log on STDOUT instead of progressbar'
       self.class.app_option ['-l', '--verbose-log-level'], 'LEVEL', 'Log level for verbose mode output',
@@ -313,6 +315,7 @@ module Kafo
           '--detailed-exitcodes',
       ]
       options.push '--noop' if noop?
+      options.push '--profile' if profile?
       begin
         command = PuppetCommand.new('include kafo_configure', options).command
         PTY.spawn(command) do |stdin, stdout, pid|
