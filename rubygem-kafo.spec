@@ -5,8 +5,8 @@
 
 Summary: A gem for making installations based on puppet user friendly
 Name: %{?scl_prefix}rubygem-%{gem_name}
-Version: 0.6.6
-Release: 2%{?dist}
+Version: 0.6.7
+Release: 1%{?dist}
 Group: Development/Libraries
 License: GPLv3+
 URL: https://github.com/theforeman/kafo
@@ -17,7 +17,7 @@ Requires: %{?scl_prefix}ruby(abi)
 Requires: %{?scl_prefix}ruby(release)
 %endif
 Requires: %{?scl_prefix}puppet
-Requires: %{?scl_prefix}rubygem(logging)
+Requires: %{?scl_prefix}rubygem(logging) < 2.0.0
 Requires: %{?scl_prefix}rubygem(clamp) >= 0.6.2
 Requires: %{?scl_prefix}rubygem(highline) < 1.7
 Requires: %{?scl_prefix}rubygem(kafo_parsers)
@@ -87,6 +87,11 @@ cp -a .%{gem_dir}/* \
 %doc %{gem_instdir}/README.md
 
 %changelog
+* Mon Apr 06 2015 Marek Hulan <mhulan@redhat.com> 0.6.7-1
+- Fixes #9996: Exposes Puppet's --profile as an option for installers.
+  (ericdhelms@gmail.com)
+- Pin down logging for Ruby 1.8 support (mhulan@redhat.com)
+
 * Wed Mar 18 2015 Marek Hulan <mhulan@redhat.com> 0.6.6-2
 - Fixed spec to reflect pinned highline
 
