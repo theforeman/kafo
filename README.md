@@ -9,36 +9,36 @@ echo "include some_modules" | puppet apply
 ```
 ## Why should I care?
 
-Suppose you work on software which you want to distribute to a machine in
+Suppose you work on software which you want to distribute to a machine in an
 infrastructure managed by puppet. You write a puppet module for your app.
-But you also want to be able to distribute this app to a machine outside of
-puppet infrastructure (e.g. install it to your clients) or you want to install
+But now you also want to be able to distribute your app to a machine outside of
+your puppet infrastructure (e.g. install it to your clients) or you want to install
 it in order to create a puppet infrastructure itself (e.g. foreman or
 foreman-proxy).
 
-With kafo you can reuse your puppet modules for creating an installer. Even
-better after the installation you can easily modify you configuration. All
-using the very same puppet modules.
+With kafo you can reuse your puppet modules for creating an installer. 
+Even better: After the installation you can easily modify your configuration.
+All using the very same puppet modules.
 
-## What it does, how does it work?
+## What does it do, how does it work?
 
-Kafo reads a config file to find out which modules should it use. Then it
-loads parameters from puppet manifests and gives you a way to customize them.
+Kafo reads a config file to find out which modules it should use. Then it
+loads parameters from puppet manifests and gives you different ways to customize them.
 
-There are three ways how you can set parameters. You can
- * predefine them in configuration file
+There are three options how you can set parameters. You can
+ * predefine them in the configuration file
  * specify them as CLI arguments
- * you can use interactive mode which will ask you for all required parameters
+ * you can use the interactive mode which will ask you for all required parameters
 
-Note that your answers (gathered from any mode) are saved for the next run
-so you don't have to specify them again. Kafo also support default values of
-parameters so you can set only those you want to change. Also you can combine
-akk modes so you can create an answer file with default values easily
-and then use it for unattended installs.
+Note that your answers (gathered from any mode) are automatically saved for the next run
+so you don't have to specify them again. Kafo also supports default values for
+parameters so you can set only those you want to change. You can also combine
+all modes to create an answer file with default values easily
+and then use it for unattended installations.
 
 ## How do I use it?
 
-First install kafo gem.
+First install the kafo gem.
 
 Using bundler - add kafo gem to your Gemfile and run
 ```bash
@@ -50,7 +50,7 @@ or without bundler
 gem install kafo
 ```
 
-Create a directory for your installer. Let's say we want to create
+Create a directory for your installer. Let's say we want to create a
 foreman-installer.
 
 ```bash
@@ -58,23 +58,23 @@ mkdir foreman-installer
 cd foreman-installer
 ```
 
-Now we run ```kafofy``` script which will prepare directory structure and
-optionally create a bin script according to first parameter.
+Now we run ```kafofy``` script which will prepare the directory structure and
+optionally create a bin script according to the first parameter.
 
 ```bash
 kafofy -n foreman-installer
 ```
 
-You can see that it created modules directory where your puppet modules
-should live. It also created config and bin directories. If you specify
-argument --name (or -n for short, foreman-installer in this case) a script in 
-bin is created.
+You can see that it created a modules directory where your puppet modules
+should live. It also created config and bin directories. If you specify the
+argument ```--name``` (or -n for short, foreman-installer in this case) a script in 
+the "bin" directory with this name will be created.
 
-It's the script you can use to run installer. If you did not specify any
-you can run your installer by `kafo-configure` which is the default.
-All configuration related files are to be found in config directory.
+It's the script you can use to run the installer. If you did not specify any
+arguments you can run your installer by `kafo-configure` which is the default.
+All configuration related files are to be found in the config directory.
 
-You can supply custom locations for you configuration and answers files using
+You can supply custom locations for you configuration- and answer- files using
 options:
 ```
 kafofy --help
@@ -84,10 +84,10 @@ Usage: kafofy [options]
     -n, --name        NAME           your installer name
 ```
 
-Configuration file will be created by default template. It's the configuration
-of you installer (so you can setup log level, path to puppet modules etc).
-On the other hand, answer file must be created manually. Answer file defines
-which modules should be used and hold all values for puppet class parameters.
+The configuration file will be created by a default template. It's the configuration
+of your installer (so you can setup the log level, path to puppet modules etc).
+On the other hand, the answer file must be created manually. Answer files define
+which modules should be used and hold all values for the puppet class parameters.
 
 
 So for example to install foreman you want to
@@ -96,27 +96,27 @@ cd foreman-installer/modules
 git clone https://github.com/theforeman/puppet-foreman/ foreman
 ```
 You must also download any dependant modules.
-Then you need to tell kafo it's going to use foreman module.
+Then you need to tell kafo it's going to use the foreman module.
 ```bash
 cd ..
 echo "foreman: true" > config/answers.yaml
 ```
 
-Alternatively you can use librarian-puppet project to manage all deps for you.
+Alternatively you can use the librarian-puppet project to manage all dependencies for you.
 You just create a Puppetfile and call librarian to install your modules. See
 https://github.com/rodjek/librarian-puppet for more details.
 
-When you have your modules in-place, fire the installer with -h argument
+When you have your modules in-place, fire the installer with -h as argument
 ```bash
 bin/foreman-installer -h
 ```
 
-You will see all arguments that you can pass to kafo. Note that underscored
+This will show you all the possible arguments you can pass to kafo. Note that underscored
 puppet parameters are automatically converted to dashed arguments. You can
-also see a documentation extracted from foreman puppet module and default
+also see a documentation extracted from the foreman puppet module and a default
 value.
 
-Now run it without -h argument. It will print you the puppet apply command
+Now run it without the -h argument. It will print you the puppet apply command
 to execute. This will be automatized later. Look at config/answers.yaml, it
 was populated with default values. To change those options you can use
 arguments like this
@@ -125,17 +125,17 @@ arguments like this
 bin/foreman-installer --foreman-enc=false --foreman-db-type=sqlite
 ```
 
-or you can run interactive mode
+or you can run it in interactive mode
 
 ```bash
 bin/foreman-installer --interactive
 ```
 
-Also every change made to config/answers.yaml persists and becomes new default
-value for next run.
+Also every change made to the config/answers.yaml persists and becomes the new default
+value for the next run.
 
-As you noticed there are several ways how to specify arguments. Here's the list
-the lower the item is the higher precedence it has:
+As you may have noticed there are several ways how to specify arguments. Here's the list:
+(the lower the item is in this list the higher precedence it has):
   * default values from puppet modules
   * values from answers.yaml
   * values specified on CLI
@@ -144,7 +144,7 @@ the lower the item is the higher precedence it has:
 ## How do I report bugs or contribute?
 
 You can find our redmine issue tracker [here](http://projects.theforeman.org/projects/kafo),
-you can use your github account for logging in. When reporting new issue please 
+you can use your github account for logging in. When reporting new issues please 
 don't forget to specify your:
   * puppet version
   * installation options (GEM/RPM/DEB)
@@ -152,8 +152,8 @@ don't forget to specify your:
   * reproducing steps
 
 Since Kafo is a side project of Foreman you can use its IRC channels to 
-contact us on freenode. #theforeman is channel for generic discussions
-and #theforeman-dev is for technical topics. Likewise you can use Foreman
+contact us on freenode. #theforeman is the channel for generic discussions
+and #theforeman-dev is reserved only for technical topics. Likewise you can use the Foreman
 mailing lists on googlegroups. For more information see [this page](http://theforeman.org/support.html)
 
 Patches are always welcome. You can use instructions for Foreman, just
@@ -163,21 +163,21 @@ substitute Foreman with Kafo. More details are [here](http://projects.theforeman
 
 ## Testing aka noop etc
 
-You'll probably want to tweak your installer before so you may find
+Since you'll probably want to tweak your installer before you run it, you may find the
 ```--noop``` argument handy (-n for short). This will run puppet in
-noop so no change will be done to your system. Default value is
+noop so no change will be done to your system. The default value here is set to
 false!
 
-Sometimes you may want kafo not to store answers from current run. You can
-disable saving by passing a ```--dont-save-answers``` argument (or -d for short).
+Sometimes you may want kafo not to store answers from the current run. You can
+disable saving answer by passing a ```--dont-save-answers``` argument (or -d for short).
 
 Note that running ```--noop``` implies ```--dont-save-answers```.
 
 ## Parameters prefixes
 
-You probably noticed that every module parameter is prefixed by module name
-by default. If you use just one module it's probably unnecessary and you
-can disable this behavior in config/kafo.yaml. Just set option like this
+As a default every module parameter is prefixed by the module name.
+If you use just one module it's probably not necessary and you
+can disable this behavior in config/kafo.yaml. Just enable the following option
 ```yaml
 :no_prefix: true
 ```
@@ -185,13 +185,12 @@ can disable this behavior in config/kafo.yaml. Just set option like this
 ## Documentation
 
 Every parameter that can be set by kafo *must* be documented. This means that
-you must add documentation to your puppet class in init.pp. It's basically
-rdoc formatted documentation that must be above class definitions. There can
-be no space between doc block and class definition.
+you must add documentation to your puppet class in init.pp. It's basically a
+rdoc formatted documentation that must be above the class definitions. There can
+be no space between the doc block and the class definition.
 
 In case of emergency, it's still possible to use
-`--ignore-undocumented` option, but in general it's not recommended to
-use it long-term.
+`--ignore-undocumented` option, but in general it's not recommended to override it.
 
 Example:
 ```puppet
@@ -234,26 +233,26 @@ Example - separating parameters into groups:
 # $mysql_host::             MySQL server address
 ```
 
-When you run the installer with ```--help``` argument it displays only
-parameters specified in ```=== Parameters:``` group. If you don't specify
-any group all parameters will be considered as Basic and will be displayed.
+When you run the installer with the ```--help``` argument it displays only
+parameters specified in the ```=== Parameters:``` group. If you don't specify
+any group all parameters will be considered as basic and will be displayed.
 
-If you run installer with ```--full-help``` you'll receive help of all
+If you run the installer with ```--full-help``` you'll receive help for all
 parameters divided into groups. Note that only headers that include word
 parameters are considered as parameter groups. Other headers are ignored.
 Also note that you can nest parameter groups and the child has precedence.
 Help output does not take header level into account though.
 
-So in previous example, each parameter would be printed in one group even
+So in the previous example, each parameter would be printed in one group even
 though MySQL is a child of Advanced parameter. All groups in help would be
-prefixed with second level (==). The first level is always a module to which
-particular parameter belongs.
+prefixed with a second level (==). The first level is always a module to which
+the particular parameter belongs.
 
 ## Argument types
 
-By default all arguments that are parsed from puppet are treated as string.
+By default all arguments that are parsed from puppet are treated as strings.
 If you want to indicate that a parameter has a particular type you can do it
-in puppet manifest documentation like this
+in the puppet manifest documentation like this
 
 ```puppet
 # $param::        Some documentation for param
@@ -263,24 +262,24 @@ in puppet manifest documentation like this
 Supported types are: string, boolean, integer, array, password
 
 Note that all arguments that are nil (have no value in answers.yaml or you
-set them UNDEF (see below) are translated to ```undef``` in puppet.
+set them UNDEF (see below)) are translated to ```undef``` in puppet.
 
 ## Password arguments
 
-Kafo support password arguments. It's adding some level of protection for you
+Kafo supports password arguments. It's adding some level of protection for your
 passwords. Usually people generate random strings for passwords. However all
-values are stored in config/answers.yaml which introduce some security risk.
+values are stored in config/answers.yaml which may introduce a security risk.
 
-If this is something to consider for you, you can use password type (see 
+If this is something to consider for you, you can use the password type (see 
 Argument types for more info how to define parameter type). It will
-generate a secure (random) password of decent length (32 chars) and encrypts
+generate a secure (random) password with a length of 32 chars and encrypts
 it using AES 256 in CBC mode. It uses a passphrase that is stored in
 config/kafo.yaml so if anyone gets an access to this file, he can read all
-other passwords from answers.yaml. A random password is generated and stored
+the passwords from the answers.yaml, too. A random password is generated and stored
 if there is none in kafo.yaml yet.
 
 When Kafo runs puppet, puppet will read this password from config/kafo.yaml.
-It runs under the same user so it should have read access by default. Kafo
+It runs under the same user so it should have read access by default. The Kafo
 puppet module also provides a function that you can use to decrypt such
 parameters. You can use it like this
 
@@ -288,13 +287,13 @@ parameters. You can use it like this
 password: <%= scope.function_decrypt([scope.lookupvar("::foreman::db_password"))]) -%>
 ```
 
-Also you can take advantage of already encrypted password and store as it is
+Also you can take advantage of already encrypted passwords and store since it is
 (encrypted). Your application can decrypt it as long as it knows the
-passphrase. Passphrase can be obtained as $kafo_configure::password.
+passphrase. The passphrase can be obtained from $kafo_configure::password.
 
 Note that we use a bit extraordinary form of encrypted passwords. All our
-encrypted passwords looks like "$1$base64encodeddata". As you can see we
-use $1$ prefix by which we can detect that its encrypted password by us.
+encrypted passwords look like "$1$base64encodeddata". As you can see we
+use the $1$ as prefix by which we can detect that it is our specially encrypted password.
 The form has nothing common with Modular Crypt Format. Also our AES output
 is base64 encoded. To get a password from this format you can do something
 like this in your application
@@ -320,14 +319,14 @@ blank line.
 
 ## Hash arguments
 
-You can use Hash value not unlike Arrays. It's also multivalue type but
-you have to specify a key:value pairs like this.
+You can use a Hash value like an Array. It's also a multivalue type but
+you have to specify a key:value pair like in the following example.
 ```bash
 bin/foreman-installer --puppet-server-git-branch-map=master:some --puppet-server-git-branch-map=development:another
 ```
 
-The same applies in interactive mode, you enter each pair on separate line
-just like with Array, the only difference is that the line must be formatted
+The same applies to the interactive mode, you enter each pair on separate lines
+just like with an Array, the only difference is that the line must be formatted
 as key:value.
 
 When parsing the value, the first colon divides key and value. All other
@@ -335,9 +334,9 @@ colons are ignored.
 
 ## Grouping in interactive mode
 
-If your module has too much parameters you may find useful grouping. Every
-block in your documentation (prefixed by header) forms a group. Unlike for
-help, all block are used in interactive mode. Suppose you have following
+If your module has too many parameters you may find the grouping feature useful.
+Every block in your documentation (prefixed by header) forms a group. Unlike for
+help, all blocks are used in interactive mode. Suppose you have the following
 example:
 
 ```puppet
@@ -364,8 +363,8 @@ example:
 # $three::  number three
 ```
 
-When you enter Testing class module in interactive mode you see parameters
-from Basic group and options to configure parameters which belongs to rest
+When you enter the Testing class module in interactive mode you can see parameters
+from the Basic group and options to configure parameters which belong to the rest
 of groups on same level, in this case Advanced and Extra parameters. 
 
 ```
@@ -377,12 +376,12 @@ Module foreman configuration
 5. Back to main menu
 ```
 
-When you enter Extra paramaters, you see only $three and option to get back 
-to parent. In Advanced you see $two and two more subgroups - Advanced A and 
-Advanced B. When you enter these subgroups, you see their parameters of 
-course. Nesting is unlimited. Also there's no naming rule. Just notice that 
+When you enter Extra parameters, you see only $three and an option to get back 
+to the parent. In Advanced you can see $two and two more subgroups - Advanced A and 
+Advanced B. When you enter these subgroups, you can again see their parameters.
+Nesting is unlimited. Also there's no naming rule. Just notice that 
 the main group must be called `Parameters` and it's parameters are always 
-displayed on first level of module configuration.
+displayed on first level of the module configuration.
 
 ```
 Group Extra parameters (of module foreman)
@@ -391,15 +390,15 @@ Group Extra parameters (of module foreman)
 ```
 
 If there's no primary group a new one is created for you and it does not have
-any parameter. This mean when user enters module configuration he or she will 
-see only subgroups in menu (no parameters until a particular subgroup is entered). 
-If there is no group in documentation a new primary group is created and it 
-holds all module parameters (there are no subgroups in module configuration).
+any parameter. This means when a user enters the module configuration he or she will 
+see only subgroups in the menu (no parameters until a particular subgroup is entered). 
+If there is no group in the documentation a new primary group is created and it 
+holds all module parameters (there are no subgroups in the module configuration).
 
 ## Conditional parameters in interactive mode
 
-You can also define conditions to parameter and their groups. These conditions
-are evaluated in interactive mode and based on the result they are displayed
+You can also define conditions to parameters and their groups. These conditions
+are evaluated in interactive mode and are based on the results which are then displayed
 to the user. You can use this for example to hide mysql_* parameters when
 $db_type is not set 'mysql'. Let's look at following example
 
@@ -425,9 +424,9 @@ $db_type is not set 'mysql'. Let's look at following example
 #                            condition: !$remote
 ```
 
-Here you can see we defined several conditions on group and parameter level.
-You can write condition in ruby language. All dollar-prefixed words are be
-substituted by value of a particular puppet parameter.
+Here you can see we defined several conditions on the group and parameter level.
+You can write a condition in ruby. All dollar-prefixed words will be
+substituted with the value of the particular puppet parameter.
 
 Note that conditions are combined using ```&&``` when you nest them. So these
 are facts based on example:
@@ -462,8 +461,8 @@ to you answer file, Kafo expects a ```foreman``` subdirectory in ```modules/```.
 it expects that there will be init.pp which it will instantiate. If you need
 to change this behavior you can via ```mapping``` option in ```config/kafo.yaml```.
 
-Suppose we have puppet module and we want to use puppet/server.pp as our init
-file. Also we want to name our module as puppetmaster. We add following mapping
+Suppose we have a puppet module and we want to use a puppet/server.pp as our init
+file. Also we want to name our module puppetmaster. To do so we add the following mapping
 to kafo.yaml
 
 ```yaml
@@ -475,33 +474,33 @@ to kafo.yaml
     :params_name: 'params'      # name of manifest holding the params class without .pp extension
 ```
 
-Note that if you add mapping you must enter both dir_name and manifest_name even
-if one of them is default. Arguments params_path and params_name are optional. You can
-use just params_name or override not just file name but complete path using params_path.
-If you use params_path for this purpose, params_name is ignored.
+Note that if you add a mapping you must enter both the dir_name and manifest_name even
+if one of them is already the default. The arguments params_path and params_name are optional.
+You can use just "params_name" or override not just the file name but also complete paths using "params_path".
+If you use "params_path" for this purpose, "params_name" is ignored.
 
 ## Validations
 
-If you specify validations of parameters in you init.pp manifest they
-will be executed for your values even before puppet is run. In order to do this
-you must follow few rules however:
+If you specify validations of parameters in your init.pp manifest they
+will be replaced with your values even before puppet is run. In order to do this
+you must follow a few rules however:
 
 * you must use standard validation functions (e.g. validate_array, validate_re, ...)
 * you must have stdlib in modules directory
 
 ## Enabling or disabling module
 
-You can enable or disable module specified in answers.yaml file. Every module
-automatically adds two options to foreman-installer script. For module foreman
+You can enable or disable a module specified in the answers.yaml file. Every module
+automatically adds two options to the foreman-installer script. For the module "foreman"
 you have two flag options ```--enable-foreman``` and ```--no-enable-foreman```.
 
-When you disable a module all its answers will be removed and module will be
-set to false. When you reenable the module you'll end up with default values.
+When you disable a module all its answers will be removed and "module" will be
+set to false. When you reenable the module you'll end up with the default values.
 
 ## Special values for arguments
 
 Sometimes you may want to enforce ```undef``` value for a particular parameter.
-You can set this value by specifying UNDEF string e.g.
+You can set this value by specifying an UNDEF string e.g.
 
 ```bash
 bin/foreman-installer --foreman-db-password=UNDEF
@@ -509,25 +508,25 @@ bin/foreman-installer --foreman-db-password=UNDEF
 
 It also works in interactive mode.
 
-You may also need to override array parameter with empty array value. For this
+You may also need to override array parameters with empty array values. For this
 purpose you can use `EMPTY_ARRAY` string as a value. Similarly you can use
 `EMPTY_HASH` for hash parameters.
 
 ## Hooks
 
-You may need to add new features to the installer. Kafo provides simple hook
-mechanism that allows you to run custom code at various time. We support
-several hooks.
+You may need to add new features to the installer. Kafo provides a simple hook
+mechanism that allows you to run custom code at 6 different occasions.
+We currently support the following hooks.
 
-* boot - before kafo is ready to work, useful for adding new installer arguments, logger won't work yet
+* boot - before kafo is ready to work, useful for adding new installer arguments, but logger won't work yet
 * init - just after hooking is initialized and kafo is configured, parameters have no values yet
 * pre_values - just before value from CLI is set to parameters (they already have default values)
 * pre_validations - just after system checks and before validations are executed (and before interactive wizard is started), at this point all parameter values are already set but not yet stored in answer file
 * pre  - just before puppet is executed to converge system
 * post  - just after puppet is executed to converge system
 
-Let's assume we want to add --reset-foreman-db option to our
-foreman-installer. We could either add following lines to generated
+Let's assume we want to add the ```--reset-foreman-db``` option to our
+foreman-installer. We could add the following lines to the generated
 installer script.
 
 ```ruby
@@ -557,21 +556,21 @@ KafoConfigure.hooking.register_pre(:reset_db) do
 end
 ```
 
-Note that the hook is evaluated in HookContext object which provides some DSL. We can create
+Note that the hook is evaluated in HookContext object which provides some DSL. We can create a
 new installer option using ```app_option```. These option values can be accessed by using
 ```app_value(:reset_foreman_db)```. You can modify parameters (if they are already defined)
 using ```param('module name', 'parameter name')``` accessor. You can register your own module
-that is not specified in answer file using ```add_module```. Custom mapping is also supported.
-This is useful if you need to add some module to existing installer based on kafo but you don't
-have control over its source code. You can use custom config storage which persists among
+that is not specified in the answer file using ```add_module```. Custom mapping is also supported.
+This is useful if you need to add some module to the existing installer based on kafo but you don't
+have control over its source code. You can use a custom config storage which persists among
 kafo runs using ```get_custom_config``` and ```store_custom_config```.
 Last but not least you have access to logger. For more details, see
 [hook_context.rb](https://github.com/theforeman/kafo/blob/master/lib/kafo/hook_context.rb).
 
-If you don't want to modify you installer script you can place your hooks into
-hooks directory. By default hooks dir is searched for ruby files in subdirectories
+If you don't want to modify your installer script you can place your hooks into the
+hooks directory. By default the hooks dir is searched for ruby files in subdirectories
 based on hook type. For example pre hooks are searched for in ```$installer_dir/hooks/pre/*.rb```
-Hooks from previous example would look like this. The only change to the code is 
+The hooks from the previous example would look like this. The only change to the code is 
 that you don't explicitely register hooks, it's done automatically for you.
 
 ```ruby
@@ -597,8 +596,8 @@ end
 ```
 
 
-If you want to add more directories to be search you can use hook_dirs option
-in installer configuration file.
+If you want to add more directories to be search you can use the "hook_dirs" option
+in the installer configuration file.
 
 ```yaml
 :hook_dirs:
@@ -606,24 +605,24 @@ in installer configuration file.
 - /my/plugin/hooks
 ```
 
-You can register as many hooks as you need. The order of execution for particular hook type 
+You can register as many hooks as you need. The order of execution for a particular hook type 
 is based on hook file name.
 
-If you want to cancel installation you can use ```exit``` method and specify an exit code.
+If you want to cancel the installation you can use the ```exit``` method and specify an exit code.
 
 ## Colors
 
-Everybody loves colors right? In case you don't you can disable them using ```--no-colors``` 
-argument or disallow them in installer config file (search for ```colors:``` key and set
+Everybody loves colors right? In case you don't you can disable them using the ```--no-colors``` 
+argument or disallow them in the installer config file (search for ```colors:``` key and set
 it to false). If you don't touch this setting, kafo will try to detect whether colors
 are supported and will enable/disable it accordingly.
 
 Kafo supports two sets of colors, one for terminals with bright and one for dark backround.
 You can specify your installer default scheme in installer config file (```color_of_background``` 
-key). Or user can override this default setting by ```--color-of-background``` argument.
+key). Alternatively the user can override this default setting with the ```--color-of-background``` argument.
 Possible values are ```dark``` and ```bright```.
 
-You can reuse kafo color schema in your custom hooks (so you can reuse dark/bright logic).
+You can reuse the kafo color schema in your custom hooks (so you can reuse dark/bright logic).
 Look at this example in bin/foreman-installer
 ```ruby
 #!/usr/bin/env ruby
@@ -671,18 +670,18 @@ paths. In order to do that you can use following configuration options:
 * :modules_dir: /usr/share/foreman-installer/modules
 * :kafo_modules_dir: /usr/share/kafo/modules
 
-Answer file is obvious. Installer dir is a place where you installer is 
-installed. E.g. system checks will be loaded from here (under checks 
+Answer file is obvious. The "installer_dir" is the place where your installer is 
+located. E.g. system checks will be loaded from here (under checks 
 subdirectory). You can optionally change foreman-installer modules dir
 using modules_dir option.
 
 On debian systems you may want to specify kafo modules dir
-independent on your installer location. If you specify this option kafo
-internal installer puppet modules will be loaded from here.
+independent on your installer location. If you specify this option kafo's
+internal-installer puppet-modules will be loaded from here.
 
 ## Order of puppet modules execution
 
-When you have more than one module you may end up in situation where you need
+When you have more than one module you may end up in the situation where you need a
 specific order of execution. It seems as a puppet antipattern to me however
 there may be cases where it's needed. You can set order in config/kafo.yaml
 like this
@@ -698,8 +697,9 @@ those that have explicit order. Their order is not be specified.
 
 ## Changing the order of module appearance in interactive mode
 
-We sort our module alphabetically. Sometimes you may want to reorder
-module, e.g. display plugin modules last. For this you can use ```low_priority_modules```
+We sort our modules alphabetically. Sometimes you may want to reorder
+modules, e.g. a display plugin modules as last module.
+For this you can use the ```low_priority_modules```
 configuration option. It accepts an array of patterns considering the
 first to have the lowest priority. So in follwing example
 
@@ -720,23 +720,23 @@ were mentioned later.
 By default kafo logs every run to a separate file in /var/log/kafo.
 You probably want to put your installation logs alongside with other logs of
 your application. That's why kafo has its own configuration file in which you
-can tune details like this.
+can tune details like these.
 
-In order to do that create a configuration file in config/kafo.yaml. You can
+In order to do that, create a configuration file under config/kafo.yaml. You can
 use config/kafo.yaml.example as a template. If config/kafo.yaml does not exist
 default values will be used.
 
-As a developer you can appreciate more verbose log. You can set debug level
+As a developer you can appreciate more verbose log. You can set a debug level
 in config/kafo.yml. Also you can change a user or group that will own the
-log file. This is usefull if your installer requires to be run under root
+log file. This is usefull if your installer requires to be run as root
 but you want the logs to be readable by specific users.
 
 ## System checks
 
-When you want to make sure that user has some software installed or has the
-right version you can write a simple script and put it into checks directory.
+When you want to make sure that a user has a certain software installed or has the
+right version you can write a simple script and put it into the checks directory.
 All files found there will be executed and if any of these exits with an non-zero
-exit code, kafo won't execute puppet but print an error message 
+exit code, kafo won't execute puppet but only print an error message 
 `Your system does not meet configuration criteria.`
 
 Everything on STDOUT and STDERR is logged in error level.
@@ -749,16 +749,16 @@ java -version 2>&1 | grep OpenJDK
 exit $?
 ```
 
-If you want to ignore results of check scripts, you can use the builtin
+If you want to ignore results of the check scripts, you can use the builtin
 parameter `--skip-checks-i-know-better` (or `-s`). This will completely
 disable running all system check scripts. Note that this option is
 not persisted between runs.
 
 ## Exit code
 
-Kafo can terminate either before or after puppet is ran. Puppet is ran with
---detailed-exitcodes and Kafo returns the same exit code as puppet does. If
-kafo terminates after puppet run exit codes are:
+Kafo can terminate either before or after puppet is run. If it is run with
+```--detailed-exitcodes``` Kafo returns the same exit code as puppet does. If
+kafo terminates after puppet run exit codes are like the following:
 * '1' means there were parser/validation errors
 * '2' means there were changes,
 * '4' means there were failures during the transaction,
@@ -776,7 +776,7 @@ Other exit codes that can be returned:
 
 ## Running Puppet Profiling
 
-As of Puppet 3.2, performance data can be gathered during a puppet run by assing the `--profile` option. See [Tune Puppet for Performance with Profiler](https://puppetlabs.com/blog/tune-puppet-performance-profiler) for more information from the Puppet team. Users who wish to perform a Kafo run and gather this type of profiling data to analyze can pass the same option to their installer. The profiling data will then be present in the normal Kafo logs.
+As of Puppet 3.2, performance data can be gathered during a puppet run by adding the `--profile` option. See [Tune Puppet for Performance with Profiler](https://puppetlabs.com/blog/tune-puppet-performance-profiler) for more information from the Puppet team. Users who wish to perform a Kafo run and gather this type of profiling data to analyze can pass the same option to their installer. The profiling data will then be present in the normal Kafo logs.
 
 # License
 
