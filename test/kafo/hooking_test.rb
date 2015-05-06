@@ -28,6 +28,7 @@ module Kafo
         before { hooking.execute(:pre); dummy_logger.rewind }
         specify { dummy_logger.error.read.must_include 's2' }
         specify { dummy_logger.error.read.must_include 's1' }
+        specify { dummy_logger.error.read.must_match /.*s1.*s2.*/m }
       end
 
       describe "#execute(:post)" do
