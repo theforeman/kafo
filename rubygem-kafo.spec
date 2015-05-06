@@ -5,7 +5,7 @@
 
 Summary: A gem for making installations based on puppet user friendly
 Name: %{?scl_prefix}rubygem-%{gem_name}
-Version: 0.6.7
+Version: 0.6.8
 Release: 1%{?dist}
 Group: Development/Libraries
 License: GPLv3+
@@ -87,6 +87,12 @@ cp -a .%{gem_dir}/* \
 %doc %{gem_instdir}/README.md
 
 %changelog
+* Wed May 06 2015 Marek Hulan <mhulan@redhat.com> 0.6.8-1
+- Pin puppet to < 4.0.0 (martin.bacovsky@gmail.com)
+- Fixes #10390 - Hooks within group are executed in right order
+  (martin.bacovsky@gmail.com)
+- fix spelling mistakes and grammar errors in readme (Manna@Atix.de)
+
 * Mon Apr 06 2015 Marek Hulan <mhulan@redhat.com> 0.6.7-1
 - Fixes #9996: Exposes Puppet's --profile as an option for installers.
   (ericdhelms@gmail.com)
