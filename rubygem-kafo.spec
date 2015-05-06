@@ -6,7 +6,7 @@
 Summary: A gem for making installations based on puppet user friendly
 Name: %{?scl_prefix}rubygem-%{gem_name}
 Version: 0.6.8
-Release: 1%{?dist}
+Release: 2%{?dist}
 Group: Development/Libraries
 License: GPLv3+
 URL: https://github.com/theforeman/kafo
@@ -16,7 +16,7 @@ Requires: %{?scl_prefix}ruby(abi)
 %else
 Requires: %{?scl_prefix}ruby(release)
 %endif
-Requires: %{?scl_prefix}puppet
+Requires: %{?scl_prefix}puppet < 4.0.0
 Requires: %{?scl_prefix}rubygem(logging) < 2.0.0
 Requires: %{?scl_prefix}rubygem(clamp) >= 0.6.2
 Requires: %{?scl_prefix}rubygem(highline) < 1.7
@@ -87,6 +87,9 @@ cp -a .%{gem_dir}/* \
 %doc %{gem_instdir}/README.md
 
 %changelog
+* Wed May 06 2015 Marek Hulan <mhulan@redhat.com> 0.6.8-2
+- Puppet version was pinned
+
 * Wed May 06 2015 Marek Hulan <mhulan@redhat.com> 0.6.8-1
 - Pin puppet to < 4.0.0 (martin.bacovsky@gmail.com)
 - Fixes #10390 - Hooks within group are executed in right order
