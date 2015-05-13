@@ -44,7 +44,7 @@ module Kafo
 
     def execute(group)
       logger.info "Executing hooks in group #{group}"
-      self.hooks[group].keys.sort.each do |name|
+      self.hooks[group].keys.sort_by(&:to_s).each do |name|
         hook = self.hooks[group][name]
         result = HookContext.execute(self.kafo, &hook)
         logger.debug "Hook #{name} returned #{result.inspect}"
