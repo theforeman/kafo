@@ -5,8 +5,8 @@
 
 Summary: A gem for making installations based on puppet user friendly
 Name: %{?scl_prefix}rubygem-%{gem_name}
-Version: 0.6.8
-Release: 2%{?dist}
+Version: 0.6.9
+Release: 1%{?dist}
 Group: Development/Libraries
 License: GPLv3+
 URL: https://github.com/theforeman/kafo
@@ -87,6 +87,10 @@ cp -a .%{gem_dir}/* \
 %doc %{gem_instdir}/README.md
 
 %changelog
+* Mon May 18 2015 Marek Hulan <mhulan@redhat.com> 0.6.9-1
+- Fixes #10500 - sorting of hooks by name for symbols
+  (jkim@jkimdt.usersys.redhat.com)
+
 * Wed May 06 2015 Marek Hulan <mhulan@redhat.com> 0.6.8-2
 - Puppet version was pinned
 
