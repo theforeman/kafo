@@ -5,7 +5,7 @@
 
 Summary: A gem for making installations based on puppet user friendly
 Name: %{?scl_prefix}rubygem-%{gem_name}
-Version: 0.6.9
+Version: 0.6.10
 Release: 1%{?dist}
 Group: Development/Libraries
 License: GPLv3+
@@ -87,6 +87,9 @@ cp -a .%{gem_dir}/* \
 %doc %{gem_instdir}/README.md
 
 %changelog
+* Thu May 28 2015 Marek Hulan <mhulan@redhat.com> 0.6.10-1
+- Enable progress bar with Puppet 3.8 (kvedulv@kvedulv.de)
+
 * Mon May 18 2015 Marek Hulan <mhulan@redhat.com> 0.6.9-1
 - Fixes #10500 - sorting of hooks by name for symbols
   (jkim@jkimdt.usersys.redhat.com)
