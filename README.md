@@ -259,7 +259,7 @@ in the puppet manifest documentation like this
                   type:boolean
 ```
 
-Supported types are: string, boolean, integer, array, password
+Supported types are: string, boolean, integer, array, password, hash
 
 Note that all arguments that are nil (have no value in answers.yaml or you
 set them UNDEF (see below)) are translated to ```undef``` in puppet.
