@@ -522,7 +522,8 @@ We currently support the following hooks.
 * init - just after hooking is initialized and kafo is configured, parameters have no values yet
 * pre_values - just before value from CLI is set to parameters (they already have default values)
 * pre_validations - just after system checks and before validations are executed (and before interactive wizard is started), at this point all parameter values are already set but not yet stored in answer file
-* pre  - just before puppet is executed to converge system
+* pre_commit - after validations or interactive wizard have completed, all parameter values are set but not yet stored in the answer file
+* pre  - just before puppet is executed to converge system, after parameter values are stored in the answer file
 * post  - just after puppet is executed to converge system
 
 Let's assume we want to add the ```--reset-foreman-db``` option to our
