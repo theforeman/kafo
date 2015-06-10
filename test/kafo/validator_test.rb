@@ -33,22 +33,28 @@ module Kafo
 
     describe "validations using method missing" do
       it "should validate boolean" do
-        validator.function_validate_bool([true]).wont_equal false
-        validator.function_validate_bool([false]).wont_equal false
+        validator.function_validate_bool([true]).must_equal true
+        validator.function_validate_bool([false]).must_equal true
         validator.function_validate_bool(['false']).must_equal false
         validator.function_validate_bool([0]).must_equal false
       end
 
       it "should validate regular expression" do
-        validator.function_validate_re(['www.theformean.org', '^.*\.org$']).wont_equal false
+        validator.function_validate_re(['www.theformean.org', '^.*\.org$']).must_equal true
         validator.function_validate_re(['www.theformean,org', '^.*\.org$']).must_equal false
-        validator.function_validate_re(["ipmitool", "^(freeipmi|ipmitool|shell)$"]).wont_equal false
+        validator.function_validate_re(["ipmitool", "^(freeipmi|ipmitool|shell)$"]).must_equal true
         validator.function_validate_re(["xipmi", "^(freeipmi|ipmitool|shell)$"]).must_equal false
       end
 
       it "should validate array" do
-        validator.function_validate_array([['a','b','c']]).wont_equal false
+        validator.function_validate_array([['a','b','c']]).must_equal true
         validator.function_validate_array(['a']).must_equal false
+      end
+
+      it "should validate integer" do
+        validator.function_validate_integer([1]).must_equal true
+        validator.function_validate_integer(['1']).must_equal true
+        validator.function_validate_integer(['foo']).must_equal false
       end
     end
 

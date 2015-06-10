@@ -89,13 +89,7 @@ module Kafo
       end
 
       validator = Validator.new([self])
-      validations.map! do |v|
-        result = v.evaluate(validator)
-        # validate_re returns nil if succeeds
-        result = true if v.name == 'validate_re' && result.nil?
-        result
-      end
-
+      validations.map! { |v| v.evaluate(validator) }
       validations.all?
     end
 
