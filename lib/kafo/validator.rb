@@ -51,6 +51,7 @@ module Kafo
       if engine.respond_to? method
         @logger.debug "calling #{method.inspect} with #{args.inspect}"
         engine.send(method, *args)
+        true
       else
         raise Puppet::DevError, "Function #{$1} not defined despite being loaded!"
       end
