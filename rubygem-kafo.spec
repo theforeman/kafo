@@ -5,7 +5,7 @@
 
 Summary: A gem for making installations based on puppet user friendly
 Name: %{?scl_prefix}rubygem-%{gem_name}
-Version: 0.6.10
+Version: 0.6.11
 Release: 1%{?dist}
 Group: Development/Libraries
 License: GPLv3+
@@ -87,6 +87,13 @@ cp -a .%{gem_dir}/* \
 %doc %{gem_instdir}/README.md
 
 %changelog
+* Thu Jun 11 2015 Marek Hulan <mhulan@redhat.com> 0.6.11-1
+- Treat any return value from stdlib's validate_* functions as success
+  (dcleal@redhat.com)
+- Add pre_commit hook between param wizard/validation and answer file writing
+  (dcleal@redhat.com)
+- Document hash as valid parameter type (dcleal@redhat.com)
+
 * Thu May 28 2015 Marek Hulan <mhulan@redhat.com> 0.6.10-1
 - Enable progress bar with Puppet 3.8 (kvedulv@kvedulv.de)
 
