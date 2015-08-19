@@ -15,8 +15,7 @@ module Kafo
       kafo                     = OpenStruct.new
       kafo.config              = KafoConfigure.config
       kafo.config.app[:name]   = 'Foreman'
-      kafo.config.app[:colors] = false
-      ColorScheme.new(kafo.config).setup
+      ColorScheme.new(:colors => false).setup
 
       kafo.config.instance_variable_set '@modules', [puppet_module]
       kafo.params = puppet_module.params

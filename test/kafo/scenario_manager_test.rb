@@ -64,5 +64,78 @@ module Kafo
       end
     end
 
+    describe '#print_scenario_diff' do
+      let(:basic_config_file) { ConfigFileFactory.build('basic', BASIC_CONFIGURATION).path }
+      let(:new_config) { Kafo::Configuration.new(basic_config_file, false) }
+      let(:old_config) { Kafo::Configuration.new(basic_config_file, false) }
+
+      let(:p_foo) { fake_param('mod', 'foo', 1) }
+      let(:p_bar) { fake_param('mod', 'bar', 10) }
+      let(:p_baz) { fake_param('mod', 'baz', 100) }
+      let(:p_old_foo) { fake_param('mod', 'foo', 2) }
+      let(:p_old_bar) { fake_param('mod', 'bar', 10) }
+      let(:p_old_baz) { fake_param('mod', 'baz', 100) }
+
+      let(:input) { StringIO.new }
+      let(:output) { StringIO.new }
+      before do
+        $terminal.instance_variable_set '@output', output
+      end
+
+      it 'prints no updates' do
+        old_config.stub(:params, [p_old_bar]) do
+          old_config.stub(:modules, []) do
+            new_config.stub(:params, [p_bar]) do
+              new_config.stub(:modules, []) do
+                manager.print_scenario_diff(old_config, new_config)
+                must_be_on_stdout(output, "No values will be updated from previous scenario\n")
+              end
+            end
+          end
+        end
+      end
+
+      it 'prints updated_values' do
+        old_config.stub(:params, [p_old_foo, p_old_bar]) do
+          old_config.stub(:modules, []) do
+            new_config.stub(:params, [p_foo, p_bar]) do
+              new_config.stub(:modules, []) do
+                manager.print_scenario_diff(old_config, new_config)
+                must_be_on_stdout(output, "mod::foo: 1 -> 2\n")
+                end
+              end
+          end
+        end
+      end
+
+      it 'print no loses' do
+        old_config.stub(:params, []) do
+          old_config.stub(:modules, []) do
+            new_config.stub(:params, []) do
+              new_config.stub(:modules, []) do
+                manager.print_scenario_diff(old_config, new_config)
+                must_be_on_stdout(output, "No values from previous installation will be lost\n")
+              end
+            end
+          end
+        end
+      end
+
+      it 'prints values that will be lost' do
+        old_config.stub(:params, [p_old_baz]) do
+          old_config.stub(:modules, []) do
+            new_config.stub(:params, []) do
+              new_config.stub(:modules, []) do
+                new_config.stub(:module_enabled?, true) do
+                  manager.print_scenario_diff(old_config, new_config)
+                  must_be_on_stdout(output, "mod::baz: 100\n")
+                end
+              end
+            end
+          end
+        end
+      end
+    end
+
   end
 end

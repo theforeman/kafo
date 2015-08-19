@@ -2,12 +2,18 @@ require 'highline/import'
 
 module Kafo
   class ColorScheme
-    def initialize(config)
-      @config = config
+
+    def self.colors_possible?
+      ::ENV['TERM'] && !`which tput 2> /dev/null`.empty? && `tput colors`.to_i > 0
+    end
+
+    def initialize(options={})
+      @background = options[:background].nil? ? :dark : options[:background]
+      @colors = options[:colors].nil? ? self.class.colors_possible? : options[:colors]
     end
 
     def setup
-      if @config.app[:colors]
+      if @colors
         HighLine.color_scheme = build_color_scheme
         HighLine.use_color = true
       else
@@ -28,6 +34,7 @@ module Kafo
     def color_hash
       @color_hash ||= {
           :headline => build_color(:yellow),
+          :title => build_color(:yellow),
           :horizontal_line => build_color(:white),
           :important => build_color(:white),
           :question => build_color(:green),
@@ -41,7 +48,7 @@ module Kafo
     end
 
     def build_color(color)
-      bright = @config.app[:color_of_background].to_s == 'bright'
+      bright = @background.to_s == 'bright'
       color = convert_bright_to_dark(color) if bright
 
       attributes = [ color ]

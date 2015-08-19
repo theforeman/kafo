@@ -51,7 +51,7 @@ module Kafo
       end
 
       def phrase
-        KafoConfigure.config.app[:password]
+        @module.configuration.app[:password]
       end
 
     end

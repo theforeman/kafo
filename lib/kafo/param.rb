@@ -99,7 +99,7 @@ module Kafo
     end
 
     def <=> o
-      unless KafoConfigure.config.app[:no_prefix]
+      unless @module.configuration.app[:no_prefix]
         r = self.module_name <=> o.module_name
         return r unless r == 0
       end

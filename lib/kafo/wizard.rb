@@ -1,6 +1,5 @@
 # encoding: UTF-8
 require 'highline/import'
-require 'kafo/color_scheme'
 require 'yaml'
 
 module Kafo

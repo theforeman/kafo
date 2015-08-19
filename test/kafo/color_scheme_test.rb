@@ -2,20 +2,19 @@ require 'test_helper'
 
 module Kafo
   describe ColorScheme do
-    let(:config) { Struct.new(:app) }
-    let(:config_dark_colors) { config.new(:colors => true) }
-    let(:config_bright_colors) { config.new(:colors => true, :color_of_background => :bright) }
-    let(:config_no_colors) { config.new(:colors => false) }
+    let(:dark_colors) { { :colors => true, :background => :dark } }
+    let(:bright_colors) { { :colors => true, :background => :bright } }
+    let(:no_colors) { { :colors => false } }
 
     describe "#setup" do
       describe "without colors" do
-        let(:color_scheme) { ColorScheme.new(config_no_colors) }
+        let(:color_scheme) { ColorScheme.new(no_colors) }
         before { color_scheme.setup }
         specify { refute HighLine.use_color? }
       end
 
       describe "with dark background colors" do
-        let(:color_scheme) { ColorScheme.new(config_dark_colors) }
+        let(:color_scheme) { ColorScheme.new(dark_colors) }
         before { color_scheme.setup }
         specify { assert HighLine.use_color? }
         let(:highline_color_scheme) { HighLine.color_scheme }
@@ -27,7 +26,7 @@ module Kafo
       end
 
       describe "with bright background colors" do
-        let(:color_scheme) { ColorScheme.new(config_bright_colors) }
+        let(:color_scheme) { ColorScheme.new(bright_colors) }
         before { color_scheme.setup }
         specify { assert HighLine.use_color? }
         let(:highline_color_scheme) { HighLine.color_scheme }

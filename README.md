@@ -221,7 +221,7 @@ to look for module parameters. There are multiple ways how the installer can sel
 ```
   * by user selection in interractive mode (`-i` or `--interractive`)
 ```bash
-  $> foreman-installer -i
+  foreman-installer -i
 
   Select installation scenario
 
@@ -236,6 +236,43 @@ to look for module parameters. There are multiple ways how the installer can sel
   * automatically if there is only one scenario available
   * automatically if installer was ran already with scenario selected
 
+### Re-installing with different scenario
+
+Lets assume you have already completed installation with one scenario (e.g. smart-proxy).
+Now you want to reinstall or upgrade with different scenario (e.g. foreman). This is tricky
+situation and may end with unpredictable results so you should double check
+if the scenario and the puppet modules used in it support such kind of change.
+
+Installer tries to prevent unintentional change of a scenario and interrupts when such situation is detected:
+```bash
+  foreman-installer -S foreman-installer
+  ERROR: You are trying to replace existing installation with different scenario. This may lead to unpredictable states. Use --force to override. You can use --compare-scenarios to see the differences
+```
+
+To avoid losing some configuration values installer can detect differences between answer files of the two scenarios.
+To display them use either interactive mode (`-i`) or `--compare-scenarios` flag:
+```bash
+  foreman-installer --compare-scenarios --scenario foreman
+  Scenarios are being compared, that may take a while...
+
+  Values from previous installation that will be added by installer:
+    foreman_proxy::http_port: 8000 -> 8080
+
+  Values from previous installation that will be lost by scenario change:
+    foreman_proxy::plugin::abrt::enabled: true
+    ...
+```
+
+It may take some time as the installer has to evaluate default values for both scenarios. As a result it prints two lists.
+ - __Values from previous installation that will be added by installer:__ - in this list are options present in both scenarios but having different default values.
+   The only item from the example says that the default value for the new scenario is '8000' while the value for currently intalled scenario is '8080'.
+   When the new scenario is used the installer tries to keep the customized values from current installation and thus will use the `8080` value
+ - __Values from previous installation that will be lost by scenario change:__ - this list contains options that are part of current installation
+   and are missing from the new scenario. Most of the items are options from puppet modules that are disabled in the new scenario by default but were enabled
+   in the old one.
+
+If you are sure you want to proceed use `--force` to run the installation. Installer will replace
+the default values with values from the previous installation where possible as was indicated in the `--compare-scenario` output.
 
 ### Adding scenario
 
@@ -748,7 +785,7 @@ paths. In order to do that you can use following configuration options:
 Answer file is obvious. The "installer_dir" is the place where your installer is
 located. E.g. system checks will be loaded from here (under checks
 subdirectory) if not set elsewhere by `check_dirs`. You can optionally change foreman-installer modules dir
-using `modules_dir` option and hooks dir using `hook_dirs` option. `module_dirs`, `hook_dirs` and `check_dirs`
+using `module_dirs` option and hooks dir using `hook_dirs` option. `module_dirs`, `hook_dirs` and `check_dirs`
 can hold multiple directories where to look for the resources.
 
 On debian systems you may want to specify kafo modules dir

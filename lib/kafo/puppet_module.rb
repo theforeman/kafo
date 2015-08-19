@@ -9,20 +9,21 @@ module Kafo
     PRIMARY_GROUP_NAME = 'Parameters'
 
     attr_reader :name, :identifier, :params, :dir_name, :class_name, :manifest_name, :manifest_path,
-                :groups, :params_path, :params_class_name
+                :groups, :params_path, :params_class_name, :configuration
 
-    def initialize(identifier, parser = KafoParsers::PuppetModuleParser)
+    def initialize(identifier, parser = KafoParsers::PuppetModuleParser, configuration = KafoConfigure.config)
       @identifier        = identifier
+      @configuration     = configuration
       @name              = get_name
       @dir_name          = get_dir_name
       @manifest_name     = get_manifest_name
       @class_name        = get_class_name
       @params            = []
-      if KafoConfigure.module_dirs.count == 1
-        module_dir       = KafoConfigure.module_dirs.first
+      if @configuration.module_dirs.count == 1
+        module_dir       = @configuration.module_dirs.first
       else
-        module_dir         = KafoConfigure.module_dirs.find { |dir| File.exists?(File.join(dir, module_manifest_path)) } ||
-          warn("Manifest #{module_manifest_path} was not found in #{KafoConfigure.module_dirs.join(', ')}")
+        module_dir         = @configuration.module_dirs.find { |dir| File.exists?(File.join(dir, module_manifest_path)) } ||
+          warn("Manifest #{module_manifest_path} was not found in #{@configuration.module_dirs.join(', ')}")
       end
       @manifest_path     = File.join(module_dir, module_manifest_path)
       @parser            = parser
@@ -34,7 +35,7 @@ module Kafo
     end
 
     def enabled?
-      @enabled.nil? ? @enabled = KafoConfigure.config.module_enabled?(self) : @enabled
+      @enabled.nil? ? @enabled = @configuration.module_enabled?(self) : @enabled
     end
 
     def disable
@@ -84,7 +85,7 @@ module Kafo
     end
 
     def <=> o
-      KafoConfigure.config.app[:low_priority_modules].each do |module_name|
+      @configuration.app[:low_priority_modules].each do |module_name|
         return 1 if self.name.include?(module_name) && !o.name.include?(module_name)
         return -1 if !self.name.include?(module_name) && o.name.include?(module_name)
         if self.name.include?(module_name) && o.name.include?(module_name)
@@ -109,7 +110,7 @@ module Kafo
 
     # mapping from configuration with stringified keys
     def mapping
-      @mapping ||= Hash[KafoConfigure.config.app[:mapping].map { |k, v| [k.to_s, v] }]
+      @mapping ||= Hash[@configuration.app[:mapping].map { |k, v| [k.to_s, v] }]
     end
 
     # custom module directory name
