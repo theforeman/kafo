@@ -164,9 +164,12 @@ class Minitest::Spec
   before do
     Kafo::KafoConfigure.config   = Kafo::Configuration.new(ConfigFileFactory.build('basic', BASIC_CONFIGURATION).path)
     Kafo::KafoConfigure.root_dir = File.dirname(__FILE__)
-    Kafo::KafoConfigure.logger   = Kafo::Logger.new
-    Kafo::KafoConfigure.modules_dir = 'test/fixtures/modules'
+    Kafo::KafoConfigure.exit_handler = Kafo::ExitHandler.new
     Kafo::Logger.loggers = []
+    Kafo::KafoConfigure.logger   = Kafo::Logger.new
+    Kafo::KafoConfigure.module_dirs = ['test/fixtures/modules']
+    Kafo::Logger.buffer.clear
+    Kafo::Logger.error_buffer.clear
   end
 end
 

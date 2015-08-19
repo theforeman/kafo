@@ -12,25 +12,30 @@ require 'kafo/configuration'
 options = {}
 OptionParser.new do |opts|
   opts.banner = "Usage: kafofy"
-  options[:answer_file] = './config/answers.yaml'
-  opts.on("-a", "--answer_file FILE", "location of the answer file") do |answer_file|
-    options[:answer_file] = answer_file
+  options[:config_dir] = './config/installer-scenarios.d/'
+  opts.on("-c", "--config_dir DIR", "location of the scenarios configuration directory [./config/installer-scenarios.d/]") do |config_dir|
+    options[:config_dir] = config_dir
   end
-  opts.on("-c", "--config_file FILE", "location of the configuration file") do |config_file|
-    options[:config_file] = config_file
+  opts.on("-s", "--scenario SCENARIO", "scenario file name (without extension) [default]") do |scenario|
+    options[:scenario] = scenario
   end
-  opts.on("-n", "--name NAME", "installer name") do |name|
+  opts.on("-a", "--answer_file ANSWERS", "answer file file name (without extension) [default-answers]") do |answer_file|
+    options[:answer_file] = File.join(options[:config_dir], answer_file + '.yaml')
+  end
+  opts.on("-n", "--name NAME", "installer name [kafo-configure]") do |name|
     options[:name] = name
   end
 end.parse!
 
 config = Kafo::Configuration::DEFAULT
-options[:answer_file] ||= config[:answer_file]
+options[:scenario] ||= 'default'
+options[:answer_file] ||= File.join(options[:config_dir],  options[:scenario] + '-answers.yaml')
 options[:name] ||= "kafo-configure"
-options[:config_file] ||= "./config/#{options[:name]}.yaml"
+options[:config_file] ||= File.join(options[:config_dir], options[:scenario] + '.yaml')
 
 # Create directory structure
-%w(bin config modules hooks).each do |dir|
+dirs = %w(bin config modules hooks) << options[:config_dir]
+dirs.each do |dir|
   FileUtils.mkdir_p dir
 end
 
@@ -41,7 +46,7 @@ src = File.expand_path(File.join(File.dirname(__FILE__), '..'))
 end
 
 # Create default config file
-puts "using #{options[:config_file]} as default config file"
+puts "creating #{options[:config_file]} as a default scenario file"
 if !File.exists?(options[:config_file])
   puts "... creating config file #{options[:config_file]}"
   FileUtils.touch options[:config_file]
@@ -49,23 +54,35 @@ if !File.exists?(options[:config_file])
   FileUtils.cp('config/kafo.yaml.example', options[:config_file])
   if options[:answer_file]
     `sed -i 's/^# :answer_file.*$/:answer_file: #{options[:answer_file].gsub('/', '\/')}/' #{options[:config_file]}`
-    `sed -i 's/^# :name.*$/:name: #{options[:name]}/' #{options[:config_file]}`
+    `sed -i 's/^# :name.*$/:name: #{options[:scenario]}/' #{options[:config_file]}`
   end
 end
 
-# Installer script 
+# Installer script
 script_name = "bin/#{options[:name]}"
 puts "... creating #{script_name}"
-content = <<EOS
+if !File.exists?(script_name)
+  content = <<EOS
 #!/usr/bin/env ruby
 require 'rubygems'
-CONFIG_FILE = '#{options[:config_file]}'
 require 'kafo'
-result = Kafo::KafoConfigure.run
-exit result.nil? ? 0 : result.exit_code
+
+# where to find scenarios
+CONFIG_DIR = '#{options[:config_dir]}'
+
+# Run the install
+@result = Kafo::KafoConfigure.run
+
+# handle exit code when help was invoked or installer ended with '2' (success in puppet)
+if @result.nil? || (!@result.config.app[:detailed_exitcodes] && @result.exit_code == 2)
+  exit(0)
+else
+  exit(@result.exit_code)
+end
 EOS
-File.open(script_name, 'w') { |file| file.write(content) }
-FileUtils.chmod 0755, script_name
+  File.open(script_name, 'w') { |file| file.write(content) }
+  FileUtils.chmod 0755, script_name
+end
 
 puts "Your directory was kafofied"
 
@@ -73,3 +90,4 @@ puts "Now you should:"
 puts "  1. upload your puppet modules to modules directory (you can use librarian-puppet project)"
 puts "  2. create default #{options[:answer_file]} or modify #{options[:config_file]} to load another answer file"
 puts "  3. run #{script_name} to install your modules"
+puts "  Note: You can add more scenarios by running kafofy multiple times"

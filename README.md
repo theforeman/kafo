@@ -16,9 +16,12 @@ your puppet infrastructure (e.g. install it to your clients) or you want to inst
 it in order to create a puppet infrastructure itself (e.g. foreman or
 foreman-proxy).
 
-With kafo you can reuse your puppet modules for creating an installer. 
+With kafo you can reuse your puppet modules for creating an installer.
 Even better: After the installation you can easily modify your configuration.
 All using the very same puppet modules.
+
+With your installer you can also provide multiple configuration files defining
+different installation scenarios.
 
 ## What does it do, how does it work?
 
@@ -62,35 +65,47 @@ Now we run ```kafofy``` script which will prepare the directory structure and
 optionally create a bin script according to the first parameter.
 
 ```bash
-kafofy -n foreman-installer
+kafofy -n foreman-installer -s foreman
 ```
 
 You can see that it created a modules directory where your puppet modules
-should live. It also created config and bin directories. If you specify the
-argument ```--name``` (or -n for short, foreman-installer in this case) a script in 
-the "bin" directory with this name will be created.
+should live. It also created config and bin directories and the default installation
+scenario config file. If you specify the argument ```--name``` (or -n for short,
+foreman-installer in this case) a script in the "bin" directory with this name will be created.
 
 It's the script you can use to run the installer. If you did not specify any
 arguments you can run your installer by `kafo-configure` which is the default.
 All configuration related files are to be found in the config directory.
 
-You can supply custom locations for you configuration- and answer- files using
-options:
+You can supply custom location for your scenario configuration and answer files
+and change configuration and answer files names using options:
 ```
 kafofy --help
 Usage: kafofy [options]
-    -a, --answer_file FILE           location of the answer file
-    -c, --config_file FILE           location of the configuration file
-    -n, --name        NAME           your installer name
+    -c, --config_dir DIR            location of the scenarios configuration directory [./config/installer-scenarios.d/]
+    -s, --scenario SCENARIO          scenario file name (without extension) [default]
+    -a, --answer_file ANSWERS        answer file file name (without extension) [default-answers]
+    -n, --name NAME                  installer name [kafo-configure]
 ```
 
-The configuration file will be created by a default template. It's the configuration
+The scenario configuration file will be created by a default template. It's the configuration
 of your installer (so you can setup the log level, path to puppet modules etc).
 On the other hand, the answer file must be created manually. Answer files define
 which modules should be used and hold all values for the puppet class parameters.
 
+To add another installation scenario just run kafofy again:
+```bash
+kafofy -n foreman-installer -s foreman-proxy
+```
+it will create new configuration template for you. You can check available scenarios with:
+```bash
+$ bin/foreman-installer --list-scenarios
+Available scenarios
+  foreman-proxy (use: --scenario foreman-proxy)
+  foreman (use: --scenario foreman)
+```
 
-So for example to install foreman you want to
+Let's see for example how to install foreman:
 ```bash
 cd foreman-installer/modules
 git clone https://github.com/theforeman/puppet-foreman/ foreman
@@ -99,7 +114,7 @@ You must also download any dependant modules.
 Then you need to tell kafo it's going to use the foreman module.
 ```bash
 cd ..
-echo "foreman: true" > config/answers.yaml
+echo "foreman: true" > config/installer-scenarios.d/foreman-answers.yaml
 ```
 
 Alternatively you can use the librarian-puppet project to manage all dependencies for you.
@@ -107,8 +122,9 @@ You just create a Puppetfile and call librarian to install your modules. See
 https://github.com/rodjek/librarian-puppet for more details.
 
 When you have your modules in-place, fire the installer with -h as argument
+and specify the foreman scenario to let installer find the right modules
 ```bash
-bin/foreman-installer -h
+bin/foreman-installer -S foreman -h
 ```
 
 This will show you all the possible arguments you can pass to kafo. Note that underscored
@@ -117,9 +133,10 @@ also see a documentation extracted from the foreman puppet module and a default
 value.
 
 Now run it without the -h argument. It will print you the puppet apply command
-to execute. This will be automatized later. Look at config/answers.yaml, it
-was populated with default values. To change those options you can use
-arguments like this
+to execute. This will be automatized later. Once the installer is run the scenario
+is remembered and it is not necessary to specify it again.
+Look at config/answers.yaml, it was populated with default values.
+To change those options you can use arguments like this
 
 ```bash
 bin/foreman-installer --foreman-enc=false --foreman-db-type=sqlite
@@ -131,8 +148,8 @@ or you can run it in interactive mode
 bin/foreman-installer --interactive
 ```
 
-Also every change made to the config/answers.yaml persists and becomes the new default
-value for the next run.
+Also every change made to the `config/installer-scenarios.d/foreman-answers.yaml` persists
+and becomes the new default value for the next run.
 
 As you may have noticed there are several ways how to specify arguments. Here's the list:
 (the lower the item is in this list the higher precedence it has):
@@ -144,14 +161,14 @@ As you may have noticed there are several ways how to specify arguments. Here's 
 ## How do I report bugs or contribute?
 
 You can find our redmine issue tracker [here](http://projects.theforeman.org/projects/kafo),
-you can use your github account for logging in. When reporting new issues please 
+you can use your github account for logging in. When reporting new issues please
 don't forget to specify your:
   * puppet version
   * installation options (GEM/RPM/DEB)
   * error trace (if any) or log with debug level
   * reproducing steps
 
-Since Kafo is a side project of Foreman you can use its IRC channels to 
+Since Kafo is a side project of Foreman you can use its IRC channels to
 contact us on freenode. #theforeman is the channel for generic discussions
 and #theforeman-dev is reserved only for technical topics. Likewise you can use the Foreman
 mailing lists on googlegroups. For more information see [this page](http://theforeman.org/support.html)
@@ -181,6 +198,61 @@ can disable this behavior in config/kafo.yaml. Just enable the following option
 ```yaml
 :no_prefix: true
 ```
+## Scenarios
+
+With your installer you can provide multiple configuration files aka. scenarios.
+Every scenario has its own answer file to store the scenario settings.
+The files are kept in `installer-scenarios.d/` directory.
+
+### Using scenarios
+
+To list scenarios available on your system
+```bash
+foreman-installer --list-scenarios
+```
+
+The installer needs to know the configuration even for such a basic operation
+as printing help is because it contains basic settings and defines where
+to look for module parameters. There are multiple ways how the installer can select the scenario:
+  * from a command line argument `-S` or `--scenario`
+```bash
+  foreman-installer --scenario foreman -h
+   ...
+```
+  * by user selection in interractive mode (`-i` or `--interractive`)
+```bash
+  $> foreman-installer -i
+
+  Select installation scenario
+
+  Please select one of the pre-set installation scenarios. You can customize your installtion later during the installtion.
+
+  Available actions:
+  1. Foreman: Basic and most generic installation of Foreman
+  2. Foreman Proxy: Install Foreman proxy without Foreman
+  3. Cancel Installation
+  Your choice:
+```
+  * automatically if there is only one scenario available
+  * automatically if installer was ran already with scenario selected
+
+
+### Adding scenario
+
+You can add new scenario using kafofy as it was explained earlier or by creating
+config and answer file in the `installer-scenarios.d/` directory.
+[Template](https://github.com/theforeman/kafo/blob/master/config/kafo.yaml.example)
+provided by Kafo can be used and customized to satisfy your needs
+```bash
+  cp `gem content kafo|grep "kafo.yaml.example"` <config>/installer-scenarios.d/new-scenario.yaml
+  touch <config>/installer-scenarios.d/new-scenario-answers.yaml
+```
+
+### Scenario as an installer plugin
+Scenarios were designed to make it possible to package them separately as optional installer extension.  
+Config files are located in separate directory which makes packaging of additional scenarios easy.
+Configuration of paths to modules, checks and hooks accepts multiple directories
+so it is possible to bundle your scenario with additional modules, hooks and checks.
 
 ## Documentation
 
@@ -270,7 +342,7 @@ Kafo supports password arguments. It's adding some level of protection for your
 passwords. Usually people generate random strings for passwords. However all
 values are stored in config/answers.yaml which may introduce a security risk.
 
-If this is something to consider for you, you can use the password type (see 
+If this is something to consider for you, you can use the password type (see
 Argument types for more info how to define parameter type). It will
 generate a secure (random) password with a length of 32 chars and encrypts
 it using AES 256 in CBC mode. It uses a passphrase that is stored in
@@ -365,7 +437,7 @@ example:
 
 When you enter the Testing class module in interactive mode you can see parameters
 from the Basic group and options to configure parameters which belong to the rest
-of groups on same level, in this case Advanced and Extra parameters. 
+of groups on same level, in this case Advanced and Extra parameters.
 
 ```
 Module foreman configuration
@@ -376,11 +448,11 @@ Module foreman configuration
 5. Back to main menu
 ```
 
-When you enter Extra parameters, you see only $three and an option to get back 
-to the parent. In Advanced you can see $two and two more subgroups - Advanced A and 
+When you enter Extra parameters, you see only $three and an option to get back
+to the parent. In Advanced you can see $two and two more subgroups - Advanced A and
 Advanced B. When you enter these subgroups, you can again see their parameters.
-Nesting is unlimited. Also there's no naming rule. Just notice that 
-the main group must be called `Parameters` and it's parameters are always 
+Nesting is unlimited. Also there's no naming rule. Just notice that
+the main group must be called `Parameters` and it's parameters are always
 displayed on first level of the module configuration.
 
 ```
@@ -390,9 +462,9 @@ Group Extra parameters (of module foreman)
 ```
 
 If there's no primary group a new one is created for you and it does not have
-any parameter. This means when a user enters the module configuration he or she will 
-see only subgroups in the menu (no parameters until a particular subgroup is entered). 
-If there is no group in the documentation a new primary group is created and it 
+any parameter. This means when a user enters the module configuration he or she will
+see only subgroups in the menu (no parameters until a particular subgroup is entered).
+If there is no group in the documentation a new primary group is created and it
 holds all module parameters (there are no subgroups in the module configuration).
 
 ## Conditional parameters in interactive mode
@@ -571,7 +643,7 @@ Last but not least you have access to logger. For more details, see
 If you don't want to modify your installer script you can place your hooks into the
 hooks directory. By default the hooks dir is searched for ruby files in subdirectories
 based on hook type. For example pre hooks are searched for in ```$installer_dir/hooks/pre/*.rb```
-The hooks from the previous example would look like this. The only change to the code is 
+The hooks from the previous example would look like this. The only change to the code is
 that you don't explicitely register hooks, it's done automatically for you.
 
 ```ruby
@@ -606,20 +678,20 @@ in the installer configuration file.
 - /my/plugin/hooks
 ```
 
-You can register as many hooks as you need. The order of execution for a particular hook type 
+You can register as many hooks as you need. The order of execution for a particular hook type
 is based on hook file name.
 
 If you want to cancel the installation you can use the ```exit``` method and specify an exit code.
 
 ## Colors
 
-Everybody loves colors right? In case you don't you can disable them using the ```--no-colors``` 
+Everybody loves colors right? In case you don't you can disable them using the ```--no-colors```
 argument or disallow them in the installer config file (search for ```colors:``` key and set
 it to false). If you don't touch this setting, kafo will try to detect whether colors
 are supported and will enable/disable it accordingly.
 
 Kafo supports two sets of colors, one for terminals with bright and one for dark backround.
-You can specify your installer default scheme in installer config file (```color_of_background``` 
+You can specify your installer default scheme in installer config file (```color_of_background```
 key). Alternatively the user can override this default setting with the ```--color-of-background``` argument.
 Possible values are ```dark``` and ```bright```.
 
@@ -646,7 +718,7 @@ end
 As you can see you can use HighLine helpers (e.g. say) with colors. Look at kafo/color_schema.rb for
 supported color identifiers. We can guarantee that there will always be at least :good, :bad, :info.
 
-Methods like module_enabled? and get_param are just helpers defined in the same file. If you find 
+Methods like module_enabled? and get_param are just helpers defined in the same file. If you find
 them useful, here's the definition
 
 ```ruby
@@ -668,13 +740,16 @@ paths. In order to do that you can use following configuration options:
 
 * :answer_file: /etc/kafo/kafo.yaml
 * :installer_dir: /usr/share/kafo/
-* :modules_dir: /usr/share/foreman-installer/modules
+* :module_dirs: /usr/share/foreman-installer/modules
+* :hook_dirs: /user/share/foreman-installer/hooks
+* :check_dirs: /user/share/foreman-installer/checks
 * :kafo_modules_dir: /usr/share/kafo/modules
 
-Answer file is obvious. The "installer_dir" is the place where your installer is 
-located. E.g. system checks will be loaded from here (under checks 
-subdirectory). You can optionally change foreman-installer modules dir
-using modules_dir option.
+Answer file is obvious. The "installer_dir" is the place where your installer is
+located. E.g. system checks will be loaded from here (under checks
+subdirectory) if not set elsewhere by `check_dirs`. You can optionally change foreman-installer modules dir
+using `modules_dir` option and hooks dir using `hook_dirs` option. `module_dirs`, `hook_dirs` and `check_dirs`
+can hold multiple directories where to look for the resources.
 
 On debian systems you may want to specify kafo modules dir
 independent on your installer location. If you specify this option kafo's
@@ -737,7 +812,7 @@ but you want the logs to be readable by specific users.
 When you want to make sure that a user has a certain software installed or has the
 right version you can write a simple script and put it into the checks directory.
 All files found there will be executed and if any of these exits with an non-zero
-exit code, kafo won't execute puppet but only print an error message 
+exit code, kafo won't execute puppet but only print an error message
 `Your system does not meet configuration criteria.`
 
 Everything on STDOUT and STDERR is logged in error level.
@@ -773,6 +848,8 @@ Other exit codes that can be returned:
 * '23' means that you have no answer file
 * '24' means that your answer file asks for puppet module that you did not provide
 * '25' means that kafo could not get default values from puppet
+* '26' means that kafo could not find the specified scenario
+* '27' means that kafo found previous installation that has different scenario than is the specified scenario  
 * '130' user interrupt (^C)
 
 ## Running Puppet Profiling

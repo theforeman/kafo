@@ -3,7 +3,9 @@
 module Kafo
   class SystemChecker
     def self.check
-      new(File.join(KafoConfigure.root_dir, 'checks', '*')).check
+      KafoConfigure.check_dirs.each do |dir|
+        new(File.join(dir, '*')).check
+      end
     end
 
     def initialize(path)

@@ -3,14 +3,17 @@
 # note current configuration is written to kafo.yaml every time kafo is run
 
 ## Installer configuration
-# Your project name
-# :name: Kafo
+# Human readable scenario name
+# :name: default
+# Description of the installer scenario and its purpose
+# :description:
 # Path to answer file, if the file does not exist a $pwd/config/answers.yaml is used as a fallback
 # :answer_file: /etc/kafo/answers.yaml
 # Custom installer path
 # :installer_dir: /usr/share/kafo/
-# Uncomment if you want to load puppet modules from a specific path, $pwd/modules is used by default
-# :modules_dir: /usr/share/kafo/modules
+# Uncomment if you want to load puppet modules from a specific path, $pwd/modules is used by default,
+# multiple dirs are allowed
+# :module_dirs: /usr/share/kafo/modules
 # Similar as modules_dir but for kafo internal modules, leave nil if you don't need to change it
 # :kafo_modules_dir:
 # Enable colors? If you don't touch this, we'll autodetect terminal capabilities
@@ -43,6 +46,11 @@
 # when you specify your directory, it will be search for $yourdir/$type/*.rb
 # :hook_dirs:
 # - /opt/hooks
+
+## Checks - system checks in these extra directories will be loaded
+# by default $installer_dir/checks is used
+# :check_dirs:
+# - /opt/checks
 
 # custom storage is handy if you use hooks and you must store some configuration
 # which should persist among installer runs. It can be also used for passing
