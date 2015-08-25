@@ -27,11 +27,11 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'kafo_parsers'
   spec.add_dependency 'puppet', '< 4.0.0'
   # better logging
-  spec.add_dependency 'logging', '< 2.0.0'
+  spec.add_dependency 'logging', '< 3.0.0'
   # CLI interface
   spec.add_dependency 'clamp', '>= 0.6.2'
   # interactive mode
-  spec.add_dependency 'highline', '>= 1.6.21', '< 1.7'
+  spec.add_dependency 'highline', '>= 1.6.21', '< 2.0'
   # ruby progress bar
   spec.add_dependency 'powerbar'
 end
