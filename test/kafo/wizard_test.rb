@@ -83,7 +83,7 @@ module Kafo
           it "displays menu" do
             must_exit_with_code(0) { wizard.send :main_menu }
             must_be_on_stdout(output,
-                              "[✓] Configure puppet",
+                              "[#{Kafo::Wizard::OK}] Configure puppet",
                               'Display current config',
                               'Save and run',
                               'Cancel run without Saving')
