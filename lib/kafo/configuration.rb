@@ -104,7 +104,7 @@ module Kafo
         temp_dir = Dir.mktmpdir(nil, app[:default_values_dir])
         KafoConfigure.exit_handler.register_cleanup_path temp_dir
         @logger.info 'Loading default values from puppet modules...'
-        command = PuppetCommand.new("$temp_dir=\"#{temp_dir}\" #{includes} dump_values(#{params})").append('2>&1').command
+        command = PuppetCommand.new("$temp_dir=\"#{temp_dir}\" #{includes} dump_values(#{params})", ['--noop']).append('2>&1').command
         result = `#{command}`
         @logger.debug result
         unless $?.exitstatus == 0
