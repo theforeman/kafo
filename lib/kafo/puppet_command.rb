@@ -39,9 +39,9 @@ module Kafo
 
     def modules_path
       [
-          KafoConfigure.modules_dir,
+          KafoConfigure.module_dirs,
           KafoConfigure.kafo_modules_dir,
-      ].join(':')
+      ].flatten.join(':')
     end
   end
 end

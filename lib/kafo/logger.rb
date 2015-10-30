@@ -37,6 +37,13 @@ module Kafo
     COLOR_LAYOUT   = Logging::Layouts::Pattern.new(:pattern => PATTERN, :color_scheme => 'bright')
     NOCOLOR_LAYOUT = Logging::Layouts::Pattern.new(:pattern => PATTERN, :color_scheme => nil)
 
+    def self.setup_fatal_logger(layout)
+      fatal_logger           = Logging.logger['fatal']
+      fatal_logger.level     = 'fatal'
+      fatal_logger.appenders = [::Logging.appenders.stderr(:layout => layout)]
+      self.loggers << fatal_logger
+    end
+
     def self.setup
       begin
         FileUtils.mkdir_p(KafoConfigure.config.app[:log_dir], :mode => 0750)
@@ -59,13 +66,9 @@ module Kafo
       end
 
       logger.level = KafoConfigure.config.app[:log_level]
+      self.loggers = [logger]
 
-      fatal_logger           = Logging.logger['fatal']
-      fatal_logger.level     = 'fatal'
-      layout                 = KafoConfigure.config.app[:colors] ? COLOR_LAYOUT : NOCOLOR_LAYOUT
-      fatal_logger.appenders = [::Logging.appenders.stderr(:layout => layout)]
-      
-      self.loggers = [logger, fatal_logger]
+      setup_fatal_logger(KafoConfigure.config.app[:colors] ? COLOR_LAYOUT : NOCOLOR_LAYOUT)
     end
 
     def self.setup_verbose
@@ -89,6 +92,7 @@ module Kafo
     end
 
     def self.dump_errors
+      setup_fatal_logger(ARGV.include?('--no-colors') ? NOCOLOR_LAYOUT : COLOR_LAYOUT) if loggers.empty?
       unless self.error_buffer.empty?
         loggers.each { |logger| logger.error 'Repeating errors encountered during run:' }
         self.dump_buffer(self.error_buffer)

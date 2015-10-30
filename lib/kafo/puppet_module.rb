@@ -18,7 +18,13 @@ module Kafo
       @manifest_name     = get_manifest_name
       @class_name        = get_class_name
       @params            = []
-      @manifest_path     = File.join(KafoConfigure.modules_dir, module_manifest_path)
+      if KafoConfigure.module_dirs.count == 1
+        module_dir       = KafoConfigure.module_dirs.first
+      else
+        module_dir         = KafoConfigure.module_dirs.find { |dir| File.exists?(File.join(dir, module_manifest_path)) } ||
+          warn("Manifest #{module_manifest_path} was not found in #{KafoConfigure.module_dirs.join(', ')}")
+      end
+      @manifest_path     = File.join(module_dir, module_manifest_path)
       @parser            = parser
       @validations       = []
       @logger            = KafoConfigure.logger

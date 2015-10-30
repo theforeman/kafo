@@ -10,9 +10,11 @@ module Kafo
 
     def initialize(params)
       self.class.prepare_functions
-      validate_files = KafoConfigure.modules_dir + '/*/lib/puppet/parser/functions/validate_*.rb'
-      is_function_files = KafoConfigure.modules_dir + '/*/lib/puppet/parser/functions/is_*.rb'
-      definitions = Dir.glob(validate_files) + Dir.glob(is_function_files)
+      definitions = KafoConfigure.module_dirs.map do |dir|
+        validate_files = dir + '/*/lib/puppet/parser/functions/validate_*.rb'
+        is_function_files = dir + '/*/lib/puppet/parser/functions/is_*.rb'
+        Dir.glob(validate_files) + Dir.glob(is_function_files)
+      end.flatten
 
       definitions.each do |file|
         require File.expand_path(file)

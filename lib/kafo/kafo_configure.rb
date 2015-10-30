@@ -21,6 +21,7 @@ require 'kafo/puppet_command'
 require 'kafo/progress_bar'
 require 'kafo/hooking'
 require 'kafo/exit_handler'
+require 'kafo/scenario_manager'
 
 module Kafo
   class KafoConfigure < Clamp::Command
@@ -28,8 +29,8 @@ module Kafo
 
     class << self
       attr_accessor :config, :root_dir, :config_file, :gem_root, :temp_config_file,
-                    :modules_dir, :kafo_modules_dir, :verbose, :app_options, :logger,
-                    :exit_handler
+                    :module_dirs, :kafo_modules_dir, :verbose, :app_options, :logger,
+                    :check_dirs, :exit_handler, :scenario_manager
       attr_writer :hooking
 
       def hooking
@@ -40,11 +41,17 @@ module Kafo
     def initialize(*args)
       self.class.logger           = Logger.new
       self.class.exit_handler     = ExitHandler.new
+      self.class.scenario_manager = ScenarioManager.new((defined?(CONFIG_DIR) && CONFIG_DIR) || (defined?(CONFIG_FILE) && CONFIG_FILE))
+
+      # Handle --list-scenarios before we need them
+      self.class.scenario_manager.list_available_scenarios if ARGV.include?('--list-scenarios')
+
       self.class.config_file      = config_file
       self.class.config           = Configuration.new(self.class.config_file)
       self.class.root_dir         = File.expand_path(self.class.config.app[:installer_dir])
-      modules_dir                 = self.class.config.app[:modules_dir] || (self.class.config.app[:installer_dir] + '/modules')
-      self.class.modules_dir      = File.expand_path(modules_dir)
+      self.class.check_dirs       = [self.class.config.app[:check_dirs] || File.join(self.class.root_dir, 'checks')].flatten
+      module_dirs                 = self.class.config.app[:modules_dir] || self.class.config.app[:module_dirs] || (self.class.config.app[:installer_dir] + '/modules')
+      self.class.module_dirs      = [module_dirs].flatten.map { |dir| File.expand_path(dir) }
       self.class.gem_root         = File.join(File.dirname(__FILE__), '../../')
       self.class.kafo_modules_dir = self.class.config.app[:kafo_modules_dir] || (self.class.gem_root + '/modules')
       @progress_bar               = nil
@@ -108,6 +115,7 @@ module Kafo
         store_params(temp_config_file)
       else
         store_params
+        self.class.scenario_manager.link_last_scenario(self.class.config_file) if self.class.scenario_manager.configured?
       end
       run_installation
       return self
@@ -216,6 +224,8 @@ module Kafo
       self.class.app_option ['-v', '--verbose'], :flag, 'Display log on STDOUT instead of progressbar'
       self.class.app_option ['-l', '--verbose-log-level'], 'LEVEL', 'Log level for verbose mode output',
                             :default => 'info'
+      self.class.app_option ['-S', '--scenario'], 'SCENARIO', 'Use installation scenario'
+      self.class.app_option ['--list-scenarios'], :flag, 'List available installation scenaraios'
     end
 
     def set_options
@@ -375,6 +385,7 @@ module Kafo
 
     def config_file
       return CONFIG_FILE if defined?(CONFIG_FILE) && File.exists?(CONFIG_FILE)
+      return self.class.scenario_manager.select_scenario if self.class.scenario_manager.configured?
       return '/etc/kafo/kafo.yaml' if File.exists?('/etc/kafo/kafo.yaml')
       return "#{::RbConfig::CONFIG['sysconfdir']}/kafo/kafo.yaml" if File.exists?("#{::RbConfig::CONFIG['sysconfdir']}/kafo/kafo.yaml")
       File.join(Dir.pwd, 'config', 'kafo.yaml')

@@ -13,6 +13,8 @@ module Kafo
     end
 
     DEFAULT = {
+        :name                 => '',
+        :description          => '',
         :log_dir              => '/var/log/kafo',
         :log_name             => 'configuration.log',
         :log_level            => 'info',
@@ -20,7 +22,7 @@ module Kafo
         :mapping              => {},
         :answer_file          => './config/answers.yaml',
         :installer_dir        => '.',
-        :modules_dir          => './modules',
+        :module_dirs          => ['./modules'],
         :default_values_dir   => '/tmp',
         :colors               => Configuration.colors_possible?,
         :color_of_background  => :dark,
@@ -104,7 +106,7 @@ module Kafo
         temp_dir = Dir.mktmpdir(nil, app[:default_values_dir])
         KafoConfigure.exit_handler.register_cleanup_path temp_dir
         @logger.info 'Loading default values from puppet modules...'
-        command = PuppetCommand.new("$temp_dir=\"#{temp_dir}\" #{includes} dump_values(#{params})", ['--noop']).append('2>&1').command
+        command = PuppetCommand.new("$temp_dir=\"#{temp_dir}\" #{includes} dump_values(#{params_to_dump})", ['--noop']).append('2>&1').command
         result = `#{command}`
         @logger.debug result
         unless $?.exitstatus == 0
@@ -145,6 +147,23 @@ module Kafo
       File.open(filename, 'w') { |file| file.write(config_header + format(YAML.dump(data))) }
     end
 
+    def params
+      @params ||= modules.map(&:params).flatten
+    end
+
+    def preset_parameters
+      # set values based on default_values
+      params.each do |param|
+        param.set_default(params_default_values)
+      end
+
+      # set values based on YAML
+      params.each do |param|
+        param.set_value_by_config(self)
+      end
+      params
+    end
+
     private
 
     def custom_storage
@@ -153,16 +172,18 @@ module Kafo
 
     def includes
       modules.map do |mod|
-        params_file = File.join(KafoConfigure.modules_dir, mod.params_path)
-        @logger.debug "checking presence of #{params_file}"
-        File.exist?(params_file) ? "include #{mod.dir_name}::#{mod.params_class_name}" : nil
+        module_dir = KafoConfigure.module_dirs.find do |dir|
+          params_file = File.join(dir, mod.params_path)
+          @logger.debug "checking presence of #{params_file}"
+          File.exist?(params_file)
+        end
+        module_dir ? "include #{mod.dir_name}::#{mod.params_class_name}" : nil
       end.uniq.compact.join(' ')
     end
 
-    def params
-      params = modules.map(&:params).flatten
-      params = params.select { |p| p.default != 'UNSET' }
-      params.map { |param| "#{param.dump_default}" }.join(',')
+    def params_to_dump
+      parameters = params.select { |p| p.default != 'UNSET' }
+      parameters.map { |param| "#{param.dump_default}" }.join(',')
     end
 
     def format(data)
