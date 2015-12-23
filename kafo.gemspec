@@ -23,9 +23,10 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'simplecov', '< 0.9'
   spec.add_development_dependency 'ci_reporter', '~> 1.9.0'
 
+  spec.add_dependency 'kafo_wizards'
+  spec.add_dependency 'ansi'
   # puppet module parsing
   spec.add_dependency 'kafo_parsers'
-  spec.add_dependency 'kafo_wizards'
   spec.add_dependency 'puppet', '< 4.0.0'
   # better logging
   spec.add_dependency 'logging', '< 3.0.0'
