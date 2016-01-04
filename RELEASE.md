@@ -17,38 +17,21 @@ if you want to become one.
 
 ## Build RPM
 
-Now we update rubygem-kafo.spec. Find the line starting with Version and update
-it for desired version. Then tag it using tito
+Now we update rubygem-kafo.spec in [foreman-packaging](https://github.com/theforeman/foreman-packaging/tree/rpm/develop/rubygem-kafo).
 
-```sh
-tito tag --keep-version
-```
-
-and edit changelog. I usually remove-merge only commits from changelog. You
-have to push tags to theforeman repository.
-
-Then you should build scratch rpms and test them. If they work you can build 
-rpms in koji. I am building it with this command
-
-```sh
-tito release koji
-```
-
-After sucessfull build packages will be moved to repositories automatically.
-
-(you need to have your koji client configured and you must have access to 
-koji.katello.org)
+Follow the [repository instructions](https://github.com/theforeman/foreman-packaging/tree/rpm/develop#howto-update-a-package)
+to update the package by changing the version in the spec and updating
+the source file.  Open a pull request against `rpm/develop` to submit
+the change and create a test build.
 
 ## Build DEB
 
 Create a pull-request on theforeman/foreman-packaging repository against
-deb/development branch. To bump a version you must edit dependencies/*/kafo/changelog.
-After you create new changelog entry (similar to RPM). When you have
-your PR ready you can build scratches in ci.theforeman.org. Search for
-packaging_build_deb_dependency task under Packaging tab. Again you need to 
-have access. Put link to scratches into PR message and wait until someone
-merges it.
+deb/develop branch.
 
+Follow the [repository instructions](https://github.com/theforeman/foreman-packaging/tree/deb/develop/#howto-update-a-package)
+to run a script to bump the version number automatically.  Opening a
+pull request will automatically attempt a test build.
 
 ## Take a rest
 
