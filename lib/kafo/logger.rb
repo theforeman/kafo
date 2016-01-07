@@ -68,13 +68,13 @@ module Kafo
       logger.level = KafoConfigure.config.app[:log_level]
       self.loggers = [logger]
 
-      setup_fatal_logger(KafoConfigure.config.app[:colors] ? COLOR_LAYOUT : NOCOLOR_LAYOUT)
+      setup_fatal_logger(color_layout)
     end
 
     def self.setup_verbose
       logger           = Logging.logger['verbose']
       logger.level     = KafoConfigure.config.app[:verbose_log_level]
-      layout           = KafoConfigure.config.app[:colors] ? COLOR_LAYOUT : NOCOLOR_LAYOUT
+      layout           = color_layout
       logger.appenders = [::Logging.appenders.stdout(:layout => layout)]
       self.loggers<< logger
     end
@@ -92,7 +92,7 @@ module Kafo
     end
 
     def self.dump_errors
-      setup_fatal_logger(ARGV.include?('--no-colors') ? NOCOLOR_LAYOUT : COLOR_LAYOUT) if loggers.empty?
+      setup_fatal_logger(color_layout) if loggers.empty?
       unless self.error_buffer.empty?
         loggers.each { |logger| logger.error 'Repeating errors encountered during run:' }
         self.dump_buffer(self.error_buffer)
@@ -108,6 +108,10 @@ module Kafo
         self.loggers.each { |logger| logger.send log[0], *log[1], &log[2] }
       end
       buffer.clear
+    end
+
+    def self.color_layout
+      KafoConfigure.use_colors? ? COLOR_LAYOUT : NOCOLOR_LAYOUT
     end
 
     def log(name, *args, &block)

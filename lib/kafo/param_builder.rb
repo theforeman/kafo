@@ -10,7 +10,7 @@ module Kafo
     end
 
     def validate
-      return true if KafoConfigure.config.app[:ignore_undocumented]
+      return true if @module.configuration.app[:ignore_undocumented]
 
       parameters = @data[:parameters].sort
       docs       = @data[:docs].keys.sort

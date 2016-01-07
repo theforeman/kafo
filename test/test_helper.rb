@@ -208,3 +208,7 @@ def wont_be_on_stdout(output, *args)
     stdout.wont_include inclusion
   end
 end
+
+def fake_param(mod_name, name, value)
+  OpenStruct.new( { :module => OpenStruct.new( { :class_name => mod_name, :name => mod_name, :enabled? => true } ), :name => name, :value => value } )
+end

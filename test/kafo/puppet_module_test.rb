@@ -42,8 +42,8 @@ module Kafo
     end
 
     describe "#manifest_path" do
-      specify { mod.manifest_path.must_equal 'test/fixtures/modules/puppet/manifests/init.pp' }
-      specify { plugin1_mod.manifest_path.must_equal 'test/fixtures/modules/foreman/manifests/plugin/default_hostgroup.pp' }
+      specify { mod.manifest_path.must_match %r"test/fixtures/modules/puppet/manifests/init.pp$" }
+      specify { plugin1_mod.manifest_path.must_match %r"test/fixtures/modules/foreman/manifests/plugin/default_hostgroup.pp" }
     end
 
     describe "#params_path" do

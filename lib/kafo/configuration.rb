@@ -8,10 +8,6 @@ module Kafo
   class Configuration
     attr_reader :config_file, :answer_file
 
-    def self.colors_possible?
-      !`which tput 2> /dev/null`.empty? && `tput colors`.to_i > 0
-    end
-
     DEFAULT = {
         :name                 => '',
         :description          => '',
@@ -24,7 +20,7 @@ module Kafo
         :installer_dir        => '.',
         :module_dirs          => ['./modules'],
         :default_values_dir   => '/tmp',
-        :colors               => Configuration.colors_possible?,
+        :colors               => Kafo::ColorScheme.colors_possible?,
         :color_of_background  => :dark,
         :hook_dirs            => [],
         :custom               => {},
@@ -39,7 +35,7 @@ module Kafo
 
       @answer_file = app[:answer_file]
       begin
-        @data = YAML.load_file(@answer_file)
+        @data = load_yaml_file(@answer_file)
       rescue Errno::ENOENT => e
         puts "No answer file at #{@answer_file} found, can not continue"
         KafoConfigure.exit(:no_answer_file)
@@ -64,7 +60,7 @@ module Kafo
     def app
       @app ||= begin
         begin
-          configuration = YAML.load_file(@config_file)
+          configuration = load_yaml_file(@config_file)
         rescue => e
           configuration = {}
         end
@@ -84,11 +80,31 @@ module Kafo
     end
 
     def modules
-      @modules ||= @data.keys.map { |mod| PuppetModule.new(mod).parse }.sort
+      @modules ||= @data.keys.map { |mod| PuppetModule.new(mod, KafoParsers::PuppetModuleParser, self).parse }.sort
+    end
+
+    def root_dir
+      File.expand_path(app[:installer_dir])
+    end
+
+    def check_dirs
+      [app[:check_dirs] || File.join(root_dir, 'checks')].flatten
+    end
+
+    def module_dirs
+      [app[:modules_dir] || app[:module_dirs] || (app[:installer_dir] + '/modules')].flatten.map { |dir| File.expand_path(dir) }
+    end
+
+    def gem_root
+      File.join(File.dirname(__FILE__), '../../')
+    end
+
+    def kafo_modules_dir
+      app[:kafo_modules_dir] || (gem_root + '/modules')
     end
 
     def add_module(name)
-      mod = PuppetModule.new(name).parse
+      mod = PuppetModule.new(name, KafoParsers::PuppetModuleParser, self).parse
       unless modules.map(&:name).include?(mod.name)
         mod.enable
         @modules << mod
@@ -106,7 +122,7 @@ module Kafo
         temp_dir = Dir.mktmpdir(nil, app[:default_values_dir])
         KafoConfigure.exit_handler.register_cleanup_path temp_dir
         @logger.info 'Loading default values from puppet modules...'
-        command = PuppetCommand.new("$temp_dir=\"#{temp_dir}\" #{includes} dump_values(#{params_to_dump})", ['--noop']).append('2>&1').command
+        command = PuppetCommand.new("$temp_dir=\"#{temp_dir}\" #{includes} dump_values(#{params_to_dump})", ['--noop'], self).append('2>&1').command
         result = `#{command}`
         @logger.debug result
         unless $?.exitstatus == 0
@@ -118,7 +134,7 @@ module Kafo
           KafoConfigure.exit(:defaults_error)
         end
         @logger.info "... finished"
-        YAML.load_file(File.join(temp_dir, 'default_values.yaml'))
+        load_yaml_file(File.join(temp_dir, 'default_values.yaml'))
       end
     end
 
@@ -135,7 +151,7 @@ module Kafo
     end
 
     def config_header
-      files          = [app[:config_header_file], File.join(KafoConfigure.gem_root, '/config/config_header.txt')].compact
+      files          = [app[:config_header_file], File.join(gem_root, '/config/config_header.txt')].compact
       file           = files.select { |f| File.exists?(f) }.first
       @config_header ||= file.nil? ? '' : File.read(file)
     end
@@ -151,17 +167,49 @@ module Kafo
       @params ||= modules.map(&:params).flatten
     end
 
-    def preset_parameters
+    def param(mod, name)
+      params.detect { |p| p.name == name && p.module.name == mod }
+    end
+
+    def preset_defaults_from_puppet
       # set values based on default_values
       params.each do |param|
         param.set_default(params_default_values)
       end
+    end
 
+    def preset_defaults_from_yaml
       # set values based on YAML
       params.each do |param|
         param.set_value_by_config(self)
       end
-      params
+    end
+
+    def preset_defaults_from_other_config(other_config)
+      params_changed(other_config).each do |par|
+        param(par.module.class_name, par.name).value = other_config.param(par.module.class_name, par.name).value
+      end
+    end
+
+    def params_changed(old_config)
+      # finds params that had different value in the old config
+      params.select do |par|
+        next unless par.module.enabled?
+        old_param = old_config.param(par.module.class_name, par.name)
+        old_param && old_param.value != par.value
+      end
+    end
+
+    def params_missing(old_config)
+      # finds params that are present but will be missing in the new config
+      old_config.params.select do |par|
+        next if !par.module.enabled? || !module_enabled?(par.module.name)
+        param(par.module.class_name, par.name).nil?
+      end
+    end
+
+    def temp_config_file
+      @temp_config_file ||= "/tmp/kafo_answers_#{rand(1_000_000)}.yaml"
     end
 
     private
@@ -172,7 +220,7 @@ module Kafo
 
     def includes
       modules.map do |mod|
-        module_dir = KafoConfigure.module_dirs.find do |dir|
+        module_dir = module_dirs.find do |dir|
           params_file = File.join(dir, mod.params_path)
           @logger.debug "checking presence of #{params_file}"
           File.exist?(params_file)
@@ -188,6 +236,10 @@ module Kafo
 
     def format(data)
       data.gsub('!ruby/sym ', ':')
+    end
+
+    def load_yaml_file(filename)
+      YAML.load_file(filename)
     end
   end
 end

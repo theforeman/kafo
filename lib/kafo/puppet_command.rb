@@ -1,7 +1,8 @@
 # encoding: UTF-8
 module Kafo
   class PuppetCommand
-    def initialize(command, options = [])
+    def initialize(command, options = [], configuration = KafoConfigure.config)
+      @configuration = configuration
       @command = command
 
       # Expand the modules_path to work around the fact that Puppet doesn't
@@ -21,9 +22,9 @@ module Kafo
 
     def command
       result = [
-          "echo '$kafo_config_file=\"#{KafoConfigure.config_file}\" #{custom_answer_file} #{add_progress} #{@command}'",
+          "echo '$kafo_config_file=\"#{@configuration.config_file}\" #{custom_answer_file} #{add_progress} #{@command}'",
           '|',
-          "RUBYLIB=#{["#{KafoConfigure.gem_root}/modules", ::ENV['RUBYLIB']].join(File::PATH_SEPARATOR)}",
+          "RUBYLIB=#{["#{@configuration.gem_root}/modules", ::ENV['RUBYLIB']].join(File::PATH_SEPARATOR)}",
           "puppet apply #{@options.join(' ')} #{@suffix}",
       ].join(' ')
       @logger.debug result
@@ -39,8 +40,8 @@ module Kafo
 
     def modules_path
       [
-          KafoConfigure.module_dirs,
-          KafoConfigure.kafo_modules_dir,
+          @configuration.module_dirs,
+          @configuration.kafo_modules_dir,
       ].flatten.join(':')
     end
   end

@@ -9,6 +9,7 @@ end
 
 require 'pty'
 require 'clamp'
+require 'kafo/color_scheme'
 require 'kafo_parsers/exceptions'
 require 'kafo/exceptions'
 require 'kafo/configuration'
@@ -39,6 +40,7 @@ module Kafo
     end
 
     def initialize(*args)
+      self.class.preset_color_scheme
       self.class.logger           = Logger.new
       self.class.exit_handler     = ExitHandler.new
       self.class.scenario_manager = ScenarioManager.new((defined?(CONFIG_DIR) && CONFIG_DIR) || (defined?(CONFIG_FILE) && CONFIG_FILE))
@@ -48,12 +50,11 @@ module Kafo
 
       self.class.config_file      = config_file
       self.class.config           = Configuration.new(self.class.config_file)
-      self.class.root_dir         = File.expand_path(self.class.config.app[:installer_dir])
-      self.class.check_dirs       = [self.class.config.app[:check_dirs] || File.join(self.class.root_dir, 'checks')].flatten
-      module_dirs                 = self.class.config.app[:modules_dir] || self.class.config.app[:module_dirs] || (self.class.config.app[:installer_dir] + '/modules')
-      self.class.module_dirs      = [module_dirs].flatten.map { |dir| File.expand_path(dir) }
-      self.class.gem_root         = File.join(File.dirname(__FILE__), '../../')
-      self.class.kafo_modules_dir = self.class.config.app[:kafo_modules_dir] || (self.class.gem_root + '/modules')
+      self.class.root_dir         = self.class.config.root_dir
+      self.class.check_dirs       = self.class.config.check_dirs
+      self.class.module_dirs      = self.class.config.module_dirs
+      self.class.gem_root         = self.class.config.gem_root
+      self.class.kafo_modules_dir = self.class.config.kafo_modules_dir
       @progress_bar               = nil
       self.class.hooking.load
       self.class.hooking.kafo     = self
@@ -67,7 +68,7 @@ module Kafo
       parse clamp_app_arguments
       parse_app_arguments
       Logger.setup
-      ColorScheme.new(config).setup
+      self.class.set_color_scheme
 
       self.class.hooking.execute(:init)
       set_parameters # here the params gets parsed and we need app config populated
@@ -111,8 +112,8 @@ module Kafo
 
       self.class.hooking.execute(:pre_commit)
       if dont_save_answers? || noop?
-        self.class.temp_config_file = temp_config_file
-        store_params(temp_config_file)
+        self.class.temp_config_file = self.class.config.temp_config_file
+        store_params(self.class.config.temp_config_file)
       else
         store_params
         self.class.scenario_manager.link_last_scenario(self.class.config_file) if self.class.scenario_manager.configured?
@@ -186,21 +187,18 @@ module Kafo
     end
 
     def param(mod, name)
-      params.detect { |p| p.name == name && p.module.name == mod }
+      config.param(mod, name)
     end
 
     private
 
     def set_parameters
-      # set values based on default_values
-      params.each do |param|
-        param.set_default(config.params_default_values)
-      end
-
+      config.preset_defaults_from_puppet
       self.class.hooking.execute(:pre_values)
-      # set values based on YAML
-      params.each do |param|
-        param.set_value_by_config(config)
+      config.preset_defaults_from_yaml
+      if self.class.scenario_manager.scenario_changed?(config.config_file)
+        prev_scenario = self.class.scenario_manager.load_and_setup_configuration(self.class.scenario_manager.previous_scenario)
+        config.preset_defaults_from_other_config(prev_scenario)
       end
     end
 
@@ -226,6 +224,8 @@ module Kafo
                             :default => 'info'
       self.class.app_option ['-S', '--scenario'], 'SCENARIO', 'Use installation scenario'
       self.class.app_option ['--list-scenarios'], :flag, 'List available installation scenaraios'
+      self.class.app_option ['--force'], :flag, 'Force change of installation scenaraio'
+      self.class.app_option ['--compare-scenarios'], :flag, 'Show changes between last used scenario and the scenario specified with -S or --scenario argument'
     end
 
     def set_options
@@ -351,7 +351,7 @@ module Kafo
       end
       @progress_bar.close if @progress_bar
       logger.info "Puppet has finished, bye!"
-      FileUtils.rm(temp_config_file, :force => true)
+      FileUtils.rm(self.class.config.temp_config_file, :force => true)
       self.class.exit(exit_code) do
         self.class.hooking.execute(:post)
       end
@@ -391,8 +391,26 @@ module Kafo
       File.join(Dir.pwd, 'config', 'kafo.yaml')
     end
 
-    def temp_config_file
-      @temp_config_file ||= "/tmp/kafo_answers_#{rand(1_000_000)}.yaml"
+    def self.use_colors?
+      if config
+        colors = config.app[:colors]
+      else
+        colors = ARGV.include?('--no-colors') ? false : nil
+        colors = ARGV.include?('--colors') ? true : nil if colors.nil?
+      end
+      colors
+    end
+
+    def self.preset_color_scheme
+      match = ARGV.join(' ').match /--color-of-background[ =](\w+)/
+      background = match && match[1]
+      ColorScheme.new(:background => background, :colors => use_colors?).setup
+    end
+
+    def self.set_color_scheme
+      ColorScheme.new(
+        :background => config.app[:color_of_background],
+        :colors => use_colors?).setup
     end
   end
 end
