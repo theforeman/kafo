@@ -71,5 +71,31 @@ module Kafo
         end
       end
     end
+
+    describe '#migrate_configuration' do
+
+      let(:keys) { [:log_dir, :log_name, :log_level, :no_prefix, :default_values_dir,
+          :colors, :color_of_background, :custom, :password, :verbose_log_level] }
+
+      before do
+        (keys + [:description]).each { |key| old_config.app[key] = 'old value' }
+      end
+
+      it 'migrates values from other configuration' do
+        basic_config.migrate_configuration(old_config)
+        keys.each { |key| basic_config.app[key].must_equal 'old value' }
+        basic_config.app[:description].wont_equal 'old value'
+      end
+
+      it 'migrates values from other configuration except those marked to skip' do
+        basic_config.migrate_configuration(old_config, :skip => [:log_name])
+        basic_config.app[:log_name].wont_equal 'old value'
+      end
+
+      it 'migrates values from other configuration plus those marked to add' do
+        basic_config.migrate_configuration(old_config, :with => [:description])
+        basic_config.app[:description].must_equal 'old value'
+      end
+    end
   end
 end
