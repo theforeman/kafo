@@ -52,7 +52,7 @@ module Kafo
       end
 
       logger   = Logging.logger['main']
-      filename = "#{KafoConfigure.config.app[:log_dir]}/#{KafoConfigure.config.app[:log_name] || 'configure.log'}"
+      filename = KafoConfigure.config.log_file
       begin
         logger.appenders = ::Logging.appenders.rolling_file('configure',
                                                             :filename => filename,
@@ -66,14 +66,14 @@ module Kafo
       end
 
       logger.level = KafoConfigure.config.app[:log_level]
-      self.loggers = [logger]
+      self.loggers << logger
 
-      setup_fatal_logger(color_layout)
+      setup_fatal_logger(color_layout) unless loggers.detect {|l| l.name == 'verbose'}
     end
 
     def self.setup_verbose
       logger           = Logging.logger['verbose']
-      logger.level     = KafoConfigure.config.app[:verbose_log_level]
+      logger.level     = (KafoConfigure.config && KafoConfigure.config.app[:verbose_log_level]) || :info
       layout           = color_layout
       logger.appenders = [::Logging.appenders.stdout(:layout => layout)]
       self.loggers<< logger
@@ -94,7 +94,7 @@ module Kafo
     def self.dump_errors
       setup_fatal_logger(color_layout) if loggers.empty?
       unless self.error_buffer.empty?
-        loggers.each { |logger| logger.error 'Repeating errors encountered during run:' }
+        loggers.each { |logger| logger.error 'Errors encountered during run:' }
         self.dump_buffer(self.error_buffer)
       end
     end

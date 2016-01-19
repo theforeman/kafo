@@ -3,6 +3,7 @@ require 'yaml'
 require 'tmpdir'
 require 'kafo/puppet_module'
 require 'kafo/password_manager'
+require 'kafo/color_scheme'
 
 module Kafo
   class Configuration
@@ -25,6 +26,7 @@ module Kafo
         :hook_dirs            => [],
         :custom               => {},
         :low_priority_modules => [],
+        :verbose_log_level    => 'info'
     }
 
     def initialize(file, persist = true)
@@ -67,6 +69,8 @@ module Kafo
 
         result            = DEFAULT.merge(configuration || {})
         result[:password] ||= PasswordManager.new.password
+        result[:module_dirs] = result[:modules_dir] || result[:module_dirs]
+        result.delete(:modules_dir)
         result
       end
     end
@@ -92,7 +96,7 @@ module Kafo
     end
 
     def module_dirs
-      [app[:modules_dir] || app[:module_dirs] || (app[:installer_dir] + '/modules')].flatten.map { |dir| File.expand_path(dir) }
+      [app[:module_dirs] || (app[:installer_dir] + '/modules')].flatten.map { |dir| File.expand_path(dir) }
     end
 
     def gem_root
@@ -113,6 +117,18 @@ module Kafo
 
     def add_mapping(module_name, mapping)
       app[:mapping][module_name] = mapping
+      save_configuration(app)
+    end
+
+    def migrate_configuration(from_config, options={})
+      keys_to_skip = options.fetch(:skip, [])
+      keys = [:log_dir, :log_name, :log_level, :no_prefix, :default_values_dir,
+        :colors, :color_of_background, :custom, :password, :verbose_log_level]
+      keys += options.fetch(:with, [])
+      keys.each do |key|
+        next if keys_to_skip.include?(key)
+        app[key] = from_config.app[key]
+      end
       save_configuration(app)
     end
 
@@ -210,6 +226,18 @@ module Kafo
 
     def temp_config_file
       @temp_config_file ||= "/tmp/kafo_answers_#{rand(1_000_000)}.yaml"
+    end
+
+    def log_file
+      File.join(app[:log_dir], app[:log_name])
+    end
+
+    def log_exists?
+      File.exists?(log_file) && File.size(log_file) > 0
+    end
+
+    def answers
+      @data
     end
 
     private

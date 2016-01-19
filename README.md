@@ -627,6 +627,7 @@ You may need to add new features to the installer. Kafo provides a simple hook
 mechanism that allows you to run custom code at 6 different occasions.
 We currently support the following hooks.
 
+* pre_migrations - just after kafo reads its configuration - useful for config file updates. Only in this stage it is posible to request config reload (`Kafo.request_config_reload`) to get in our changes
 * boot - before kafo is ready to work, useful for adding new installer arguments, but logger won't work yet
 * init - just after hooking is initialized and kafo is configured, parameters have no values yet
 * pre_values - just before value from CLI is set to parameters (they already have default values)

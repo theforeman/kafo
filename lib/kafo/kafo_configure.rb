@@ -43,30 +43,45 @@ module Kafo
       self.class.preset_color_scheme
       self.class.logger           = Logger.new
       self.class.exit_handler     = ExitHandler.new
-      self.class.scenario_manager = ScenarioManager.new((defined?(CONFIG_DIR) && CONFIG_DIR) || (defined?(CONFIG_FILE) && CONFIG_FILE))
+      @progress_bar               = nil
+      @config_reload_requested    = false
+
+      scenario_manager = setup_scenario_manager
+      self.class.scenario_manager = scenario_manager
 
       # Handle --list-scenarios before we need them
-      self.class.scenario_manager.list_available_scenarios if ARGV.include?('--list-scenarios')
+      scenario_manager.list_available_scenarios if ARGV.include?('--list-scenarios')
+      setup_config(config_file)
 
-      self.class.config_file      = config_file
-      self.class.config           = Configuration.new(self.class.config_file)
-      self.class.root_dir         = self.class.config.root_dir
-      self.class.check_dirs       = self.class.config.check_dirs
-      self.class.module_dirs      = self.class.config.module_dirs
-      self.class.gem_root         = self.class.config.gem_root
-      self.class.kafo_modules_dir = self.class.config.kafo_modules_dir
-      @progress_bar               = nil
-      self.class.hooking.load
-      self.class.hooking.kafo     = self
+      self.class.hooking.execute(:pre_migrations)
+      # run migrations
+
+      # reload config
+      if @config_reload_requested
+        scenario_manager = setup_scenario_manager
+        self.class.scenario_manager = scenario_manager
+        setup_config(self.class.config_file)
+        self.class.logger.info('Installer configuration was reloaded')
+      end
+
+      if scenario_manager.configured?
+        scenario_manager.check_scenario_change(self.class.config_file)
+        if scenario_manager.scenario_changed?(self.class.config_file)
+          prev_config = scenario_manager.load_configuration(scenario_manager.previous_scenario)
+          self.class.config.migrate_configuration(prev_config, :skip => [:log_name])
+          setup_config(self.class.config_file)
+          self.class.logger.info("Due to scenario change the configuration (#{self.class.config_file}) was updated with #{scenario_manager.previous_scenario} and reloaded.")
+        end
+      end
 
       super
 
       self.class.hooking.execute(:boot)
-      set_app_options
+      set_app_options # define args for installer
       # we need to parse app config params using clamp even before run method does it
       # so we limit parsing only to app config options (because of --help and later defined params)
       parse clamp_app_arguments
-      parse_app_arguments
+      parse_app_arguments # set values from ARGS to config.app
       Logger.setup
       self.class.set_color_scheme
 
@@ -190,7 +205,28 @@ module Kafo
       config.param(mod, name)
     end
 
+    def request_config_reload
+      @config_reload_requested = true
+    end
+
+
     private
+
+    def setup_config(conf_file)
+      self.class.config_file      = conf_file
+      self.class.config           = Configuration.new(self.class.config_file)
+      self.class.root_dir         = self.class.config.root_dir
+      self.class.check_dirs       = self.class.config.check_dirs
+      self.class.module_dirs      = self.class.config.module_dirs
+      self.class.gem_root         = self.class.config.gem_root
+      self.class.kafo_modules_dir = self.class.config.kafo_modules_dir
+      self.class.hooking.load
+      self.class.hooking.kafo     = self
+    end
+
+    def setup_scenario_manager
+      ScenarioManager.new((defined?(CONFIG_DIR) && CONFIG_DIR) || (defined?(CONFIG_FILE) && CONFIG_FILE))
+    end
 
     def set_parameters
       config.preset_defaults_from_puppet

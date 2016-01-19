@@ -33,7 +33,7 @@ module Kafo
       c                         = Configuration.new(config, false)
       KafoConfigure.config      = c
       KafoConfigure.root_dir    = File.expand_path(c.app[:installer_dir])
-      KafoConfigure.modules_dir = File.expand_path(c.app[:modules_dir])
+      KafoConfigure.module_dirs = File.expand_path(c.app[:module_dirs])
       KafoConfigure.logger      = Logger.new(STDOUT)
 
       exporter = self.class.const_get(format.capitalize).new(c)
