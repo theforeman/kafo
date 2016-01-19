@@ -12,6 +12,7 @@ require 'clamp'
 require 'kafo/color_scheme'
 require 'kafo_parsers/exceptions'
 require 'kafo/exceptions'
+require 'kafo/migrations'
 require 'kafo/configuration'
 require 'kafo/logger'
 require 'kafo/string_helper'
@@ -54,7 +55,9 @@ module Kafo
       setup_config(config_file)
 
       self.class.hooking.execute(:pre_migrations)
+
       # run migrations
+      self.class.config.run_migrations
 
       # reload config
       if @config_reload_requested
@@ -68,6 +71,7 @@ module Kafo
         scenario_manager.check_scenario_change(self.class.config_file)
         if scenario_manager.scenario_changed?(self.class.config_file)
           prev_config = scenario_manager.load_configuration(scenario_manager.previous_scenario)
+          prev_config.run_migrations
           self.class.config.migrate_configuration(prev_config, :skip => [:log_name])
           setup_config(self.class.config_file)
           self.class.logger.info("Due to scenario change the configuration (#{self.class.config_file}) was updated with #{scenario_manager.previous_scenario} and reloaded.")

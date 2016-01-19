@@ -286,10 +286,35 @@ provided by Kafo can be used and customized to satisfy your needs
 ```
 
 ### Scenario as an installer plugin
+
 Scenarios were designed to make it possible to package them separately as optional installer extension.  
 Config files are located in separate directory which makes packaging of additional scenarios easy.
 Configuration of paths to modules, checks and hooks accepts multiple directories
 so it is possible to bundle your scenario with additional modules, hooks and checks.
+
+### Updating scenarios
+
+As your project grows you may need to change your installer modules or add new ones. To make upgrades of existing installations easier
+Kafo has support for scenario migrations. Migrations are ruby scripts similar to hooks and are located
+in `<config>/installer-scenarios.d/your-scenario.migrations/` so each scenario has its own set of independent migrations.
+During its initialization the installer checks for migrations that were not applied yet. It happens exactly between execution of `pre-migrations` and `boot` hooks.
+The installer stores names of applied migrations in `<config>/installer-scenarios.d/your-scenario.migrations/.applied` to avoid runnig the migrations multiple times.  
+It is recommended to prefix the migration names with `date +%y%m%d%H%M%S` to avoid migration ordering issues.
+
+In a migration you can modify the scenario configuration as well as the answer file. The changed configs are stored immediately after all the migrations were applied.
+Note that `--noop` and `--dont-save-answers` has no effect on migrations.
+
+Sample migration adding new module could look like as follows:
+
+```bash
+  cat <<EOF > "/etc/foreman/installer-scenarios.d/foreman-installer.migrations/`date +%y%m%d%H%M%S`-gutterball.rb"
+  scenario[:mapping]['katello::plugin::gutterball'] = {
+      :dir_name => 'katello',
+      :manifest_name => 'plugin/gutterball'
+  }
+  answers['katello::plugin::gutterball'] = true
+  EOF
+```
 
 ## Documentation
 
