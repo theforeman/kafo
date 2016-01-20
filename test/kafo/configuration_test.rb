@@ -97,5 +97,40 @@ module Kafo
         basic_config.app[:description].must_equal 'old value'
       end
     end
+
+    describe '#run_migrations' do
+      before do
+        @tmp_dir = Dir.mktmpdir
+        File.open("#{@tmp_dir}/01.rb", 'w') {|f| f.write("scenario[:custom][:test] = '01'") }
+        File.open("#{@tmp_dir}/02.rb", 'w') {|f| f.write("scenario[:description] = 'Migrated'") }
+      end
+
+      after do
+        FileUtils.rm_rf( @tmp_dir ) if File.exists?( @tmp_dir )
+      end
+
+      it "runs the migrations" do
+        basic_config.stub(:migrations_dir, @tmp_dir) do
+          basic_config.run_migrations
+          basic_config.app[:description].must_equal 'Migrated'
+          basic_config.app[:custom].must_equal({ :test => '01'})
+        end
+      end
+
+      it "wont run the applied migrations twice" do
+        basic_config.stub(:migrations_dir, @tmp_dir) do
+          basic_config.run_migrations
+          YAML.load_file(File.join(@tmp_dir, '.applied')).must_equal ["01.rb", "02.rb"]
+
+          basic_config.app[:description] = "New desc"
+          basic_config.run_migrations
+          basic_config.app[:description].must_equal "New desc"
+        end
+      end
+    end
+
+    describe '#migrations_dir' do
+      specify { basic_config.migrations_dir.must_match /\/tmp\/testing_config.*\.migrations$/ }
+    end
   end
 end

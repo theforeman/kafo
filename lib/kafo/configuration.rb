@@ -240,6 +240,22 @@ module Kafo
       @data
     end
 
+    def run_migrations
+      migrations = Kafo::Migrations.new(migrations_dir)
+      @app, @data = migrations.run(app, answers)
+      if migrations.migrations.count > 0
+        @modules = nil # force the lazy loaded modules to reload next time they are used
+        save_configuration(app)
+        store(answers)
+        migrations.store_applied
+        @logger.info("#{migrations.migrations.count} migration/s were applied. Updated configuration was saved.")
+      end
+    end
+
+    def migrations_dir
+      @config_file.gsub(/\.yaml$/, '.migrations')
+    end
+
     private
 
     def custom_storage
