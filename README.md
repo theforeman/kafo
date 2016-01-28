@@ -302,6 +302,7 @@ The installer stores names of applied migrations in `<config>/installer-scenario
 It is recommended to prefix the migration names with `date +%y%m%d%H%M%S` to avoid migration ordering issues.
 
 In a migration you can modify the scenario configuration as well as the answer file. The changed configs are stored immediately after all the migrations were applied.
+If you just want to apply the migrations you can use `--migrations-only` switch. 
 Note that `--noop` and `--dont-save-answers` has no effect on migrations.
 
 Sample migration adding new module could look like as follows:

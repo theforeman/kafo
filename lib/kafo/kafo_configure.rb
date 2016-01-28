@@ -59,6 +59,13 @@ module Kafo
       # run migrations
       self.class.config.run_migrations
 
+      if ARGV.include?('--migrations-only')
+        self.class.verbose = (ARGV.include?('--verbose') || ARGV.include?('-v'))
+        Logger.setup
+        self.class.logger.info('Log buffers flushed')
+        self.class.exit(0)
+      end
+
       # reload config
       if @config_reload_requested
         scenario_manager = setup_scenario_manager
@@ -266,6 +273,7 @@ module Kafo
       self.class.app_option ['--list-scenarios'], :flag, 'List available installation scenaraios'
       self.class.app_option ['--force'], :flag, 'Force change of installation scenaraio'
       self.class.app_option ['--compare-scenarios'], :flag, 'Show changes between last used scenario and the scenario specified with -S or --scenario argument'
+      self.class.app_option ['--migrations-only'], :flag, 'Apply migrations to a selected scenario and exit'
     end
 
     def set_options
