@@ -1,5 +1,6 @@
 # encoding: UTF-8
 require 'kafo_wizards'
+require 'pathname'
 
 module Kafo
   class ScenarioManager
@@ -8,7 +9,7 @@ module Kafo
     def initialize(config, last_scenario_link_name='last_scenario.yaml')
       @config_dir = File.file?(config) ? File.dirname(config) : config
       @last_scenario_link = File.join(config_dir, last_scenario_link_name)
-      @previous_scenario = File.realpath(last_scenario_link) if File.exists?(last_scenario_link)
+      @previous_scenario = Pathname.new(last_scenario_link).realpath.to_s if File.exists?(last_scenario_link)
     end
 
     def available_scenarios
@@ -67,7 +68,7 @@ module Kafo
     end
 
     def scenario_changed?(scenario)
-      scenario = File.realpath(scenario) if File.symlink?(scenario)
+      scenario = Pathname.new(scenario).realpath.to_s if File.symlink?(scenario)
       !!previous_scenario && scenario != previous_scenario
     end
 

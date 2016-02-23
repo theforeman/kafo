@@ -1,4 +1,6 @@
 require 'test_helper'
+require 'fileutils'
+require 'tmpdir'
 
 module Kafo
   describe ScenarioManager do
@@ -11,6 +13,23 @@ module Kafo
       it "supports old configuration" do
         File.stub(:file?, true) do
           manager_with_file.config_dir.must_equal '/path/to/scenarios.d'
+        end
+      end
+    end
+
+    describe "#initialize" do
+      describe "with last_scenario.yaml" do
+        let(:tmpdir) { Dir.mktmpdir }
+        let(:scenario_path) { File.join(tmpdir, 'foreman.yaml') }
+
+        before do
+          FileUtils.touch(scenario_path)
+          FileUtils.ln_s(scenario_path, File.join(tmpdir, 'last_scenario.yaml'))
+        end
+        after { FileUtils.remove_entry_secure tmpdir }
+
+        it "determines path to last scenario" do
+          ScenarioManager.new(tmpdir).previous_scenario.must_equal scenario_path
         end
       end
     end
@@ -33,6 +52,23 @@ module Kafo
       end
 
       specify { manager.scenario_changed?('/path/to/scenarios.d/foreman.yaml').must_equal false }
+
+      describe "with symlink" do
+        let(:tmpdir) { Dir.mktmpdir }
+        let(:scenario_path) { File.join(tmpdir, 'foreman.yaml') }
+
+        before do
+          FileUtils.touch(scenario_path)
+          FileUtils.ln_s(scenario_path, File.join(tmpdir, 'linked_foreman.yaml'))
+        end
+        after { FileUtils.remove_entry_secure tmpdir }
+
+        it "detects unchanged scenario" do
+          manager.stub(:previous_scenario, scenario_path) do
+            manager.scenario_changed?(File.join(tmpdir, 'linked_foreman.yaml')).must_equal false
+          end
+        end
+      end
     end
 
     describe "#list_available_scenarios" do
