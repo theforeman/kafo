@@ -141,26 +141,25 @@ module Kafo
     end
 
     def confirm_scenario_change(new_scenario)
-      unless ARGV.include?('--force')
-        if (ARGV & ['--interactive', '-i']).any?
-          show_scenario_diff(@previous_scenario, new_scenario)
+      if (ARGV & ['--interactive', '-i']).any?
+        show_scenario_diff(@previous_scenario, new_scenario)
 
-          wizard = KafoWizards.wizard(:cli, 'Confirm installation scenario selection',
-            :description => "You are trying to replace existing installation with different scenario. This may lead to unpredictable states. Please confirm that you want to proceed.")
-          wizard.entries << wizard.factory.button(:proceed, :label => 'Proceed with selected installation scenario', :default => false)
-          wizard.entries << wizard.factory.button(:cancel, :label => 'Cancel Installation', :default => true)
-          result = wizard.run
-          if result == :cancel
-            say 'Installation was cancelled by user'
-            dump_log_and_exit(0)
-          end
-        else
-          message = "You are trying to replace existing installation with different scenario. This may lead to unpredictable states. " +
-          "Use --force to override. You can use --compare-scenarios to see the differences"
-          KafoConfigure.logger.error(message)
-          dump_log_and_exit(:scenario_error)
+        wizard = KafoWizards.wizard(:cli, 'Confirm installation scenario selection',
+          :description => "You are trying to replace existing installation with different scenario. This may lead to unpredictable states. Please confirm that you want to proceed.")
+        wizard.entries << wizard.factory.button(:proceed, :label => 'Proceed with selected installation scenario', :default => false)
+        wizard.entries << wizard.factory.button(:cancel, :label => 'Cancel Installation', :default => true)
+        result = wizard.run
+        if result == :cancel
+          say 'Installation was cancelled by user'
+          dump_log_and_exit(0)
         end
+      elsif !ARGV.include?('--force') && !KafoConfigure.in_help_mode?
+        message = "You are trying to replace existing installation with different scenario. This may lead to unpredictable states. " +
+        "Use --force to override. You can use --compare-scenarios to see the differences"
+        KafoConfigure.logger.error(message)
+        dump_log_and_exit(:scenario_error)
       end
+      true
     end
 
     def print_scenario_diff(prev_conf, new_conf)

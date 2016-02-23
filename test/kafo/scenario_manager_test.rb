@@ -149,6 +149,52 @@ module Kafo
       end
     end
 
+    describe '#confirm_scenario_change' do
+      let(:basic_config_file) { ConfigFileFactory.build('basic', BASIC_CONFIGURATION).path }
+      let(:new_config) { Kafo::Configuration.new(basic_config_file, false) }
+
+      before :all do
+        @argv = ARGV
+        ARGV.clear
+      end
+
+      after :all do
+        ARGV.clear
+        ARGV.concat(@argv)
+      end
+
+      it 'prints error and exits when not forced' do
+        log_device = DummyLogger.new
+        Logger.loggers = [log_device]
+        must_exit_with_code(Kafo::ExitHandler.new.error_codes[:scenario_error]) do
+          capture_io { manager.confirm_scenario_change(new_config) }
+        end
+        log_device.rewind
+        errors = log_device.error.read
+        errors.must_match /You are trying to replace existing installation with different scenario. This may lead to unpredictable states. Use --force to override. You can use --compare-scenarios to see the differences/
+      end
+
+      it 'passes when forced (--force)' do
+        ARGV << '--force'
+        assert manager.confirm_scenario_change(new_config)
+      end
+
+      it 'passes when printing help (--help)' do
+        ARGV << '--help'
+        assert manager.confirm_scenario_change(new_config)
+      end
+
+      it 'passes when printing full help (--full-help)' do
+        ARGV << '--full-help'
+        assert manager.confirm_scenario_change(new_config)
+      end
+
+      it 'passes when printing help (-h)' do
+        ARGV << '-h'
+        assert manager.confirm_scenario_change(new_config)
+      end
+    end
+
     describe '#print_scenario_diff' do
       let(:basic_config_file) { ConfigFileFactory.build('basic', BASIC_CONFIGURATION).path }
       let(:new_config) { Kafo::Configuration.new(basic_config_file, false) }
