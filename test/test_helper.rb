@@ -174,6 +174,7 @@ class Minitest::Spec
 end
 
 def must_exit_with_code(code, &block)
+  code = (Kafo::ExitHandler.new.error_codes[code] || code) if code.is_a?(Symbol)
   begin
     block.call
   rescue SystemExit => e

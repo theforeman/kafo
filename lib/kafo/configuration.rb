@@ -12,6 +12,7 @@ module Kafo
     DEFAULT = {
         :name                 => '',
         :description          => '',
+        :enabled              => true,
         :log_dir              => '/var/log/kafo',
         :log_name             => 'configuration.log',
         :log_level            => 'info',

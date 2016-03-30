@@ -16,12 +16,16 @@ class ConfigFileFactory
     temp_file('testing_config', content)
   end
 
+  def self.build_answers(key, content)
+    @answers[key] ||= temp_file('testing_answers', content)
+  end
+
   def self.answers(file)
-    @answers[file] ||= temp_file('testing_ansers', File.read(file))
+    @answers[file] ||= temp_file('testing_answers', File.read(file))
   end
 
   def self.temp_file(name, content)
-    f = Tempfile.open(['testing_config', '.yaml'])
+    f = Tempfile.open([name, '.yaml'])
     f.write content
     f.close
     f
