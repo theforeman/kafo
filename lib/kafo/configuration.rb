@@ -27,7 +27,8 @@ module Kafo
         :hook_dirs            => [],
         :custom               => {},
         :low_priority_modules => [],
-        :verbose_log_level    => 'info'
+        :verbose_log_level    => 'info',
+        :parser_cache_path    => './config/parser_cache.json'
     }
 
     def initialize(file, persist = true)
@@ -255,6 +256,12 @@ module Kafo
 
     def migrations_dir
       @config_file.gsub(/\.yaml$/, '.migrations')
+    end
+
+    def parser_cache
+      if app[:parser_cache_path]
+        @parser_cache ||= Kafo::ParserCacheReader.new_from_file(File.expand_path(app[:parser_cache_path]))
+      end
     end
 
     private

@@ -79,7 +79,7 @@ module Kafo
     end
 
     def get_type(type)
-      type = type.capitalize
+      type = (type || 'string').capitalize
       Params.const_defined?(type) ? Params.const_get(type) : raise(TypeError, "undefined parameter type '#{type}'")
     end
   end

@@ -8,6 +8,7 @@ require 'minitest/mock'
 
 require 'manifest_file_factory'
 require 'config_file_factory'
+require 'parser_cache_factory'
 require 'test_parser'
 require 'kafo'
 
