@@ -71,6 +71,34 @@ module Kafo
       end
     end
 
+    describe "#available_scenarios" do
+      def create_and_load_scenarios(content, filename='default.yaml')
+        Dir.mktmpdir do |dir|
+          File.open(File.join(dir, filename), 'w') { |f| f.write(content) }
+          ScenarioManager.new(dir).available_scenarios
+        end
+      end
+
+      it 'collects valid scenarios' do
+        scn = { :name => 'First', :description => 'First scenario', :answer_file => ''}
+        create_and_load_scenarios(scn.to_yaml).keys.count.must_equal 1
+      end
+
+      it 'skips scenarios without answer file' do
+        yaml_file = { :this_is => 'Not a scenario' }
+        create_and_load_scenarios(yaml_file.to_yaml).keys.must_be_empty
+      end
+
+      it 'skips disabled scenarios' do
+        scn = { :name => 'Second', :description => 'Second scenario', :answer_file => '', :enabled => false }
+        create_and_load_scenarios(scn.to_yaml).keys.must_be_empty
+      end
+
+      it 'skips non-yaml files' do
+        create_and_load_scenarios('some text file', 'text.txt').keys.must_be_empty
+      end
+    end
+
     describe "#list_available_scenarios" do
       let(:input) { StringIO.new }
       let(:output) { StringIO.new }
@@ -96,6 +124,27 @@ module Kafo
         manager.stub(:available_scenarios, {}) do
           must_exit_with_code(0) { manager.list_available_scenarios }
           must_be_on_stdout(output, 'No available scenarios found')
+        end
+      end
+    end
+
+    describe '#select_scenario' do
+      let(:input) { StringIO.new }
+      let(:output) { StringIO.new }
+      before do
+        $terminal.instance_variable_set '@output', output
+      end
+
+      it 'fails if disabled scenario is selected' do
+        disabled_answers = ConfigFileFactory.build_answers('disabled', {}.to_yaml)
+        disabled_scn = { :name => 'Disabled', :description => 'Disabled scenario', :answer_file => disabled_answers.path, :enabled => false }
+        scn_file = ConfigFileFactory.build('disabled', disabled_scn.to_yaml).path
+
+        manager.stub(:scenario_from_args, scn_file) do
+          must_exit_with_code(:scenario_error) { manager.select_scenario }
+          must_be_on_stdout(output, 'Selected scenario is DISABLED, can not continue.')
+          must_be_on_stdout(output, 'Use --list-scenarios to list available options.')
+          must_be_on_stdout(output, 'You can also --enable-scenario SCENARIO to make the selected scenario available.')
         end
       end
     end

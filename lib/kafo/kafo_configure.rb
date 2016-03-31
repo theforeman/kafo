@@ -52,6 +52,8 @@ module Kafo
 
       # Handle --list-scenarios before we need them
       scenario_manager.list_available_scenarios if ARGV.include?('--list-scenarios')
+      scenario_manager.check_enable_scenario
+      scenario_manager.check_disable_scenario
       setup_config(config_file)
 
       self.class.hooking.execute(:pre_migrations)
@@ -270,6 +272,8 @@ module Kafo
       self.class.app_option ['-l', '--verbose-log-level'], 'LEVEL', 'Log level for verbose mode output',
                             :default => 'info'
       self.class.app_option ['-S', '--scenario'], 'SCENARIO', 'Use installation scenario'
+      self.class.app_option ['--disable-scenario'], 'SCENARIO', 'Disable installation scenario'
+      self.class.app_option ['--enable-scenario'], 'SCENARIO', 'Enable installation scenario'
       self.class.app_option ['--list-scenarios'], :flag, 'List available installation scenaraios'
       self.class.app_option ['--force'], :flag, 'Force change of installation scenaraio'
       self.class.app_option ['--compare-scenarios'], :flag, 'Show changes between last used scenario and the scenario specified with -S or --scenario argument'

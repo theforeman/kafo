@@ -302,7 +302,7 @@ The installer stores names of applied migrations in `<config>/installer-scenario
 It is recommended to prefix the migration names with `date +%y%m%d%H%M%S` to avoid migration ordering issues.
 
 In a migration you can modify the scenario configuration as well as the answer file. The changed configs are stored immediately after all the migrations were applied.
-If you just want to apply the migrations you can use `--migrations-only` switch. 
+If you just want to apply the migrations you can use `--migrations-only` switch.
 Note that `--noop` and `--dont-save-answers` has no effect on migrations.
 
 Sample migration adding new module could look like as follows:
@@ -316,6 +316,20 @@ Sample migration adding new module could look like as follows:
   answers['katello::plugin::gutterball'] = true
   EOF
 ```
+
+### Enabling/disabling scenarios
+
+Scenarios that are deprecated or wanted to be hidden on the system can be disabled with:
+
+```bash
+  foreman-installer --disable-scenario deprecated-scenario
+  Scenario deprecated-scenario was disabled.
+```
+The disabled scenario is not shown in the scenario list and is prevented from being installed.
+It is not deleted from the file system however so the custom values in the answer file are preserved
+and e.g. migration to new scenario is still possible.
+
+Disabled scenario can be enabled back again with `foreman-installer --enable-scenario SCENARIO`.
 
 ## Documentation
 
@@ -913,7 +927,7 @@ Other exit codes that can be returned:
 * '24' means that your answer file asks for puppet module that you did not provide
 * '25' means that kafo could not get default values from puppet
 * '26' means that kafo could not find the specified scenario
-* '27' means that kafo found previous installation that has different scenario than is the specified scenario  
+* '27' means that kafo found found scenario configuration error that prevents installation from continuing  
 * '130' user interrupt (^C)
 
 ## Running Puppet Profiling

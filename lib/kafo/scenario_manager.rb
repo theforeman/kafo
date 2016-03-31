@@ -17,7 +17,7 @@ module Kafo
       @available_scenarios ||= Dir.glob(File.join(config_dir, '*.yaml')).reject { |f| f =~ /#{last_scenario_link}$/ }.inject({}) do |scns, scn_file|
         begin
           content = YAML.load_file(scn_file)
-          if content.is_a?(Hash) && content.has_key?(:answer_file)
+          if content.is_a?(Hash) && content.has_key?(:answer_file) && content.fetch(:enabled, true)
             # add scenario name for legacy configs
             content[:name] = File.basename(scn_file, '.yaml') unless content.has_key?(:name)
             scns[scn_file] = content
@@ -76,14 +76,13 @@ module Kafo
       !!(defined?(CONFIG_DIR) && CONFIG_DIR)
     end
 
-    def scenario_from_args
+    def scenario_from_args(arg_name='--scenario|-S')
       # try scenario provided in the args via -S or --scenario
-      parsed = ARGV.join(" ").match /(--scenario|-S)(\s+|[=]?)(\S+)/
+      parsed = ARGV.join(" ").match /(#{arg_name})(\s+|[=]?)(\S+)/
       if parsed
         scenario_file = File.join(config_dir, "#{parsed[3]}.yaml")
         return scenario_file if File.exists?(scenario_file)
-        KafoConfigure.logger.fatal "Scenario (#{scenario_file}) was not found, can not continue"
-        KafoConfigure.exit(:unknown_scenario)
+        fail_now("Scenario (#{scenario_file}) was not found, can not continue", :unknown_scenario)
       end
     end
 
@@ -93,18 +92,11 @@ module Kafo
         select_scenario_interactively
       if scenario.nil?
         fail_now("Scenario was not selected, can not continue. Use --list-scenarios to list available options.", :unknown_scenario)
+      elsif !scenario_enabled?(scenario)
+        fail_now("Selected scenario is DISABLED, can not continue. Use --list-scenarios to list available options." \
+	        " You can also --enable-scenario SCENARIO to make the selected scenario available.", :scenario_error)
       end
       scenario
-    end
-
-    def scenario_from_args
-      # try scenario provided in the args via -S or --scenario
-      parsed = ARGV.join(" ").match /(--scenario|-S)(\s+|[=]?)(\S+)/
-      if parsed
-        scenario_file = File.join(config_dir, "#{parsed[3]}.yaml")
-        return scenario_file if File.exists?(scenario_file)
-        fail_now("Scenario (#{scenario_file}) was not found, can not continue", :unknown_scenario)
-      end
     end
 
     def show_scenario_diff(prev_scenario, new_scenario)
@@ -124,6 +116,28 @@ module Kafo
           KafoConfigure.logger.info "Scenario #{scenario} was selected"
         end
       end
+    end
+
+    def check_enable_scenario
+      scenario = scenario_from_args('--enable-scenario')
+      set_scenario_availability(scenario, true) if scenario
+    end
+
+    def check_disable_scenario
+      scenario = scenario_from_args('--disable-scenario')
+      set_scenario_availability(scenario, false) if scenario
+    end
+
+    def set_scenario_availability(scenario, available)
+      cfg = load_configuration(scenario)
+      cfg.app[:enabled] = available
+      cfg.save_configuration(cfg.app)
+      say "Scenario #{File.basename(scenario, ".yaml")} was #{available ? "enabled" : "disabled"}"
+      KafoConfigure.exit(0)
+    end
+
+    def scenario_enabled?(scenario)
+      load_configuration(scenario).app[:enabled]
     end
 
     def confirm_scenario_change(new_scenario)
