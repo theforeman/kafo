@@ -85,19 +85,23 @@ module Kafo
         end
       end
 
-      let(:groups) { parsed.groups.map(&:name) }
-      specify { groups.must_include('Parameters') }
-      specify { groups.must_include('Advanced parameters') }
-      specify { groups.must_include('Extra parameters') }
-      specify { groups.wont_include('MySQL') }
-      specify { groups.wont_include('Sqlite') }
+      describe "with groups" do
+        let(:groups) { parsed.groups.map(&:name) }
+        specify { groups.must_include('Parameters') }
+        specify { groups.must_include('Advanced parameters') }
+        specify { groups.must_include('Extra parameters') }
+        specify { groups.wont_include('MySQL') }
+        specify { groups.wont_include('Sqlite') }
+      end
 
-      let(:param_names) { parsed.params.map(&:name) }
-      specify { param_names.must_include('version') }
-      specify { param_names.must_include('debug') }
-      specify { param_names.must_include('remote') }
-      specify { param_names.must_include('file') }
-      specify { param_names.must_include('m_i_a') }
+      describe "parses parameter names" do
+        let(:param_names) { parsed.params.map(&:name) }
+        specify { param_names.must_include('version') }
+        specify { param_names.must_include('debug') }
+        specify { param_names.must_include('remote') }
+        specify { param_names.must_include('file') }
+        specify { param_names.must_include('m_i_a') }
+      end
     end
 
     describe "#primary_parameter_group" do
