@@ -6,6 +6,9 @@ module Kafo
   class ConditionError < StandardError
   end
 
+  class ParserError < StandardError
+  end
+
   class TypeError < StandardError
   end
 end

@@ -86,7 +86,7 @@ module Kafo
     end
 
     def modules
-      @modules ||= @data.keys.map { |mod| PuppetModule.new(mod, KafoParsers::PuppetModuleParser, self).parse }.sort
+      @modules ||= @data.keys.map { |mod| PuppetModule.new(mod, PuppetModule.find_parser, self).parse }.sort
     end
 
     def root_dir
@@ -110,7 +110,7 @@ module Kafo
     end
 
     def add_module(name)
-      mod = PuppetModule.new(name, KafoParsers::PuppetModuleParser, self).parse
+      mod = PuppetModule.new(name, PuppetModule.find_parser, self).parse
       unless modules.map(&:name).include?(mod.name)
         mod.enable
         @modules << mod

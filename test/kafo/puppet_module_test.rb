@@ -104,6 +104,16 @@ module Kafo
         specify { parsed.raw_data[:groups].must_equal [] }
       end
 
+      describe "with nil parser and no cache" do
+        let(:parser) { nil }
+        specify { Proc.new { parsed }.must_raise ParserError }
+      end
+
+      describe "without :none parser and no cache" do
+        let(:parser) { :none }
+        specify { Proc.new { parsed }.must_raise ParserError }
+      end
+
       describe "with groups" do
         let(:groups) { parsed.groups.map(&:name) }
         specify { groups.must_include('Parameters') }

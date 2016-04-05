@@ -1,3 +1,5 @@
+require 'kafo_parsers/parsers'
+
 class TestParser
   attr_reader :manifest_file
 
@@ -8,6 +10,6 @@ class TestParser
 
   # we use @manifest instead of manifest for testing
   def parse(manifest)
-    KafoParsers::PuppetModuleParser.parse(manifest_file)
+    KafoParsers::Parsers.find_available.parse(manifest_file)
   end
 end
