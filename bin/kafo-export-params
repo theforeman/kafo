@@ -3,12 +3,10 @@ require 'rubygems'
 require 'ostruct'
 require 'clamp'
 require 'logging'
-require 'kafo/string_helper'
+require 'kafo/configuration'
 require 'kafo/exceptions'
+require 'kafo/string_helper'
 require 'logger'
-
-$LOAD_PATH.unshift File.expand_path(File.join(File.dirname(__FILE__), '..', 'lib', 'kafo'))
-require 'configuration'
 
 KafoConfigure = OpenStruct.new
 def KafoConfigure.exit(code)
