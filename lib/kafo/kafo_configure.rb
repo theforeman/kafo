@@ -78,7 +78,7 @@ module Kafo
 
       if scenario_manager.configured?
         scenario_manager.check_scenario_change(self.class.config_file)
-        if scenario_manager.scenario_changed?(self.class.config_file)
+        if scenario_manager.scenario_changed?(self.class.config_file) && !self.class.in_help_mode?
           prev_config = scenario_manager.load_configuration(scenario_manager.previous_scenario)
           prev_config.run_migrations
           self.class.config.migrate_configuration(prev_config, :skip => [:log_name])
@@ -164,6 +164,10 @@ module Kafo
 
     def self.exit_code
       self.exit_handler.exit_code
+    end
+
+    def self.in_help_mode?
+      ARGV.include?('--help') || ARGV.include?('--full-help') || ARGV.include?('-h')
     end
 
     def exit_code
