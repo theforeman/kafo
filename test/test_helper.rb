@@ -75,6 +75,8 @@ BASIC_MANIFEST = <<EOS
 # $username::        username
 # $password::        type:password
 #                    condition:$username != 'root'
+# $pool_size::       DB pool size
+#                    type:integer
 #
 # ==== Sqlite        condition: $db_type == 'sqlite'
 #
@@ -98,10 +100,12 @@ class testing(
   $server = 'mysql.example.com',
   $username = 'root',
   $password = 'toor',
+  $pool_size = 10,
   $file = undef,
   $m_i_a = 'test') {
 
   validate_string($undocumented)
+  validate_integer($pool_size, 100, 1)
   if $version == '1.0' {
     # this must be ignored since we can't evaluate conditions
     validate_bool($undef)

@@ -73,24 +73,20 @@ module Kafo
     end
 
     def valid?
-      validations = self.module.validations(self)
       # we get validations that can also run on other arguments, we need to take only current param
       # also we want to clone validations so we don't interfere
-      validations.map! do |v|
-        v = v.clone
-        if v.name == 'validate_re'
-          # validate_re does not take more variables as arguments, instead we need to pass all arguments
-          args = v.arguments
+      validations = self.module.validations(self).map do |v|
+        # These functions do not take more variables as arguments, instead we need to pass all arguments
+        if v.name == 'validate_re' || v.name == 'validate_integer'
+          args = v.arguments.to_a
         else
           args = v.arguments.select { |a| a.to_s == "$#{self.name}" }
         end
-        v.arguments = Puppet::Parser::AST::ASTArray.new :children => args
-        v
+        {:name => v.name, :arguments => interpret_validation_args(args)}
       end
 
-      validator = Validator.new([self])
-      validations.map! { |v| v.evaluate(validator) }
-      validations.all?
+      validator = Validator.new
+      validations.all? { |v| validator.send(v[:name], v[:arguments]) }
     end
 
     # To be overwritten in children
@@ -118,6 +114,24 @@ module Kafo
 
     def evaluate_condition(context = [])
       Condition.new(condition, context).evaluate
+    end
+
+    def interpret_validation_args(args)
+      args.map do |arg|
+        if arg.to_s == "$#{self.name}"
+          self.value
+        elsif arg.class.name == 'Puppet::Parser::AST::ASTArray'
+          interpret_validation_args(arg.to_a)
+        elsif arg.class.name == 'Puppet::Parser::AST::Concat'
+          interpret_validation_args(arg.value).join
+        elsif arg.respond_to? :value
+          arg.value
+        else
+          arg
+        end
+      end.map do |arg|
+        arg == :undef ? nil : arg
+      end
     end
   end
 end
