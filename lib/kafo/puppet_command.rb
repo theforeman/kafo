@@ -25,7 +25,7 @@ module Kafo
           "echo '$kafo_config_file=\"#{@configuration.config_file}\" #{custom_answer_file} #{add_progress} #{@command}'",
           '|',
           "RUBYLIB=#{["#{@configuration.gem_root}/modules", ::ENV['RUBYLIB']].join(File::PATH_SEPARATOR)}",
-          "puppet apply #{@options.join(' ')} #{@suffix}",
+          "#{puppet_path} apply #{@options.join(' ')} #{@suffix}",
       ].join(' ')
       @logger.debug result
       result
@@ -43,6 +43,16 @@ module Kafo
           @configuration.module_dirs,
           @configuration.kafo_modules_dir,
       ].flatten.join(':')
+    end
+
+    def puppet_path
+      @puppet_path ||= begin
+        bin_name = 'puppet'
+        bin_path = (::ENV['PATH'].split(File::PATH_SEPARATOR) + ['/opt/puppetlabs/bin']).find do |path|
+          File.executable?(File.join(path, bin_name))
+        end
+        File.join([bin_path, bin_name].compact)
+      end
     end
   end
 end
