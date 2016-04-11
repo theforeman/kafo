@@ -9,7 +9,7 @@ module Puppet::Parser::Functions
       if value.is_a?(Hash)
         data[key] = function_convert([value])
       else
-        data[key] = value.nil? ? :undef : value
+        data[key] = value unless value.nil?
       end
     end
 
