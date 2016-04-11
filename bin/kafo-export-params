@@ -5,8 +5,10 @@ require 'clamp'
 require 'logging'
 require 'kafo/configuration'
 require 'kafo/exceptions'
+require 'kafo/parser_cache_writer'
 require 'kafo/string_helper'
 require 'logger'
+require 'yaml'
 
 KafoConfigure = OpenStruct.new
 def KafoConfigure.exit(code)
@@ -15,35 +17,53 @@ end
 
 module Kafo
   class KafoExportParams < Clamp::Command
-    TYPES = %w(md html asciidoc)
+    TYPES = %w(md html asciidoc parsercache)
 
     option ['-c', '--config'], 'FILE', 'Config file for which should we generate params',
            :required => true
 
     option ['-f', '--format'], 'FORMAT',
-           'Config file for which should we generate params', :default => 'md' do |format|
+           "Format parameters will be written in, valid options: #{TYPES.join(',')}", :default => 'md' do |format|
       format = format.downcase
       raise ArgumentError unless TYPES.include?(format)
       format
     end
 
+    option ['-o', '--output'], 'FILE', 'Output file to write parameters into', :default => '-'
+
+    option '--[no-]parser-cache', :flag, 'Enable or disable the parser cache, disable for fresh results', :default => true
+
     def execute
       c                         = Configuration.new(config, false)
+      c.app[:parser_cache_path] = nil unless parser_cache?
       KafoConfigure.config      = c
       KafoConfigure.root_dir    = File.expand_path(c.app[:installer_dir])
       KafoConfigure.module_dirs = c.module_dirs
-      KafoConfigure.logger      = Logger.new(STDOUT)
+      KafoConfigure.logger      = Logger.new(STDERR)
 
-      exporter = self.class.const_get(format.capitalize).new(c)
+      if output == '-'
+        file = STDOUT
+      else
+        file = File.open(output, 'w')
+      end
+
+      exporter = self.class.const_get(format.capitalize).new(c, file)
       exporter.print_out
     end
 
-    class Html
-      include StringHelper
-
-      def initialize(config)
+    class Writer
+      def initialize(config, file)
         @config = config
+        @file = file
       end
+
+      def puts(*args)
+        @file.puts(*args)
+      end
+    end
+
+    class Html < Writer
+      include StringHelper
 
       def print_out
         puts '<div id="installer-options">'
@@ -77,12 +97,8 @@ module Kafo
       end
     end
 
-    class Asciidoc
+    class Asciidoc < Writer
       include StringHelper
-
-      def initialize(config)
-        @config = config
-      end
 
       def print_out
         @config.modules.sort.each do |mod|
@@ -97,12 +113,12 @@ module Kafo
       end
     end
 
-    class Md
+    class Md < Writer
       include StringHelper
 
-      def initialize(config)
-        @config = config
-        @max    = max_description_length
+      def initialize(*args)
+        super
+        @max = max_description_length
       end
 
       def print_out
@@ -125,6 +141,12 @@ module Kafo
         doc_lengths = @config.modules.map { |mod| mod.params.map { |param| param.doc.join(' ').length } }.flatten
         doc_lengths << 52
         doc_lengths.max
+      end
+    end
+
+    class Parsercache < Writer
+      def print_out
+        puts Kafo::ParserCacheWriter.write(@config.modules).to_yaml
       end
     end
   end

@@ -908,6 +908,22 @@ parameter `--skip-checks-i-know-better` (or `-s`). This will completely
 disable running all system check scripts. Note that this option is
 not persisted between runs.
 
+## Parser cache
+
+A cache of parsed Puppet modules and manifests can be created to skip the use
+of kafo_parsers at runtime. This is useful when kafo_parsers doesn't support the
+version of Puppet in use, and may also provide a small performance benefit.
+
+Create the cache with `kafo-export-params -f parsercache --no-parser-cache` and
+configure it in config/kafo.yaml with:
+
+```yaml
+:parser_cache_path: ./parser_cache.yaml
+```
+
+The cache will be skipped if the file modification time of the manifest is
+greater than the mtime recorded in the cache.
+
 ## Exit code
 
 Kafo can terminate either before or after puppet is run. If it is run with

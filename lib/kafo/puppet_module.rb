@@ -1,6 +1,7 @@
 # encoding: UTF-8
 require 'kafo/param'
 require 'kafo/param_builder'
+require 'kafo/parser_cache_reader'
 require 'kafo_parsers/puppet_module_parser'
 require 'kafo/validator'
 
@@ -9,7 +10,7 @@ module Kafo
     PRIMARY_GROUP_NAME = 'Parameters'
 
     attr_reader :name, :identifier, :params, :dir_name, :class_name, :manifest_name, :manifest_path,
-                :groups, :params_path, :params_class_name, :configuration
+                :groups, :params_path, :params_class_name, :configuration, :raw_data
 
     def initialize(identifier, parser = KafoParsers::PuppetModuleParser, configuration = KafoConfigure.config)
       @identifier        = identifier
@@ -27,6 +28,7 @@ module Kafo
       end
       @manifest_path     = File.join(module_dir, module_manifest_path)
       @parser            = parser
+      @parser_cache      = @configuration.parser_cache
       @validations       = []
       @logger            = KafoConfigure.logger
       @groups            = {}
@@ -48,9 +50,10 @@ module Kafo
 
     def parse(builder_klass = ParamBuilder)
       @params      = []
-      raw_data     = @parser.parse(manifest_path)
-      builder      = builder_klass.new(self, raw_data)
-      @validations = raw_data[:validations]
+      @raw_data    = @parser_cache.get(identifier, manifest_path) if @parser_cache
+      @raw_data  ||= @parser.parse(manifest_path)
+      builder      = builder_klass.new(self, @raw_data)
+      @validations = @raw_data[:validations]
 
       builder.validate
       @params = builder.build_params

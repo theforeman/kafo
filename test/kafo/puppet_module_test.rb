@@ -6,7 +6,8 @@ module Kafo
       KafoConfigure.config = Configuration.new(ConfigFileFactory.build('basic', BASIC_CONFIGURATION).path)
     end
 
-    let(:mod) { PuppetModule.new 'puppet', TestParser.new(BASIC_MANIFEST) }
+    let(:parser) { TestParser.new(BASIC_MANIFEST) }
+    let(:mod) { PuppetModule.new 'puppet', parser }
 
     describe "#enabled?" do
       specify { mod.enabled?.must_equal true }
@@ -23,8 +24,8 @@ module Kafo
     end
 
     # BASIC_CONFIGURATION has mapping configured for this module
-    let(:plugin1_mod) { PuppetModule.new 'foreman::plugin::default_hostgroup', TestParser.new(BASIC_MANIFEST) }
-    let(:plugin2_mod) { PuppetModule.new 'foreman::plugin::chef', TestParser.new(BASIC_MANIFEST) }
+    let(:plugin1_mod) { PuppetModule.new 'foreman::plugin::default_hostgroup', parser }
+    let(:plugin2_mod) { PuppetModule.new 'foreman::plugin::chef', parser }
 
     describe "#dir_name" do
       specify { mod.dir_name.must_equal 'puppet' }
@@ -58,6 +59,13 @@ module Kafo
       specify { plugin2_mod.params_class_name.must_equal 'params' }
     end
 
+    describe "#raw_data" do
+      it "returns data from parser" do
+        mod.parse
+        mod.raw_data.must_equal parser.parse(mod.manifest_path)
+      end
+    end
+
     let(:parsed) { mod.parse }
 
     describe "#parse(builder)" do
@@ -83,6 +91,17 @@ module Kafo
             end
           end
         end
+      end
+
+      describe "with parser cache" do
+        before do
+          KafoConfigure.config.app[:parser_cache_path] = ParserCacheFactory.build(
+            {:files => {"puppet" => {:data => {:parameters => [], :groups => []}}}}
+          ).path
+        end
+
+        specify { parsed.raw_data[:parameters].must_equal [] }
+        specify { parsed.raw_data[:groups].must_equal [] }
       end
 
       describe "with groups" do
