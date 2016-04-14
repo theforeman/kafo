@@ -3,7 +3,7 @@
 module Kafo
   class SystemChecker
     def self.check
-      KafoConfigure.check_dirs.each do |dir|
+      KafoConfigure.check_dirs.all? do |dir|
         new(File.join(dir, '*')).check
       end
     end
