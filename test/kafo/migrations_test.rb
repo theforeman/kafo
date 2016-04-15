@@ -9,8 +9,8 @@ module Kafo
 
       before do
         KafoConfigure.logger = dummy_logger
-        migrations.add_migration(:no1) { logger.error 's1' }
-        migrations.add_migration(:no2) { logger.error 's2' }
+        migrations.add_migration('no1') { logger.error 's1' }
+        migrations.add_migration('no2') { logger.error 's2' }
         migrations.run({}, {})
       end
 
