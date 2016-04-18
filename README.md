@@ -190,6 +190,25 @@ disable saving answer by passing a ```--dont-save-answers``` argument (or -d for
 
 Note that running ```--noop``` implies ```--dont-save-answers```.
 
+## Executing Puppet with multiple versions
+
+Kafo calls the `puppet` binary during an installer run to both compute default
+parameter values and perform the actual installer changes. This relies on
+`puppet` being in the PATH environment variable or as fallback, in
+`/opt/puppetlabs/bin`.
+
+When using Puppet via a Gemfile, Bundler should set up PATH to point at the
+gem version. If using a system/packaged version, it will typically find and
+execute /usr/bin/puppet from the regular PATH.
+
+When using an AIO/PC1 packaged version of Puppet, other versions of Puppet from
+PATH will be preferred if they exist, so they should either be removed or PATH
+set to prefer /opt/puppetlabs/bin, i.e. `export PATH=/opt/puppetlabs/bin:$PATH`.
+Debug logs from Kafo should indicate the full path of the binary used.
+
+Note that Kafo parsers supports specific versions of Puppet, and may require
+extra modules (such as puppet-strings on Puppet 4+) to parse manifests.
+
 ## Parameters prefixes
 
 As a default every module parameter is prefixed by the module name.
