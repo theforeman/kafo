@@ -2,7 +2,7 @@
 require 'kafo/param'
 require 'kafo/param_builder'
 require 'kafo/parser_cache_reader'
-require 'kafo_parsers/puppet_module_parser'
+require 'kafo_parsers/parsers'
 require 'kafo/validator'
 
 module Kafo
@@ -12,7 +12,21 @@ module Kafo
     attr_reader :name, :identifier, :params, :dir_name, :class_name, :manifest_name, :manifest_path,
                 :groups, :params_path, :params_class_name, :configuration, :raw_data
 
-    def initialize(identifier, parser = KafoParsers::PuppetModuleParser, configuration = KafoConfigure.config)
+    def self.find_parser
+      @parser ||= begin
+        logger = KafoConfigure.logger
+        parser = KafoParsers::Parsers.find_available(:logger => logger)
+        if parser
+          logger.debug "Using Puppet module parser #{parser}"
+          parser
+        else
+          logger.debug "No available Puppet module parser found"
+          :none  # prevent continually re-checking
+        end
+      end
+    end
+
+    def initialize(identifier, parser = self.class.find_parser, configuration = KafoConfigure.config)
       @identifier        = identifier
       @configuration     = configuration
       @name              = get_name
@@ -49,9 +63,15 @@ module Kafo
     end
 
     def parse(builder_klass = ParamBuilder)
-      @params      = []
-      @raw_data    = @parser_cache.get(identifier, manifest_path) if @parser_cache
-      @raw_data  ||= @parser.parse(manifest_path)
+      @raw_data = @parser_cache.get(identifier, manifest_path) if @parser_cache
+      if @raw_data.nil?
+        if @parser.nil? || @parser == :none
+          raise ParserError.new("No Puppet module parser is installed and no cache of the file #{manifest_path} is available. Please check debug logs and install optional dependencies for the parser.")
+        else
+          @raw_data = @parser.parse(manifest_path)
+        end
+      end
+
       builder      = builder_klass.new(self, @raw_data)
       @validations = @raw_data[:validations]
 
