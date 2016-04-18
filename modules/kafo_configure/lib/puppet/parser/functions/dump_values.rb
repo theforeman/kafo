@@ -6,7 +6,7 @@ module Puppet::Parser::Functions
     options<< false if Puppet::PUPPETVERSION.start_with?('2.6')
     data = args.map do |arg|
       found_value = lookupvar(arg, *options)
-      [arg, found_value.nil? ? arg : found_value]
+      [arg, found_value]
     end
     data = Hash[data]
 
