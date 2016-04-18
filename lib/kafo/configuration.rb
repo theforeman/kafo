@@ -27,8 +27,7 @@ module Kafo
         :hook_dirs            => [],
         :custom               => {},
         :low_priority_modules => [],
-        :verbose_log_level    => 'info',
-        :parser_cache_path    => './config/parser_cache.json'
+        :verbose_log_level    => 'info'
     }
 
     def initialize(file, persist = true)
