@@ -336,6 +336,13 @@ Sample migration adding new module could look like as follows:
   EOF
 ```
 
+The migration can also call `facts`, which returns a hash of symbol fact names to values (from
+Facter), to help determine new parameter values.
+
+```ruby
+answers['module']['foo'] = 'bar' if facts[:osfamily] == 'Debian'
+```
+
 ### Enabling/disabling scenarios
 
 Scenarios that are deprecated or wanted to be hidden on the system can be disabled with:

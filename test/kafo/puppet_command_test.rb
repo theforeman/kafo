@@ -18,13 +18,19 @@ module Kafo
 
         specify { KafoConfigure.stub(:temp_config_file, '/tmp/answer') { pc.command.must_include '$kafo_answer_file="/tmp/answer"' } }
         specify { KafoConfigure.stub(:temp_config_file, nil) { pc.command.wont_include '$kafo_answer_file' } }
+
+        specify { PuppetCommand.stub(:search_puppet_path, '/opt/puppetlabs/bin/puppet') { pc.command.must_include '/opt/puppetlabs/bin/puppet apply' } }
       end
+    end
+
+    describe '.search_puppet_path' do
+      let(:pc) { PuppetCommand.search_puppet_path('puppet') }
 
       describe "with 'puppet' in PATH" do
         specify do
           ::ENV.stub(:[], '/usr/bin:/usr/local/bin') do
             File.stub(:executable?, Proc.new { |path| path == '/usr/local/bin/puppet' }) do
-              pc.command.must_include '/usr/local/bin/puppet apply'
+              pc.must_equal '/usr/local/bin/puppet'
             end
           end
         end
@@ -34,14 +40,14 @@ module Kafo
         specify do
           ::ENV.stub(:[], '/usr/bin:/usr/local/bin') do
             File.stub(:executable?, Proc.new { |path| path == '/opt/puppetlabs/bin/puppet' }) do
-              pc.command.must_include '/opt/puppetlabs/bin/puppet apply'
+              pc.must_equal '/opt/puppetlabs/bin/puppet'
             end
           end
         end
       end
 
       describe "with no 'puppet' found in PATH" do
-        specify { File.stub(:executable?, false) { pc.command.must_include ' puppet apply' } }
+        specify { File.stub(:executable?, false) { pc.must_equal 'puppet' } }
       end
     end
   end
