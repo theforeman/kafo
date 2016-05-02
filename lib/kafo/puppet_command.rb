@@ -36,6 +36,13 @@ module Kafo
       self
     end
 
+    def self.search_puppet_path(bin_name)
+      bin_path = (::ENV['PATH'].split(File::PATH_SEPARATOR) + ['/opt/puppetlabs/bin']).find do |path|
+        File.executable?(File.join(path, bin_name))
+      end
+      File.join([bin_path, bin_name].compact)
+    end
+
     private
 
     def modules_path
@@ -46,13 +53,7 @@ module Kafo
     end
 
     def puppet_path
-      @puppet_path ||= begin
-        bin_name = 'puppet'
-        bin_path = (::ENV['PATH'].split(File::PATH_SEPARATOR) + ['/opt/puppetlabs/bin']).find do |path|
-          File.executable?(File.join(path, bin_name))
-        end
-        File.join([bin_path, bin_name].compact)
-      end
+      @puppet_path ||= self.class.search_puppet_path('puppet')
     end
   end
 end
