@@ -657,11 +657,13 @@ If you use "params_path" for this purpose, "params_name" is ignored.
 ## Validations
 
 If you specify validations of parameters in your init.pp manifest they
-will be replaced with your values even before puppet is run. In order to do this
+will be replaced with your values even before Puppet is run. In order to do this
 you must follow a few rules however:
 
 * you must use standard validation functions (e.g. validate_array, validate_re, ...)
-* you must have stdlib in modules directory
+
+These functions are re-implemented in Kafo from common stdlib functions, so please
+contribute any missing ones.
 
 ## Enabling or disabling module
 
