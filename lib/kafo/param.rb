@@ -120,12 +120,8 @@ module Kafo
       args.map do |arg|
         if arg.to_s == "$#{self.name}"
           self.value
-        elsif arg.class.name == 'Puppet::Parser::AST::ASTArray'
-          interpret_validation_args(arg.to_a)
-        elsif arg.class.name == 'Puppet::Parser::AST::Concat'
-          interpret_validation_args(arg.value).join
-        elsif arg.respond_to? :value
-          arg.value
+        elsif arg.is_a? String
+          arg.gsub("$#{self.name}", self.value.to_s)
         else
           arg
         end
