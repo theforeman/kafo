@@ -11,8 +11,5 @@ class kafo_configure {
   }
 
   $password = load_kafo_password()
-  $params   = loadanyyaml(load_kafo_answer_file())
-  $keys     = kafo_ordered(hash_keys($params))
-
-  kafo_configure::yaml_to_class { $keys: }
+  hiera_include('classes')
 }

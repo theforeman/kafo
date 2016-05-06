@@ -225,10 +225,6 @@ module Kafo
       end
     end
 
-    def temp_config_file
-      @temp_config_file ||= "/tmp/kafo_answers_#{rand(1_000_000)}.yaml"
-    end
-
     def log_file
       File.join(app[:log_dir], app[:log_name])
     end

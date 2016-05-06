@@ -158,6 +158,14 @@ As you may have noticed there are several ways how to specify arguments. Here's 
   * values specified on CLI
   * interactive mode arguments
 
+## Requirements
+
+Kafo is supported with Puppet versions 3 and 4. Puppet 2 is no longer supported
+in current versions, use an older version of Kafo or update Puppet.
+
+Puppet may be installed as a gem (add it to Gemfile) or through a package,
+including official AIO packages.
+
 ## How do I report bugs or contribute?
 
 You can find our redmine issue tracker [here](http://projects.theforeman.org/projects/kafo),
@@ -970,6 +978,36 @@ configure it in config/kafo.yaml with:
 
 The cache will be skipped if the file modification time of the manifest is
 greater than the mtime recorded in the cache.
+
+## Configuring Hiera
+
+Kafo uses Hiera to include classes and pass parameters to classes using data
+binding, but this can be extended so parameters can be set for classes not
+being managed by Kafo. Set a custom Hiera config file in Kafo's config with:
+
+```yaml
+:hiera_config: /usr/share/kafo/hiera.yaml
+```
+
+The contents of this file are as per the [hiera.yaml docs](https://docs.puppet.com/hiera/latest/configuring.html),
+but hierarchy should contain the item `kafo_answers` and the `yaml` backend
+should be enabled. Kafo will add these if they're missing.
+
+When running Puppet, Kafo will copy the Hiera config and YAML data directory to
+a temporary location to include its data. The file `kafo_answers.yaml` will be
+generated containing _all_ default and overriden values for parameters managed
+by Kafo. This may change in the future to allow a more complex hierarchy. As an
+example, a hierarchy could be set up with:
+
+```yaml
+:hierarchy:
+  - kafo_answers
+  - "%{::osfamily}"
+  - common
+```
+
+This would give precedence to all Kafo-managed parameter values, but for any
+others, would check for values per OS family, followed by a `common.yaml` file.
 
 ## Exit code
 

@@ -42,6 +42,7 @@
 # :log_group: root
 # :config_header_file:
 # :dont_save_answers:
+# :hiera_config: /usr/share/kafo/hiera.yaml
 
 ## Hooks - hooks in these extra directories will be loaded,
 # by default they are loaded from $installer_dir/hooks/$type
