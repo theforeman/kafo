@@ -159,5 +159,27 @@ module Kafo
         validation
       end
     end
+
+    describe '#set_default' do
+      let(:with_params) { param.tap { |p| p.default = 'mod::params::test' } }
+      let(:with_unset) { param.tap { |p| p.default = 'UNSET' } }
+      let(:with_value) { param.tap { |p| p.default = 42 } }
+
+      specify { with_params.tap { |p| p.set_default({}) }.default.must_equal 'mod::params::test' }
+      specify { with_params.tap { |p| p.set_default({'mod::params::test' => 42}) }.default.must_equal 42 }
+      specify { with_params.tap { |p| p.set_default({'mod::params::test' => :undef}) }.default.must_be_nil }
+      specify { with_unset.tap { |p| p.set_default({}) }.default.must_be_nil }
+      specify { with_value.tap { |p| p.set_default({42 => :undefined}) }.default.must_equal 42 }
+      specify { with_value.tap { |p| p.set_default({}) }.default.must_equal 42 }
+    end
+
+    describe '#unset_value' do
+      let(:unset) { param.tap { |p| p.unset_value } }
+      specify do
+        param.default = 'def'
+        param.value = 'val'
+        unset.value.must_equal 'def'
+      end
+    end
   end
 end

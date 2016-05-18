@@ -82,7 +82,11 @@ module Kafo
       end
 
       def parametrization
-        @parametrization ||= Hash[@params.map { |p| [parametrize(p), p] }]
+        @parametrization ||= begin
+          @params.inject({}) do |h,p|
+            h.update(parametrize(p) => p, parametrize(p, 'reset-') => p)
+          end
+        end
       end
     end
   end

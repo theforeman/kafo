@@ -26,6 +26,11 @@ module Kafo
       @value     = value == 'UNDEF' ? nil : value
     end
 
+    def unset_value
+      @value_set = false
+      @value     = nil
+    end
+
     def dump_default
       default
     end
@@ -40,7 +45,7 @@ module Kafo
 
     def set_default(defaults)
       if default == 'UNSET'
-        self.value = nil
+        self.default = nil
       else
         if defaults.has_key?(default)
           value = defaults[default]
@@ -48,21 +53,19 @@ module Kafo
             when :undef
               # value can be set to :undef if value is not defined
               # (e.g. puppetmaster = $::puppetmaster which is not defined yet)
-              self.value = nil
+              self.default = nil
             when :undefined
               # in puppet 2.7 :undefined means that it's param which value is
               # not set by another parameter (e.g. foreman_group = 'something')
               # which means, default is sensible unlike dumped default
               # newer puppet has default dump in format 'value' => 'value' so
               # it's handled correctly by else branch
-              self.value = self.default
             else
-              self.value = value
+              self.default = value
           end
-          # if we don't have default value from dump (can happen for modules added from hooks)
-          # we fallback to their own default values which must be sensible
-        else
-          self.value = self.default
+          # if we don't have default value from dump (can happen for modules added from hooks,
+          # or without using a params class), the existing default value from the manifest will
+          # be used. On calling #value, the default will be returned if no overriding value is set.
         end
       end
     end

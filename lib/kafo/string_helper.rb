@@ -18,8 +18,8 @@ module Kafo
       "#{prefix}#{d(param.name)}"
     end
 
-    def parametrize(param)
-      "--#{with_prefix(param)}"
+    def parametrize(param, prefix='')
+      "--#{prefix}#{with_prefix(param)}"
     end
   end
 end

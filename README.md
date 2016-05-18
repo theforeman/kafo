@@ -507,6 +507,25 @@ as key:value.
 When parsing the value, the first colon divides key and value. All other
 colons are ignored.
 
+## Resetting an argument
+
+Existing stored parameters can be reset back to their default value from the
+command line or interactive mode.  This deletes the stored value in the answers
+file and stores the default from the Puppet manifest in its place.
+
+The default value is the value set in, or computed by the Puppet params
+manifest. This will _not_ reset to any defaults specified in the answers file
+before running the Kafo-based installer, they are not kept.
+
+Using the CLI, a --reset option is available for every parameter, e.g.
+
+```bash
+bin/foreman-installer --reset-puppet-server-git-branch-map
+```
+
+The parameter can also be reset to the default in interactive mode, via the
+reset parameters sub-menu under each module.
+
 ## Grouping in interactive mode
 
 If your module has too many parameters you may find the grouping feature useful.

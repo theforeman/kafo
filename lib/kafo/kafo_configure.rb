@@ -301,6 +301,8 @@ module Kafo
         doc = param.doc.nil? ? 'UNDOCUMENTED' : param.doc.join("\n")
         self.class.option parametrize(param), '', doc,
                           :default => param.value, :multivalued => param.multivalued?
+        self.class.option parametrize(param, 'reset-'), :flag,
+                          "Reset #{param.name} to the default value"
       end
     end
 
@@ -345,8 +347,11 @@ module Kafo
       # enable/disable modules according to CLI
       config.modules.each { |mod| send("enable_#{mod.name}?") ? mod.enable : mod.disable }
 
-      # set values coming from CLI arguments
+      # set and reset values coming from CLI arguments
       params.each do |param|
+        if send("reset_#{u(with_prefix(param))}?")
+          param.unset_value
+        end
         variable_name = u(with_prefix(param))
         variable_name += '_list' if param.multivalued?
         cli_value     = instance_variable_get("@#{variable_name}")
