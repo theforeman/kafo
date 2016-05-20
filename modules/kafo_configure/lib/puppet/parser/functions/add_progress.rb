@@ -10,17 +10,17 @@ module Puppet::Parser::Functions
         attr_accessor :in_main_catalog
 
         def is_interesting?(resource)
-          ![:schedule, :class, :stage, :filebucket].include?(resource.to_s.split('[')[0].downcase.to_sym)
+          ![:schedule, :class, :stage, :filebucket, :anchor, :'kafo_configure::yaml_to_class'].include?(resource.to_s.split('[')[0].downcase.to_sym)
         end
 
-        def resource_count
-          catalog.vertices.select { |resource| is_interesting?(resource) }.size
+        def tracked_resources
+          @tracked_resources ||= catalog.vertices.select { |resource| is_interesting?(resource) }.map(&:to_s)
         end
 
         def evaluate_with_trigger(*args, &block)
           if catalog.version
             self.in_main_catalog = true
-            ::Puppet.info "START #{resource_count}"
+            ::Puppet.info "START #{tracked_resources.size}"
           end
           evaluate_without_trigger(*args, &block)
           self.in_main_catalog = false if catalog.version
