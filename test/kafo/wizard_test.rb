@@ -163,7 +163,7 @@ module Kafo
             puppet_module.enabled?.must_equal false
             input.puts "1" # Enable/disable module
             input.puts "y" # enable module
-            input.puts "9" # "Back to main menu"
+            input.puts "10" # "Back to main menu"
             input.rewind
           end
 
@@ -177,7 +177,7 @@ module Kafo
           before do
             puppet_module.enable
             input.puts "7" #"Configure Advanced parameters"
-            input.puts "9" #"Back to main menu"
+            input.puts "10" #"Back to main menu"
             input.rewind
           end
 
@@ -193,7 +193,7 @@ module Kafo
           before do
             puppet_module.enable
             input.puts "2" # "Set version, current value: 1.0"
-            input.puts "9" # "Back to main menu"
+            input.puts "10" # "Back to main menu"
             input.rewind
           end
 
@@ -202,6 +202,22 @@ module Kafo
               must_not_raise_eof(input, output) { wizard.send(:configure_module, puppet_module) }
             end
             must_be_on_stdout(output, 'configure executed')
+          end
+        end
+
+        describe "change parameter value" do
+          before do
+            puppet_module.enable
+            input.puts "9" # "Reset a parameter to its default value"
+            input.puts "10" # "Back to main menu"
+            input.rewind
+          end
+
+          it "executes reset_module_params" do
+            wizard.stub :reset_module_params, Proc.new { say('reset_module_params executed') } do
+              must_not_raise_eof(input, output) { wizard.send(:configure_module, puppet_module) }
+            end
+            must_be_on_stdout(output, 'reset_module_params executed')
           end
         end
       end
@@ -318,6 +334,33 @@ module Kafo
         end
       end
 
+      describe "#reset_module_params(mod)" do
+        before do
+          input.puts "Reset debug, current value: true, default value: true"
+          input.puts "Back to parent menu"
+          input.rewind
+        end
+
+        it "displays params of module" do
+          wizard.stub :reset, Proc.new { say('reset executed') } do
+            wizard.send(:reset_module_params, puppet_module)
+          end
+          must_be_on_stdout(output, 'reset executed')
+          must_be_on_stdout(output, 'debug', 'db_type', 'remote', 'server', 'username')
+          wont_be_on_stdout(output, 'password', 'file') # because of condition
+          must_be_on_stdout(output, 'Resetting parameters of module puppet')
+        end
+      end
+
+      describe "#reset(param)" do
+        let(:param) { puppet_module.params.detect { |p| p.name == 'version' }.tap { |p| p.value = '2.0' } }
+
+        it "should reset value" do
+          wizard.send :reset, param
+          param.value.must_equal('1.0')
+          param.value_set.must_equal(false)
+        end
+      end
     end
   end
 end

@@ -87,6 +87,7 @@ END
             others.each do |group|
               menu.choice("Configure #{group.formatted_name}") { configure_group(group) }
             end
+            menu.choice("Reset a parameter to its default value") { reset_module_params(mod) }
           end
           menu.choice("Back to main menu") { go_back = true }
         end
@@ -151,6 +152,26 @@ END
 
     def turn_module(mod)
       agree("Enable #{mod.name} module? (y/n) ") ? mod.enable : mod.disable
+    end
+
+    def reset_module_params(mod)
+      go_back = false
+      until go_back
+        say "\n" + HighLine.color("Resetting parameters of module #{mod.name}", :headline)
+        choose do |menu|
+          mod.params.each do |param|
+            menu.choice "Reset #{HighLine.color(param.name, :important)}, current value: #{HighLine.color(param.value.to_s, :info)}, default value: #{HighLine.color(param.default.to_s, :info)}" do
+              reset(param)
+            end if param.visible?(@kafo.params)
+          end
+          menu.choice("Back to parent menu") { go_back = true }
+        end
+      end
+    end
+
+    def reset(param)
+      param.unset_value
+      say "\n" + HighLine.color("Value for #{param.name} reset to default", :important)
     end
 
     def setup_terminal

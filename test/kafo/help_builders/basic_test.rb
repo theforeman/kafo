@@ -27,10 +27,14 @@ module Kafo
       let(:clamp_definitions) do
         [
             OpenStruct.new(:help => ['--puppet-version', 'version parameter']),
+            OpenStruct.new(:help => ['--reset-puppet-version', 'Reset version to the default value']),
             OpenStruct.new(:help => ['--puppet-server', 'enable puppetmaster server']),
+            OpenStruct.new(:help => ['--reset-puppet-server', 'Reset server to the default value']),
             OpenStruct.new(:help => ['--puppet-port', 'puppetmaster port']),
+            OpenStruct.new(:help => ['--reset-puppet-port', 'Reset port to the default value']),
             OpenStruct.new(:help => ['--no-colors', 'app wide argument, not a parameter']),
             OpenStruct.new(:help => ['--apache-port', 'apache module parameter']),
+            OpenStruct.new(:help => ['--reset-apache-port', 'Reset port to the default value']),
         ]
       end
 
@@ -50,10 +54,16 @@ module Kafo
         specify { output.must_include '= Module puppet:' }
         specify { output.must_include '--puppet-version' }
         specify { output.must_include 'version parameter' }
+        specify { output.wont_include '--reset-puppet-version' }
+        specify { output.wont_include 'reset puppet-version' }
         specify { output.wont_include '--puppet-server' }
         specify { output.wont_include 'enable puppetmaster server' }
+        specify { output.wont_include '--reset-puppet-server' }
+        specify { output.wont_include 'reset puppet-server' }
         specify { output.wont_include '--puppet-port' }
         specify { output.wont_include 'puppetmaster port' }
+        specify { output.wont_include '--reset-puppet-port' }
+        specify { output.wont_include 'reset puppet-port' }
         specify { output.wont_include 'Basic' }
         specify { output.wont_include 'Advanced' }
         specify { output.must_match /Generic.*Module apache.*Module puppet/m}
