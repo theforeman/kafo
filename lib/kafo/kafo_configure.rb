@@ -423,6 +423,7 @@ module Kafo
           '--reports=',
           "--hiera_config=#{hiera.config_path}",
       ]
+      options.push '--evaltrace' if @progress_bar
       options.push '--noop' if noop?
       options.push '--profile' if profile?
       begin
