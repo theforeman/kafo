@@ -385,6 +385,7 @@ module Kafo
           '--color=false',
           '--show_diff',
           '--detailed-exitcodes',
+          '--reports=',
       ]
       options.push '--noop' if noop?
       options.push '--profile' if profile?
