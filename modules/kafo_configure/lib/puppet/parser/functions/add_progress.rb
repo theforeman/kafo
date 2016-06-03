@@ -2,10 +2,16 @@ require 'kafo_configure/lib/kafo/puppet/report_wrapper'
 
 module Puppet::Parser::Functions
   newfunction(:add_progress) do |args|
-    supported = %w(2.6. 2.7. 3.0. 3.1. 3.2. 3.3. 3.4. 3.5. 3.6. 3.7. 3.8.)
-    if supported.any? { |version| Puppet::PUPPETVERSION.start_with?(version) }
-      # Monkey patch the transaction to put our wrapper around the report object
+    loaded = false
+    begin
       require 'puppet/transaction'
+      loaded = true
+    rescue LoadError
+      ::Puppet.warning 'Unable to load puppet/transaction for progress bar support, this version may not be supported'
+    end
+
+    if loaded
+      # Monkey patch the transaction to put our wrapper around the report object
       class Puppet::Transaction
         attr_accessor :in_main_catalog
 
@@ -26,9 +32,6 @@ module Puppet::Parser::Functions
           self.in_main_catalog = false if catalog.version
         end
 
-        alias_method :evaluate_without_trigger, :evaluate
-        alias_method :evaluate, :evaluate_with_trigger
-
         def report_with_wrapper
           unless @report_wrapper
             @report_wrapper = Kafo::Puppet::ReportWrapper.new(self, report_without_wrapper)
@@ -36,11 +39,15 @@ module Puppet::Parser::Functions
           @report_wrapper
         end
 
-        alias_method :report_without_wrapper, :report
-        alias_method :report, :report_with_wrapper
+        if method_defined?(:evaluate) && method_defined?(:report)
+          alias_method :evaluate_without_trigger, :evaluate
+          alias_method :evaluate, :evaluate_with_trigger
+          alias_method :report_without_wrapper, :report
+          alias_method :report, :report_with_wrapper
+        else
+          ::Puppet.warning 'Unable to patch Puppet transactions for progress bar support, this version may not be supported'
+        end
       end
-    else
-      ::Puppet.warning 'Your puppet version does not support progress bar'
     end
   end
 end
