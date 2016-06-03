@@ -181,5 +181,14 @@ module Kafo
         unset.value.must_equal 'def'
       end
     end
+
+    describe '#value=' do
+      specify { param.tap { |p| p.value = 'foo' }.value.must_equal 'foo' }
+      specify { param.tap { |p| p.value = 'foo' }.value_set.must_equal true }
+      specify { param.tap { |p| p.value = 'UNDEF' }.value.must_be_nil }
+      specify { param.tap { |p| p.value = 'UNDEF' }.value_set.must_equal true }
+      specify { param.tap { |p| p.value = ::HighLine::String('foo') }.value.must_equal 'foo' }
+      specify { param.tap { |p| p.value = ::HighLine::String('foo') }.value.class.must_equal ::String }
+    end
   end
 end

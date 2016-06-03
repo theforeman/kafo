@@ -23,6 +23,7 @@ module Kafo
 
     def value=(value)
       @value_set = true
+      value      = value.to_s if value.is_a?(::HighLine::String)  # don't persist highline extensions
       @value     = value == 'UNDEF' ? nil : value
     end
 
