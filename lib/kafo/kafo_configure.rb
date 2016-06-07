@@ -57,9 +57,9 @@ module Kafo
       setup_config(config_file)
 
       self.class.hooking.execute(:pre_migrations)
-
-      # run migrations
-      self.class.config.run_migrations
+      reload_config
+      applied_total = self.class.config.run_migrations
+      @config_reload_requested = true if applied_total > 0
 
       if ARGV.include?('--migrations-only')
         self.class.verbose = (ARGV.include?('--verbose') || ARGV.include?('-v'))
@@ -68,13 +68,7 @@ module Kafo
         self.class.exit(0)
       end
 
-      # reload config
-      if @config_reload_requested
-        scenario_manager = setup_scenario_manager
-        self.class.scenario_manager = scenario_manager
-        setup_config(self.class.config_file)
-        self.class.logger.info('Installer configuration was reloaded')
-      end
+      reload_config
 
       if scenario_manager.configured?
         scenario_manager.check_scenario_change(self.class.config_file)
@@ -239,6 +233,16 @@ module Kafo
       self.class.kafo_modules_dir = self.class.config.kafo_modules_dir
       self.class.hooking.load
       self.class.hooking.kafo     = self
+    end
+
+    def reload_config
+      if @config_reload_requested
+        scenario_manager = setup_scenario_manager
+        self.class.scenario_manager = scenario_manager
+        setup_config(self.class.config_file)
+        self.class.logger.info('Installer configuration was reloaded')
+        @config_reload_requestd = false
+      end
     end
 
     def setup_scenario_manager

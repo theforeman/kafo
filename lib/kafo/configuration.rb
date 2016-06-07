@@ -251,6 +251,7 @@ module Kafo
         migrations.store_applied
         @logger.info("#{migrations.migrations.count} migration/s were applied. Updated configuration was saved.")
       end
+      migrations.migrations.count
     end
 
     def migrations_dir
