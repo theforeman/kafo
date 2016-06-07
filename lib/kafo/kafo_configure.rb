@@ -24,13 +24,14 @@ require 'kafo/progress_bar'
 require 'kafo/hooking'
 require 'kafo/exit_handler'
 require 'kafo/scenario_manager'
+require 'kafo/hiera_configurer'
 
 module Kafo
   class KafoConfigure < Clamp::Command
     include StringHelper
 
     class << self
-      attr_accessor :config, :root_dir, :config_file, :gem_root, :temp_config_file,
+      attr_accessor :config, :root_dir, :config_file, :gem_root,
                     :module_dirs, :kafo_modules_dir, :verbose, :app_options, :logger,
                     :check_dirs, :exit_handler, :scenario_manager
       attr_writer :hooking
@@ -133,10 +134,7 @@ module Kafo
       end
 
       self.class.hooking.execute(:pre_commit)
-      if dont_save_answers? || noop?
-        self.class.temp_config_file = self.class.config.temp_config_file
-        store_params(self.class.config.temp_config_file)
-      else
+      unless dont_save_answers? || noop?
         store_params
         self.class.scenario_manager.link_last_scenario(self.class.config_file) if self.class.scenario_manager.configured?
       end
@@ -380,6 +378,11 @@ module Kafo
 
     def run_installation
       self.class.hooking.execute(:pre)
+
+      hiera = HieraConfigurer.new(config.app[:hiera_config], config.modules, config.app[:order])
+      hiera.write_configs
+      self.class.exit_handler.register_cleanup_path(hiera.temp_dir)
+
       exit_code   = 0
       exit_status = nil
       options     = [
@@ -390,6 +393,7 @@ module Kafo
           '--show_diff',
           '--detailed-exitcodes',
           '--reports=',
+          "--hiera_config=#{hiera.config_path}",
       ]
       options.push '--noop' if noop?
       options.push '--profile' if profile?
@@ -417,7 +421,6 @@ module Kafo
       end
       @progress_bar.close if @progress_bar
       logger.info "Puppet has finished, bye!"
-      FileUtils.rm(self.class.config.temp_config_file, :force => true)
       self.class.exit(exit_code) do
         self.class.hooking.execute(:post)
       end

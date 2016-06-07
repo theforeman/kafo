@@ -12,17 +12,13 @@ module Kafo
       @logger  = KafoConfigure.logger
     end
 
-    def custom_answer_file
-      KafoConfigure.temp_config_file.nil? ? '' : "$kafo_answer_file=\"#{KafoConfigure.temp_config_file}\""
-    end
-
     def add_progress
       KafoConfigure.verbose ? '' : "$kafo_add_progress=true"
     end
 
     def command
       result = [
-          "echo '$kafo_config_file=\"#{@configuration.config_file}\" #{custom_answer_file} #{add_progress} #{@command}'",
+          "echo '$kafo_config_file=\"#{@configuration.config_file}\" #{add_progress} #{@command}'",
           '|',
           "RUBYLIB=#{[@configuration.kafo_modules_dir, ::ENV['RUBYLIB']].join(File::PATH_SEPARATOR)}",
           "#{puppet_path} apply #{@options.join(' ')} #{@suffix}",

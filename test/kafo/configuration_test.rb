@@ -19,7 +19,6 @@ module Kafo
     specify { basic_config.check_dirs.must_equal [File.join(current_dir, 'checks')] }
     specify { File.exist?(File.expand_path(basic_config.gem_root)) }
     specify { File.expand_path(basic_config.kafo_modules_dir).must_match %r|/modules$|}
-    specify { basic_config.temp_config_file.must_match %r|/tmp/kafo_answers_\d+.yaml|}
 
     describe '#module_dirs' do
       it 'takes modules_dir' do

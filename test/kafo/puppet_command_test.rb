@@ -16,9 +16,6 @@ module Kafo
         specify { KafoConfigure.stub(:verbose, false) { pc.command.must_include '$kafo_add_progress=true' } }
         specify { KafoConfigure.stub(:verbose, true) { pc.command.wont_include '$kafo_add_progress' } }
 
-        specify { KafoConfigure.stub(:temp_config_file, '/tmp/answer') { pc.command.must_include '$kafo_answer_file="/tmp/answer"' } }
-        specify { KafoConfigure.stub(:temp_config_file, nil) { pc.command.wont_include '$kafo_answer_file' } }
-
         specify { PuppetCommand.stub(:search_puppet_path, '/opt/puppetlabs/bin/puppet') { pc.command.must_include '/opt/puppetlabs/bin/puppet apply' } }
       end
     end
