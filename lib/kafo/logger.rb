@@ -105,7 +105,7 @@ module Kafo
 
     def self.dump_buffer(buffer)
       buffer.each do |log|
-        self.loggers.each { |logger| logger.send log[0], *log[1], &log[2] }
+        self.loggers.each { |logger| logger.send log[0], *([log[1]].flatten(1)), &log[2] }
       end
       buffer.clear
     end
