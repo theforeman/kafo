@@ -91,12 +91,12 @@ module Kafo
         (available_scenarios.keys.count == 1 && available_scenarios.keys.first) ||
         select_scenario_interactively
       if scenario.nil?
-        fail_now("No installation scenario was selected, the installer can not continue.\n" \
-          "       Even --help content is dependent on selected scenario.\n" \
+        fail_now("No installation scenario was selected, the installer can not continue.\n" +
+          "       Even --help content is dependent on selected scenario.\n" +
           "       Select scenario with --scenario SCENARIO or list available scenarios with --list-scenarios.", :unknown_scenario)
       elsif !scenario_enabled?(scenario)
-        fail_now("Selected scenario is DISABLED, can not continue.\n" \
-          "       Use --list-scenarios to list available options.\n" \
+        fail_now("Selected scenario is DISABLED, can not continue.\n" +
+          "       Use --list-scenarios to list available options.\n" +
           "       You can also --enable-scenario SCENARIO to make the selected scenario available.", :scenario_error)
       end
       scenario
