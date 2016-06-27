@@ -3,7 +3,7 @@ require 'test_helper'
 module Kafo
   describe Param do
     let(:mod) { nil }
-    let(:param) { Param.new(mod, 'test') }
+    let(:param) { Param.new(mod, 'test', 'Optional[String]') }
 
     describe "#visible?" do
       describe "without condition" do
@@ -21,7 +21,7 @@ module Kafo
       end
 
       describe "with context" do
-        let(:context) { [Param.new(nil, 'context').tap { |p| p.value = true }] }
+        let(:context) { [Param.new(nil, 'context', 'String').tap { |p| p.value = true }] }
         before { param.condition = '$context' }
         specify { param.visible?(context).must_equal true }
       end
@@ -62,6 +62,13 @@ module Kafo
         specify { param.valid?.must_equal true }
       end
 
+      describe "with no validation functions, but data type validation" do
+        let(:validations) { [] }
+        before { param.value = 1 }
+        specify { param.valid?.must_equal false }
+        specify { param.tap { |p| p.valid? }.validation_errors.must_equal ['1 is not a valid string'] }
+      end
+
       describe "with a passing validation" do
         before { param.value = 'foo' }
         let(:validations) do
@@ -96,7 +103,7 @@ module Kafo
       end
 
       describe "with validate_integer" do
-        before { param.value = 2 }
+        before { param.value = '2' }
         let(:validations) do
           [create_validation('validate_integer', ['$test', '3', '1'])]
         end
@@ -104,7 +111,7 @@ module Kafo
       end
 
       describe "with validate_integer and undef arguments" do
-        before { param.value = 2 }
+        before { param.value = '2' }
         let(:validations) do
           [create_validation('validate_integer', ['$test', :undef, '1'])]
         end
@@ -126,7 +133,7 @@ module Kafo
             v.arguments.map(&:to_s).include?('$pool_size')
           end
         end
-        let(:param) { Param.new(mod, 'pool_size') }
+        let(:param) { Param.new(mod, 'pool_size', 'String') }
         specify { param.valid?.must_equal true }
       end
 
@@ -141,7 +148,7 @@ module Kafo
             v.arguments.map(&:to_s).include?('$db_type')
           end
         end
-        let(:param) { Param.new(mod, 'db_type') }
+        let(:param) { Param.new(mod, 'db_type', 'String') }
         specify { param.value = 'sqlite'; param.valid?.must_equal true }
         specify do
           param.value = 'wrong'

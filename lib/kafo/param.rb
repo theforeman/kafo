@@ -1,15 +1,17 @@
 # encoding: UTF-8
 require 'kafo/condition'
+require 'kafo/validator'
 
 module Kafo
   class Param
-    attr_reader :name, :module
+    attr_reader :name, :module, :type
     attr_accessor :default, :doc, :value_set, :condition
     attr_writer :groups
 
-    def initialize(builder, name)
+    def initialize(builder, name, type)
       @name   = name
       @module = builder
+      @type   = DataType.new_from_string(type)
     end
 
     def groups
@@ -18,13 +20,13 @@ module Kafo
 
     # we use @value_set flag because even nil can be valid value
     def value
-      @value_set ? @value : default
+      @value_set ? @type.typecast(@value) : default
     end
 
     def value=(value)
       @value_set = true
       value      = value.to_s if value.is_a?(::HighLine::String)  # don't persist highline extensions
-      @value     = value == 'UNDEF' ? nil : value
+      @value     = value
     end
 
     def unset_value
@@ -33,7 +35,7 @@ module Kafo
     end
 
     def dump_default
-      default
+      @type.dump_default(default)
     end
 
     def module_name
@@ -41,7 +43,7 @@ module Kafo
     end
 
     def to_s
-      "#<#{self.class}:#{self.object_id} @name=#{name.inspect} @default=#{default.inspect} @value=#{value.inspect}>"
+      "#<#{self.class}:#{self.object_id} @name=#{name.inspect} @default=#{default.inspect} @value=#{value.inspect} @type=#{@type}>"
     end
 
     def set_default(defaults)
@@ -87,22 +89,23 @@ module Kafo
         {:name => v.name, :arguments => interpret_validation_args(args)}
       end
 
+      # run old style validation functions
       @validator = Validator.new
       validations.each { |v| @validator.send(v[:name], v[:arguments]) }
-      @validator.errors.empty?
+      @validation_errors = @validator.errors.dup
+
+      # run data type based validations, append errors
+      @type.valid?(value, @validation_errors)
+
+      @validation_errors.empty?
     end
 
     def validation_errors
-      if @validator
-        @validator.errors
-      else
-        []
-      end
+      @validation_errors || []
     end
 
-    # To be overwritten in children
     def multivalued?
-      false
+      @type.multivalued?
     end
 
     def <=> o
@@ -118,7 +121,7 @@ module Kafo
     end
 
     def condition_value
-      value.to_s
+      @type.condition_value(value)
     end
 
     private
@@ -143,9 +146,4 @@ module Kafo
   end
 end
 
-require 'kafo/params/boolean'
-require 'kafo/params/string'
 require 'kafo/params/password'
-require 'kafo/params/array'
-require 'kafo/params/hash'
-require 'kafo/params/integer'

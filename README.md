@@ -388,10 +388,10 @@ Example:
 #
 # $enc::                    Should foreman act as an external node classifier (manage puppet class
 #                           assignments)
-#                           type:boolean
+#
 class foreman (
-  $foreman_url            = $foreman::params::foreman_url,
-  $enc                    = $foreman::params::enc
+  String $foreman_url = $foreman::params::foreman_url,
+  Boolean $enc        = $foreman::params::enc
 ) {
   class { 'foreman::install': }
 }
@@ -433,19 +433,44 @@ the particular parameter belongs.
 
 ## Argument types
 
-By default all arguments that are parsed from puppet are treated as strings.
-If you want to indicate that a parameter has a particular type you can do it
-in the puppet manifest documentation like this
+When using Puppet 4 or newer, the data type will be read from the parameter
+list and defaults to Puppet's [Any](https://docs.puppet.com/puppet/latest/reference/lang_data_abstract.html#any)
+data type, which Kafo handles as a basic string with no validation.
+
+If more specific data types, such as `Optional[Array[2]]` or similar are
+given in the [parameter list](https://docs.puppet.com/puppet/4.5/reference/lang_data_type.html#usage)
+then Kafo will parse and validate parameters values according to the
+specification.
+
+```puppet
+class example (
+  Boolean $param = false
+) {
+```
+
+When using Puppet 3, data types can be specified in the manifest documentation
+rather than the parameter list, like this:
 
 ```puppet
 # $param::        Some documentation for param
-                  type:boolean
+                  type:Array[String]
 ```
 
-Supported types are: string, boolean, integer, array, password, hash
+For compatibility with older Kafo releases, additional types are supported:
+string, boolean, integer, array, password, hash. These are equivalent to their
+Puppet 4 namesakes, plus wrapped in `Optional[..]` to permit `undef`.
+
+If the data type is given in both the manifest documentation and the parameter
+list, then the manifest documentation will be preferred.
 
 Note that all arguments that are nil (have no value in answers.yaml or you
 set them UNDEF (see below)) are translated to ```undef``` in puppet.
+
+If your module declares its own types, you can add new corresponding subclasses
+of DataType which implement validation and typecasting. This can be added to a
+`boot` hook by calling:
+
+    Kafo::DataType.register_type('YourType', Kafo::DataType::YourType)
 
 ## Password arguments
 
@@ -691,6 +716,10 @@ you must follow a few rules however:
 
 These functions are re-implemented in Kafo from common stdlib functions, so please
 contribute any missing ones.
+
+If class parameters are declared with Puppet 4 data types then Kafo will
+validate user inputs against Puppet's type validation rules, which should
+replace the use of separate validation functions.
 
 ## Enabling or disabling module
 

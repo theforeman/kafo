@@ -14,7 +14,7 @@ module Kafo
     describe "non-empty password" do
 
       subject do
-        Params::Password.new(dummy_module, "password").tap do |param|
+        Params::Password.new(dummy_module, "password", "String").tap do |param|
           param.value = "secret"
         end
       end
@@ -33,7 +33,7 @@ module Kafo
     describe "empty password" do
 
       subject do
-        Params::Password.new(dummy_module, "password").tap do |param|
+        Params::Password.new(dummy_module, "password", "String").tap do |param|
           param.value = ""
         end
       end

@@ -311,8 +311,8 @@ module Kafo
       end
 
       describe "#render_params" do
-        let(:visible) { Params::String.new(nil, 'visible').tap { |p| p.condition = 'true' } }
-        let(:invisible) { Params::String.new(nil, 'invisible').tap { |p| p.condition = 'false' } }
+        let(:visible) { Param.new(nil, 'visible', 'String').tap { |p| p.condition = 'true' } }
+        let(:invisible) { Param.new(nil, 'invisible', 'String').tap { |p| p.condition = 'false' } }
         let(:params) { [visible, invisible] }
 
         before do

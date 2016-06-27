@@ -31,11 +31,11 @@ module Kafo
 
     describe "evaluation of condition with substitution" do
       let(:builder) { Kafo::PuppetModule.new('mymod') }
-      let(:str) { Params::String.new(builder, 'str').tap { |p| p.value = 'tester' } }
-      let(:arr) { Params::Array.new(builder, 'arr').tap { |p| p.value = ['root', 'toor'] } }
-      let(:int) { Params::Integer.new(builder, 'int').tap { |p| p.value = 3 } }
-      let(:bool) { Params::Boolean.new(builder, 'bool').tap { |p| p.value = false } }
-      let(:pass) { Params::Password.new(builder, 'pass').tap { |p| p.value = 'secret' } }
+      let(:str) { Param.new(builder, 'str', 'String').tap { |p| p.value = 'tester' } }
+      let(:arr) { Param.new(builder, 'arr', 'Array[String]').tap { |p| p.value = ['root', 'toor'] } }
+      let(:int) { Param.new(builder, 'int', 'Integer').tap { |p| p.value = 3 } }
+      let(:bool) { Param.new(builder, 'bool', 'Boolean').tap { |p| p.value = false } }
+      let(:pass) { Params::Password.new(builder, 'pass', 'String').tap { |p| p.value = 'secret' } }
       let(:context) { [str, arr, int, bool, pass] }
 
       describe "substitutes all variables for param values" do

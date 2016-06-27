@@ -124,6 +124,7 @@ END
     def configure(param)
       say "\n" + HighLine.color("Parameter #{param.name} (of module #{param.module.name})", :headline)
       say HighLine.color(param.doc.join("\n").gsub('"', '\"'), :important)
+      say HighLine.color("Data type: #{param.type}", :important)
       value       = param.multivalued? ? configure_multi(param) : configure_single(param)
       value_was   = param.value
       param.value = value unless value.empty?
