@@ -77,6 +77,7 @@ module Kafo
            create_validation('validate_string', ['$test'])]
         end
         specify { param.valid?.must_equal false }
+        specify { param.tap { |p| p.valid?}.validation_errors.must_equal ['"foo" is not a valid integer'] }
       end
 
       describe "with validation on multiple parameters" do
@@ -87,6 +88,7 @@ module Kafo
         specify do
           v = MiniTest::Mock.new
           v.expect(:send, true, ['validate_string', ['foo']])
+          v.expect(:errors, [])
           Validator.stub(:new, v) do
             param.valid?.must_equal true
           end
@@ -144,7 +146,7 @@ module Kafo
         specify do
           param.value = 'wrong'
           logger = MiniTest::Mock.new
-          logger.expect(:error, true, ['invalid wrong DB type'])
+          logger.expect(:error, true, ['Validation error: invalid wrong DB type'])
           KafoConfigure.stub(:logger, logger) { param.valid?.must_equal false }
         end
       end

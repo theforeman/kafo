@@ -131,6 +131,9 @@ END
       until param.valid?
         param.value = value_was
         say "\n" + HighLine.color("Invalid value for #{param.name}", :important)
+        param.validation_errors.each do |error|
+          say "  " + HighLine.color(error, :important)
+        end
         value       = param.multivalued? ? configure_multi(param) : configure_single(param)
         param.value = value unless value.empty?
       end

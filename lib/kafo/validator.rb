@@ -1,15 +1,17 @@
 # encoding: UTF-8
 module Kafo
   class Validator
+    attr_reader :errors
 
     def initialize
+      @errors = []
       @logger = KafoConfigure.logger
     end
 
     def validate_absolute_path(args)
       args.each do |arg|
         unless arg.to_s.start_with?('/')
-          @logger.error "#{arg.inspect} is not an absolute path."
+          error "#{arg.inspect} is not an absolute path"
           return false
         end
       end
@@ -19,7 +21,7 @@ module Kafo
     def validate_array(args)
       args.each do |arg|
         unless arg.is_a?(Array)
-          @logger.error "#{arg.inspect} is not a valid array."
+          error "#{arg.inspect} is not a valid array"
           return false
         end
       end
@@ -29,7 +31,7 @@ module Kafo
     def validate_bool(args)
       args.each do |arg|
         unless arg.is_a?(TrueClass) || arg.is_a?(FalseClass)
-          @logger.error "#{arg.inspect} is not a valid boolean."
+          error "#{arg.inspect} is not a valid boolean"
           return false
         end
       end
@@ -39,7 +41,7 @@ module Kafo
     def validate_hash(args)
       args.each do |arg|
         unless arg.is_a?(Hash)
-          @logger.error "#{arg.inspect} is not a valid hash."
+          error "#{arg.inspect} is not a valid hash"
           return false
         end
       end
@@ -52,16 +54,16 @@ module Kafo
       min = args[2]
       int = Integer(value.to_s)
       if min && int < min.to_i
-        @logger.error "#{value} must be at least #{min}."
+        error "#{value} must be at least #{min}"
         return false
       end
       if max && int > max.to_i
-        @logger.error "#{value} must be less than #{max}."
+        error "#{value} must be less than #{max}"
         return false
       end
       return true
     rescue TypeError, ArgumentError
-      @logger.error "#{value.inspect} is not a valid integer."
+      error "#{value.inspect} is not a valid integer"
       return false
     end
 
@@ -70,7 +72,7 @@ module Kafo
       valid_values = ['http', 'https', 'both']
       args.each do |arg|
         unless valid_values.include?(arg)
-          @logger.error "#{arg.inspect} is not a valid value.  Valid values are: #{valid_values.join(", ")}"
+          error "#{arg.inspect} is not a valid value.  Valid values are: #{valid_values.join(", ")}"
           return false
         end
       end
@@ -86,7 +88,7 @@ module Kafo
       if regexes.any? { |rx| value =~ Regexp.compile(rx) }
         return true
       else
-        @logger.error message
+        error message
         return false
       end
     end
@@ -94,7 +96,7 @@ module Kafo
     def validate_string(args)
       args.each do |arg|
         unless arg.is_a?(String)
-          @logger.error "#{arg.inspect} is not a valid string."
+          error "#{arg.inspect} is not a valid string"
           return false
         end
       end
@@ -108,6 +110,13 @@ module Kafo
       else
         super
       end
+    end
+
+    private
+
+    def error(message)
+      @errors << message
+      @logger.error "Validation error: #{message}"
     end
   end
 end
