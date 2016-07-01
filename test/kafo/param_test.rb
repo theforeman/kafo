@@ -162,12 +162,14 @@ module Kafo
 
     describe '#set_default' do
       let(:with_params) { param.tap { |p| p.default = 'mod::params::test' } }
+      let(:with_undef) { param.tap { |p| p.default = :undef } }
       let(:with_unset) { param.tap { |p| p.default = 'UNSET' } }
       let(:with_value) { param.tap { |p| p.default = 42 } }
 
       specify { with_params.tap { |p| p.set_default({}) }.default.must_equal 'mod::params::test' }
       specify { with_params.tap { |p| p.set_default({'mod::params::test' => 42}) }.default.must_equal 42 }
       specify { with_params.tap { |p| p.set_default({'mod::params::test' => :undef}) }.default.must_be_nil }
+      specify { with_undef.tap { |p| p.set_default({}) }.default.must_be_nil }
       specify { with_unset.tap { |p| p.set_default({}) }.default.must_be_nil }
       specify { with_value.tap { |p| p.set_default({42 => :undefined}) }.default.must_equal 42 }
       specify { with_value.tap { |p| p.set_default({}) }.default.must_equal 42 }

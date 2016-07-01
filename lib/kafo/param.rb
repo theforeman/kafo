@@ -48,25 +48,23 @@ module Kafo
       if default == 'UNSET'
         self.default = nil
       else
-        if defaults.has_key?(default)
-          value = defaults[default]
-          case value
-            when :undef
-              # value can be set to :undef if value is not defined
-              # (e.g. puppetmaster = $::puppetmaster which is not defined yet)
-              self.default = nil
-            when :undefined
-              # in puppet 2.7 :undefined means that it's param which value is
-              # not set by another parameter (e.g. foreman_group = 'something')
-              # which means, default is sensible unlike dumped default
-              # newer puppet has default dump in format 'value' => 'value' so
-              # it's handled correctly by else branch
-            else
-              self.default = value
-          end
-          # if we don't have default value from dump (can happen for modules added from hooks,
-          # or without using a params class), the existing default value from the manifest will
-          # be used. On calling #value, the default will be returned if no overriding value is set.
+        # if we don't have default value from dump (can happen for modules added from hooks,
+        # or without using a params class), the existing default value from the manifest will
+        # be used. On calling #value, the default will be returned if no overriding value is set.
+        value = defaults.has_key?(default) ? defaults[default] : default
+        case value
+          when :undef
+            # value can be set to :undef if value is not defined
+            # (e.g. puppetmaster = $::puppetmaster which is not defined yet)
+            self.default = nil
+          when :undefined
+            # in puppet 2.7 :undefined means that it's param which value is
+            # not set by another parameter (e.g. foreman_group = 'something')
+            # which means, default is sensible unlike dumped default
+            # newer puppet has default dump in format 'value' => 'value' so
+            # it's handled correctly by else branch
+          else
+            self.default = value
         end
       end
     end
