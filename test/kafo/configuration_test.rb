@@ -21,6 +21,26 @@ module Kafo
     specify { File.expand_path(basic_config.kafo_modules_dir).must_match %r|/modules$|}
     specify { basic_config.temp_config_file.must_match %r|/tmp/kafo_answers_\d+.yaml|}
 
+    describe '#log_exists?' do
+      it 'returns true if a non-empty log file exists for the configuration' do
+        Dir.mktmpdir do |log_dir|
+          cfg = { :modules_dir => './my_modules',
+                  :answer_file => 'test/fixtures/basic_answers.yaml',
+                  :log_dir => log_dir }
+          config_file = ConfigFileFactory.build('modules_dir', cfg.to_yaml).path
+          config = Kafo::Configuration.new(config_file, false)
+          refute config.log_exists?
+          File.open(config.log_file, 'w') { |f| f.write 'non-empty-log' }
+          assert config.log_exists?
+          File.open(config.log_file, 'w') { |f| f.write '' }
+          refute config.log_exists?
+          old_log = config.log_file.sub(/\.log\Z/) { |suffix| ".1#{ suffix }"}
+          File.open(old_log, 'w') { |f| f.write('old-non-empty-log') }
+          assert config.log_exists?
+        end
+      end
+    end
+
     describe '#module_dirs' do
       it 'takes modules_dir' do
         cfg = { :modules_dir => './my_modules', :answer_file => 'test/fixtures/basic_answers.yaml'}

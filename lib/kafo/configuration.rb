@@ -233,8 +233,16 @@ module Kafo
       File.join(app[:log_dir], app[:log_name])
     end
 
+    def log_files_pattern
+      log_file.sub(/(\.log)\Z/i) { |suffix| "{.[0-9]*,}#{suffix}" }
+    end
+
+    def log_files
+      Dir.glob(log_files_pattern)
+    end
+
     def log_exists?
-      File.exists?(log_file) && File.size(log_file) > 0
+      log_files.any? { |f| File.size(f) > 0 }
     end
 
     def answers
