@@ -89,8 +89,17 @@ module Kafo
         {:name => v.name, :arguments => interpret_validation_args(args)}
       end
 
-      validator = Validator.new
-      validations.all? { |v| validator.send(v[:name], v[:arguments]) }
+      @validator = Validator.new
+      validations.each { |v| @validator.send(v[:name], v[:arguments]) }
+      @validator.errors.empty?
+    end
+
+    def validation_errors
+      if @validator
+        @validator.errors
+      else
+        []
+      end
     end
 
     # To be overwritten in children

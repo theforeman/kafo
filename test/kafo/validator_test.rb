@@ -6,6 +6,10 @@ module Kafo
   describe Validator do
     let(:validator) { Validator.new }
 
+    describe "#errors" do
+      specify { validator.tap { |v| v.validate_string([1]) }.errors.must_equal ["1 is not a valid string"] }
+    end
+
     describe "#validate_absolute_path" do
       specify { validator.validate_absolute_path(['/opt']).must_equal true }
       specify { validator.validate_absolute_path(['/opt', '/usr']).must_equal true }

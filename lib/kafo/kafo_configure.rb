@@ -370,7 +370,8 @@ module Kafo
       logger.info 'Running validation checks'
       results = params.map do |param|
         result = param.valid?
-        progress_log(:error, "Parameter #{with_prefix(param)} invalid") if logging && !result
+        errors = param.validation_errors.join(', ')
+        progress_log(:error, "Parameter #{with_prefix(param)} invalid: #{errors}") if logging && !result
         result
       end
       results.all?
