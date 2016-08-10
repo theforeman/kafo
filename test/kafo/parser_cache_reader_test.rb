@@ -13,25 +13,32 @@ module Kafo
       specify { subject.new_from_file(nil).must_be_nil }
       specify { subject.new_from_file('').must_be_nil }
       specify { subject.new_from_file('/non/existent/file').must_be_nil }
+      specify { subject.new_from_file(['/non/existent/file']).must_be_nil }
+      specify { subject.new_from_file(['/another/non/existent/file', '/non/existent/file']).must_be_nil }
 
       describe "with empty file" do
         let(:cache) { ParserCacheFactory.build('') }
+        let(:another_cache) { ParserCacheFactory.build('') }
         specify { subject.new_from_file(cache.path).must_be_nil }
+        specify { subject.new_from_file([cache.path, another_cache.path]).must_be_nil }
       end
 
       describe "with version other than 1" do
-        let(:cache) { ParserCacheFactory.build(valid_cache.update(:version => 2)) }
-        specify { subject.new_from_file(cache.path).must_be_nil }
+        let(:bad_version_cache) { ParserCacheFactory.build(valid_cache.update(:version => 2)) }
+        let(:proper_cache) { ParserCacheFactory.build(valid_cache) }
+        specify { subject.new_from_file([bad_version_cache.path, proper_cache.path]).must_be_nil }
       end
 
       describe "with missing files section" do
-        let(:cache) { ParserCacheFactory.build(valid_cache.reject { |k,v| k == :files }) }
-        specify { subject.new_from_file(cache.path).must_be_nil }
+        let(:bad_cache) { ParserCacheFactory.build(valid_cache.reject { |k,v| k == :files }) }
+        let(:proper_cache) { ParserCacheFactory.build(valid_cache) }
+        specify { subject.new_from_file([bad_cache.path, proper_cache.path]).must_be_nil }
       end
 
       describe "with correct format" do
-        let(:cache) { ParserCacheFactory.build(valid_cache) }
-        specify { subject.new_from_file(cache.path).must_be_instance_of subject }
+        let(:cache1) { ParserCacheFactory.build(valid_cache) }
+        let(:cache2) { ParserCacheFactory.build(valid_cache) }
+        specify { subject.new_from_file([cache1.path, cache2.path]).must_be_instance_of subject }
       end
     end
 
