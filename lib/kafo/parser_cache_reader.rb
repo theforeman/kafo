@@ -1,24 +1,35 @@
 module Kafo
   class ParserCacheReader
-    def self.new_from_file(cache_path)
-      if cache_path.nil? || cache_path.empty?
-        logger.debug "No parser cache configured in :parser_cache_path, skipping setup"
+    def self.new_from_file(cache_paths)
+      cache_paths = [cache_paths].compact unless cache_paths.is_a?(Array)
+      if cache_paths.empty?
+        logger.debug "No parser cache(s) configured in :parser_cache_path, skipping setup"
         return nil
       end
 
-      unless File.exist?(cache_path)
-        logger.warn "Parser cache configured at #{cache_path} is missing, skipping setup"
+      non_existent = cache_paths.select { |path| !File.exist?(path) }
+      unless non_existent.empty?
+        logger.warn "Parser cache(s) configured at #{non_existent.join(", ")} are missing, skipping setup"
         return nil
       end
 
-      parsed = YAML.load(File.read(cache_path))
-      if !parsed.is_a?(Hash) || parsed[:version] != 1 || !parsed[:files].is_a?(Hash)
-        logger.warn "Parser cache is from a different version of Kafo, skipping setup"
-        return nil
+      parsed = cache_paths.map { |path| YAML.load(File.read(path)) }
+
+      parsed.each_with_index do |cache, i|
+        if !cache.is_a?(Hash) || cache[:version] != PARSER_CACHE_VERSION || !cache[:files].is_a?(Hash)
+          logger.warn "Parser cache #{cache_paths[i]} is from a different version of Kafo, skipping setup"
+          return nil
+        end
       end
 
-      logger.debug "Using #{cache_path} cache with parsed modules"
-      new(parsed)
+      logger.debug "Using #{cache_paths.join(", ")} cache with parsed modules"
+
+      merged_cache = {
+        :version => PARSER_CACHE_VERSION,
+        :files => parsed.map { |cache| cache[:files] }.reduce({}) { |ret, files| ret.merge!(files) }
+      }
+
+      new(merged_cache)
     end
 
     def self.logger

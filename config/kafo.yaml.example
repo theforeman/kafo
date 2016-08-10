@@ -16,8 +16,10 @@
 # :module_dirs: /usr/share/kafo/modules
 # Similar as modules_dir but for kafo internal modules, leave nil if you don't need to change it
 # :kafo_modules_dir:
-# Location of an optional cache of parsed module data, generate with kafo-export-params -f parsercache
-# :parser_cache_path: /usr/share/kafo/parser_cache.yaml
+# Location of one or more optional caches of parsed module data, generate with kafo-export-params -f parsercache
+# :parser_cache_path:
+#   - /usr/share/kafo/parser_cache.yaml
+#   - /usr/share/kafo/another_parser_cache.yaml
 # Enable colors? If you don't touch this, we'll autodetect terminal capabilities
 # :colors: true
 # Color scheme, we support :bright and :dark (first is better for white background, dark for black background)

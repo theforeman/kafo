@@ -314,7 +314,7 @@ provided by Kafo can be used and customized to satisfy your needs
 
 ### Scenario as an installer plugin
 
-Scenarios were designed to make it possible to package them separately as optional installer extension.  
+Scenarios were designed to make it possible to package them separately as optional installer extension.
 Config files are located in separate directory which makes packaging of additional scenarios easy.
 Configuration of paths to modules, checks and hooks accepts multiple directories
 so it is possible to bundle your scenario with additional modules, hooks and checks.
@@ -325,7 +325,7 @@ As your project grows you may need to change your installer modules or add new o
 Kafo has support for scenario migrations. Migrations are ruby scripts similar to hooks and are located
 in `<config>/installer-scenarios.d/your-scenario.migrations/` so each scenario has its own set of independent migrations.
 During its initialization the installer checks for migrations that were not applied yet. It happens exactly between execution of `pre-migrations` and `boot` hooks.
-The installer stores names of applied migrations in `<config>/installer-scenarios.d/your-scenario.migrations/.applied` to avoid runnig the migrations multiple times.  
+The installer stores names of applied migrations in `<config>/installer-scenarios.d/your-scenario.migrations/.applied` to avoid runnig the migrations multiple times.
 It is recommended to prefix the migration names with `date +%y%m%d%H%M%S` to avoid migration ordering issues.
 
 In a migration you can modify the scenario configuration as well as the answer file. The changed configs are stored immediately after all the migrations were applied.
@@ -965,7 +965,7 @@ not persisted between runs.
 
 ## Parser cache
 
-A cache of parsed Puppet modules and manifests can be created to skip the use
+One or more caches of parsed Puppet modules and manifests can be created to skip the use
 of kafo_parsers at runtime. This is useful when kafo_parsers doesn't support the
 version of Puppet in use, and may also provide a small performance benefit.
 
@@ -973,7 +973,13 @@ Create the cache with `kafo-export-params -f parsercache --no-parser-cache` and
 configure it in config/kafo.yaml with:
 
 ```yaml
+# single cache
 :parser_cache_path: ./parser_cache.yaml
+
+# multiple caches
+:parser_cache_path:
+  - ./parser_cache.yaml
+  - ./another_parser_cache.yaml
 ```
 
 The cache will be skipped if the file modification time of the manifest is
@@ -1028,7 +1034,7 @@ Other exit codes that can be returned:
 * '24' means that your answer file asks for puppet module that you did not provide
 * '25' means that kafo could not get default values from puppet
 * '26' means that kafo could not find the specified scenario
-* '27' means that kafo found found scenario configuration error that prevents installation from continuing  
+* '27' means that kafo found found scenario configuration error that prevents installation from continuing
 * '130' user interrupt (^C)
 
 ## Running Puppet Profiling
