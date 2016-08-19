@@ -82,7 +82,7 @@ module Kafo
       if parsed
         scenario_file = File.join(config_dir, "#{parsed[3]}.yaml")
         return scenario_file if File.exists?(scenario_file)
-        fail_now("Scenario (#{scenario_file}) was not found, can not continue", :unknown_scenario)
+        fail_now("Scenario (#{scenario_file}) was not found, can not continue", :unset_scenario)
       end
     end
 
@@ -93,7 +93,7 @@ module Kafo
       if scenario.nil?
         fail_now("No installation scenario was selected, the installer can not continue.\n" +
           "       Even --help content is dependent on selected scenario.\n" +
-          "       Select scenario with --scenario SCENARIO or list available scenarios with --list-scenarios.", :unknown_scenario)
+          "       Select scenario with --scenario SCENARIO or list available scenarios with --list-scenarios.", :unset_scenario)
       elsif !scenario_enabled?(scenario)
         fail_now("Selected scenario is DISABLED, can not continue.\n" +
           "       Use --list-scenarios to list available options.\n" +

@@ -16,7 +16,7 @@ module Kafo
           :no_answer_file => 23,
           :unknown_module => 24,
           :defaults_error => 25,
-          :unknown_scenario => 26,
+          :unset_scenario => 26,
           :scenario_error => 27
       }
     end
