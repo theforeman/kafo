@@ -967,7 +967,10 @@ not persisted between runs.
 
 One or more caches of parsed Puppet modules and manifests can be created to skip the use
 of kafo_parsers at runtime. This is useful when kafo_parsers doesn't support the
-version of Puppet in use, and may also provide a small performance benefit.
+version of Puppet in use, and may also provide a small performance benefit. When multiple
+cache files are used, they are being loaded in order they are specified in the config
+file. If their files overlap, the later cache fully replaces the previous cache for each
+file/manifest.
 
 Create the cache with `kafo-export-params -f parsercache --no-parser-cache` and
 configure it in config/kafo.yaml with:
