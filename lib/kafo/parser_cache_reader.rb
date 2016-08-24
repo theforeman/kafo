@@ -1,3 +1,5 @@
+require 'kafo/version'
+
 module Kafo
   class ParserCacheReader
     def self.new_from_file(cache_paths)

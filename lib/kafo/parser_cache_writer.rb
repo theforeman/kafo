@@ -1,8 +1,10 @@
+require 'kafo/version'
+
 module Kafo
   class ParserCacheWriter
     def self.write(modules)
       {
-        :version => 1,
+        :version => PARSER_CACHE_VERSION,
         :files => Hash[modules.sort.map { |m| write_module(m) }]
       }
     end
