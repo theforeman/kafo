@@ -13,6 +13,7 @@ require 'kafo/color_scheme'
 require 'kafo_parsers/exceptions'
 require 'kafo/exceptions'
 require 'kafo/migrations'
+require 'kafo/store'
 require 'kafo/configuration'
 require 'kafo/logger'
 require 'kafo/string_helper'
@@ -33,7 +34,7 @@ module Kafo
     class << self
       attr_accessor :config, :root_dir, :config_file, :gem_root,
                     :module_dirs, :kafo_modules_dir, :verbose, :app_options, :logger,
-                    :check_dirs, :exit_handler, :scenario_manager
+                    :check_dirs, :exit_handler, :scenario_manager, :store
       attr_writer :hooking
 
       def hooking
@@ -100,6 +101,10 @@ module Kafo
 
     def config
       self.class.config
+    end
+
+    def store
+      self.class.store
     end
 
     def logger
@@ -230,6 +235,7 @@ module Kafo
       self.class.gem_root         = self.class.config.gem_root
       self.class.kafo_modules_dir = self.class.config.kafo_modules_dir
       self.class.hooking.load
+      self.class.store            = setup_store
       self.class.hooking.kafo     = self
     end
 
@@ -245,6 +251,14 @@ module Kafo
 
     def setup_scenario_manager
       ScenarioManager.new((defined?(CONFIG_DIR) && CONFIG_DIR) || (defined?(CONFIG_FILE) && CONFIG_FILE))
+    end
+
+    def setup_store
+      store = Store.new()
+      store_path = self.class.config.app[:store_dir]
+      store_path = File.expand_path(File.join(CONFIG_DIR, '../store.d')) if store_path.empty? && defined?(CONFIG_DIR)
+      store.add_dir(store_path) if File.exists?(store_path)
+      store
     end
 
     def set_parameters
