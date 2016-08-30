@@ -264,7 +264,7 @@ module Kafo
 
     def parser_cache
       if app[:parser_cache_path]
-        @parser_cache ||= Kafo::ParserCacheReader.new_from_file(File.expand_path(app[:parser_cache_path]))
+        @parser_cache ||= Kafo::ParserCacheReader.new_from_file(app[:parser_cache_path])
       end
     end
 

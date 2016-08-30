@@ -15,7 +15,7 @@ module Kafo
         return nil
       end
 
-      parsed = cache_paths.map { |path| YAML.load(File.read(path)) }
+      parsed = cache_paths.map { |path| YAML.load(File.read(File.expand_path(path))) }
 
       parsed.each_with_index do |cache, i|
         if !cache.is_a?(Hash) || cache[:version] != PARSER_CACHE_VERSION || !cache[:files].is_a?(Hash)
