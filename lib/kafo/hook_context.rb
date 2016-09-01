@@ -61,6 +61,13 @@ module Kafo
       self.kafo.add_module(module_name)
     end
 
+    # Check if a module is enabled in the current configuration.
+    # examples:
+    #   module_enabled?('example')
+    def module_enabled?(module_name)
+      self.kafo.module(module_name).enabled?
+    end
+
     # You can trigger installer exit by this method. You must specify exit code as a first
     # argument. You can also specify a symbol alias which is built-in (see exit_handler.rb
     # for more details).

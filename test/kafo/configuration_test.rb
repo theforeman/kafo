@@ -8,12 +8,12 @@ module Kafo
     let(:old_config) { Kafo::Configuration.new(basic_config_file, false) }
     let(:current_dir) { File.expand_path('.') }
 
-    let(:p_foo) { fake_param('mod', 'foo', 1) }
-    let(:p_bar) { fake_param('mod', 'bar', 10) }
-    let(:p_baz) { fake_param('mod', 'baz', 100) }
-    let(:p_old_foo) { fake_param('mod', 'foo', 2) }
-    let(:p_old_bar) { fake_param('mod', 'bar', 10) }
-    let(:p_old_baz) { fake_param('mod', 'baz', 100) }
+    let(:p_foo) { fake_param('foo', 1) }
+    let(:p_bar) { fake_param('bar', 10) }
+    let(:p_baz) { fake_param('baz', 100) }
+    let(:p_old_foo) { fake_param('foo', 2) }
+    let(:p_old_bar) { fake_param('bar', 10) }
+    let(:p_old_baz) { fake_param('baz', 100) }
 
     specify { basic_config.root_dir.must_equal current_dir }
     specify { basic_config.check_dirs.must_equal [File.join(current_dir, 'checks')] }
@@ -58,8 +58,8 @@ module Kafo
 
     describe '#params_changed' do
       it 'lists all the params that changed value' do
-        basic_config.stub(:params, [p_foo, p_bar, p_baz]) do
-          old_config.stub(:params, [p_old_foo, p_old_bar]) do
+        basic_config.stub(:modules, [fake_module('mod', [p_foo, p_bar, p_baz])]) do
+          old_config.stub(:modules, [fake_module('mod', [p_old_foo, p_old_bar, p_old_baz])]) do
             basic_config.params_changed(old_config).must_equal([p_foo])
           end
         end
@@ -68,9 +68,9 @@ module Kafo
 
     describe '#params_missing' do
       it 'lists all the params that are missing in the new config' do
-        basic_config.stub(:params, [p_foo, p_bar]) do
+        basic_config.stub(:modules, [fake_module('mod', [p_foo, p_bar])]) do
           basic_config.stub(:module_enabled?, true) do
-            old_config.stub(:params, [p_old_foo, p_old_baz]) do
+            old_config.stub(:modules, [fake_module('mod', [p_old_foo, p_old_baz])]) do
               basic_config.params_missing(old_config).must_equal([p_old_baz])
             end
           end
@@ -80,8 +80,8 @@ module Kafo
 
     describe '#preset_defaults_from_other_config' do
       it 'merges values from the other config' do
-        basic_config.stub(:params, [p_foo, p_bar]) do
-          old_config.stub(:params, [p_old_foo, p_old_bar, p_old_baz]) do
+        basic_config.stub(:modules, [fake_module('mod', [p_foo, p_bar])]) do
+          old_config.stub(:modules, [fake_module('mod', [p_old_foo, p_old_bar, p_old_baz])]) do
             basic_config.preset_defaults_from_other_config(old_config)
             basic_config.param('mod', 'foo').value.must_equal 2
             basic_config.param('mod', 'bar').value.must_equal 10
@@ -150,6 +150,33 @@ module Kafo
 
     describe '#migrations_dir' do
       specify { basic_config.migrations_dir.must_match /\/tmp\/testing_config.*\.migrations$/ }
+    end
+
+    describe '#module' do
+      it 'finds module by name' do
+        basic_config.stub(:modules, [PuppetModule.new('a', nil), PuppetModule.new('b', nil)]) do
+          basic_config.module('b').must_be_kind_of PuppetModule
+          basic_config.module('c').must_be_nil
+        end
+      end
+    end
+
+    describe '#param' do
+      let(:param) { fake_param('test', 1) }
+
+      it 'finds parameter by name' do
+        basic_config.stub(:module, fake_module('mod', [param])) do
+          basic_config.param('mod', 'test').must_equal param
+          basic_config.param('mod', 'unknown').must_be_nil
+          basic_config.param('unknown', 'unknown').must_be_nil
+        end
+      end
+
+      it 'returns nil for unknown module' do
+        basic_config.stub(:module, nil) do
+          basic_config.param('unknown', 'unknown').must_be_nil
+        end
+      end
     end
   end
 end

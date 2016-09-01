@@ -762,15 +762,21 @@ KafoConfigure.hooking.register_pre(:reset_db) do
 end
 ```
 
-Note that the hook is evaluated in HookContext object which provides some DSL. We can create a
-new installer option using ```app_option```. These option values can be accessed by using
-```app_value(:reset_foreman_db)```. You can modify parameters (if they are already defined)
-using ```param('module name', 'parameter name')``` accessor. You can register your own module
-that is not specified in the answer file using ```add_module```. Custom mapping is also supported.
-This is useful if you need to add some module to the existing installer based on kafo but you don't
-have control over its source code. You can use a custom config storage which persists among
-kafo runs using ```get_custom_config``` and ```store_custom_config```.
-Last but not least you have access to logger. For more details, see
+Note that the hook is evaluated in HookContext object which provides a DSL:
+
+* ```app_option``` creates a new installer option
+* ```app_value(:reset_foreman_db)``` accesses values of installer options
+* ```param('module name', 'parameter name')``` accessor allows parameters to be modified if already
+  defined
+* ```add_module``` registers your own module not specified in the answer file (custom mapping is also
+  supported), useful if you need to add some module to the existing installer based on kafo but you
+  don't have control over its source code
+* ```module_enabled?('module_name')``` indicates whether a module is currently enabled
+* ```get_custom_config``` and ```store_custom_config``` access custom config storage which persists
+  among kafo runs
+* ```logger``` is also available for writing log messages
+
+For more details, see
 [hook_context.rb](https://github.com/theforeman/kafo/blob/master/lib/kafo/hook_context.rb).
 
 If you don't want to modify your installer script you can place your hooks into the

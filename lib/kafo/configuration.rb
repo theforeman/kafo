@@ -88,6 +88,10 @@ module Kafo
       @modules ||= @data.keys.map { |mod| PuppetModule.new(mod, PuppetModule.find_parser, self).parse }.sort
     end
 
+    def module(name)
+      modules.find { |m| m.name == name }
+    end
+
     def root_dir
       File.expand_path(app[:installer_dir])
     end
@@ -184,8 +188,9 @@ module Kafo
       @params ||= modules.map(&:params).flatten
     end
 
-    def param(mod, name)
-      params.detect { |p| p.name == name && p.module.name == mod }
+    def param(mod_name, param_name)
+      mod = self.module(mod_name)
+      mod.nil? ? nil : mod.params.find { |p| p.name == param_name }
     end
 
     def preset_defaults_from_puppet
