@@ -13,8 +13,8 @@ module Kafo
         specify { pc.command.must_be_kind_of String }
         specify { pc.command.must_include 'puppet apply --modulepath /' }
 
-        specify { KafoConfigure.stub(:verbose, false) { pc.command.must_include '$kafo_add_progress=true' } }
-        specify { KafoConfigure.stub(:verbose, true) { pc.command.wont_include '$kafo_add_progress' } }
+        specify { KafoConfigure.stub(:verbose, false) { pc.command.must_include '$kafo_add_progress="true"' } }
+        specify { KafoConfigure.stub(:verbose, true) { pc.command.must_include '$kafo_add_progress="false"' } }
 
         specify { PuppetCommand.stub(:search_puppet_path, '/opt/puppetlabs/bin/puppet') { pc.command.must_include '/opt/puppetlabs/bin/puppet apply' } }
       end

@@ -6,7 +6,7 @@
 #
 class kafo_configure {
 
-  if $kafo_add_progress {
+  if $kafo_add_progress == 'true' {
     add_progress()
   }
 
