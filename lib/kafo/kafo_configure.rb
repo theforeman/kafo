@@ -20,6 +20,7 @@ require 'kafo/help_builder'
 require 'kafo/wizard'
 require 'kafo/system_checker'
 require 'kafo/puppet_command'
+require 'kafo/puppet_log_parser'
 require 'kafo/progress_bar'
 require 'kafo/hooking'
 require 'kafo/exit_handler'
@@ -400,10 +401,11 @@ module Kafo
       options.push '--profile' if profile?
       begin
         command = PuppetCommand.new('include kafo_configure', options).command
+        log_parser = PuppetLogParser.new
         PTY.spawn(command) do |stdin, stdout, pid|
           begin
             stdin.each do |line|
-              progress_log(*puppet_parse(line))
+              progress_log(*log_parser.parse(line))
               @progress_bar.update(line) if @progress_bar
             end
           rescue Errno::EIO # we reach end of input
@@ -430,23 +432,6 @@ module Kafo
     def progress_log(method, message)
       @progress_bar.print_error(message + "\n") if method == :error && @progress_bar
       logger.send(method, message)
-    end
-
-    def puppet_parse(line)
-      method, message = case
-                          when line =~ /^Error:(.*)/i || line =~ /^Err:(.*)/i
-                            [:error, $1]
-                          when line =~ /^Warning:(.*)/i || line =~ /^Notice:(.*)/i
-                            [:warn, $1]
-                          when line =~ /^Info:(.*)/i
-                            [:info, $1]
-                          when line =~ /^Debug:(.*)/i
-                            [:debug, $1]
-                          else
-                            [:info, line]
-                        end
-
-      return [method, message.chomp]
     end
 
     def unset
