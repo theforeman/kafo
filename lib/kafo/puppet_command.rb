@@ -13,7 +13,7 @@ module Kafo
     end
 
     def add_progress
-      KafoConfigure.verbose ? '' : "$kafo_add_progress=true"
+      %{$kafo_add_progress="#{!KafoConfigure.verbose}"}
     end
 
     def command
