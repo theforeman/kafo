@@ -365,6 +365,18 @@ and e.g. migration to new scenario is still possible.
 
 Disabled scenario can be enabled back again with `foreman-installer --enable-scenario SCENARIO`.
 
+## Store
+
+Kafo features simple key value store that can be used to ship data with the installer.
+
+The data are loaded from yaml files located in `store.d` directory that is either specified in
+the scenario config's `store_dir:` or on same directory
+level as configuration directory containing the scenarios. The files are loaded in
+alphabetical order and the data are merged in that order.
+
+The store is read-only during the run and the content can be influenced only by adding
+new files into the `store.d` directory (e.g. from installer plugins)
+
 ## Documentation
 
 Every parameter that can be set by kafo *must* be documented. This means that
@@ -883,6 +895,7 @@ paths. In order to do that you can use following configuration options:
 * :hook_dirs: /user/share/foreman-installer/hooks
 * :check_dirs: /user/share/foreman-installer/checks
 * :kafo_modules_dir: /usr/share/kafo/modules
+* :store_dir: /etc/foreman-installer/store.d
 
 Answer file is obvious. The "installer_dir" is the place where your installer is
 located. E.g. system checks will be loaded from here (under checks

@@ -14,6 +14,7 @@ module Kafo
         :description          => '',
         :enabled              => true,
         :log_dir              => '/var/log/kafo',
+        :store_dir            => '',
         :log_name             => 'configuration.log',
         :log_level            => 'info',
         :no_prefix            => false,
