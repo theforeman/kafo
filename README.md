@@ -1057,6 +1057,7 @@ Other exit codes that can be returned:
 * '25' means that kafo could not get default values from puppet
 * '26' means that kafo could not find the specified scenario
 * '27' means that kafo found found scenario configuration error that prevents installation from continuing
+* '28' means that a value is missing for a parameter given on the command line
 * '130' user interrupt (^C)
 
 ## Running Puppet Profiling

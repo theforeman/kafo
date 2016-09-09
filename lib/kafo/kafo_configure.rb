@@ -371,8 +371,16 @@ module Kafo
         variable_name = u(with_prefix(param))
         variable_name += '_list' if param.multivalued?
         cli_value     = instance_variable_get("@#{variable_name}")
+        if argument_missing?(cli_value)
+          puts "Parameter #{with_prefix(param)} is missing a value on the command line"
+          self.class.exit(:missing_argument)
+        end
         param.value   = cli_value unless cli_value.nil?
       end
+    end
+
+    def argument_missing?(value)
+      !!self.class.declared_options.find { |opt| opt.handles?(value) }
     end
 
     def store_params(file = nil)
