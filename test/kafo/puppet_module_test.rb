@@ -182,7 +182,7 @@ module Kafo
       let(:all_validations) { parsed.validations }
       specify { all_validations.size.must_be :>, 0 }
 
-      let(:undocumented_param) { Params::String.new(nil, 'undocumented') }
+      let(:undocumented_param) { Param.new(nil, 'undocumented', 'String') }
       let(:undocumented_validations) { parsed.validations(undocumented_param) }
       specify { undocumented_validations.wont_be_empty }
       let(:string_validation_of_undocumented) { undocumented_validations.first }
@@ -190,7 +190,7 @@ module Kafo
       specify { all_validations.must_include string_validation_of_undocumented }
 
       # we don't support validations in nested block (conditions)
-      let(:undef_param) { Params::String.new(nil, 'undef') }
+      let(:undef_param) { Param.new(nil, 'undef', 'Optional[String]') }
       let(:undef_validations) { parsed.validations(undef_param) }
       specify { undef_validations.must_be_empty }
     end

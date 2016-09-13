@@ -19,14 +19,6 @@ module Kafo
         @encrypted
       end
 
-      def condition_value
-        %{"#{value}"}
-      end
-
-      def dump_default
-        %{"#{super}"}
-      end
-
       private
 
       def setup_password

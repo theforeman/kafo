@@ -1,3 +1,5 @@
+require 'kafo/data_type'
+
 module Kafo
   class HookContext
     attr_reader :kafo

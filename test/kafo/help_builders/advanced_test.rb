@@ -5,15 +5,15 @@ module Kafo
     describe Advanced do
       let(:params) do
         [
-            Params::String.new(OpenStruct.new(:name => 'puppet'), 'version').tap do |p|
+            Param.new(OpenStruct.new(:name => 'puppet'), 'version', 'String').tap do |p|
               p.doc    = "version parameter"
               p.groups = []
             end,
-            Params::Boolean.new(OpenStruct.new(:name => 'puppet'), 'server').tap do |p|
+            Param.new(OpenStruct.new(:name => 'puppet'), 'server', 'Boolean').tap do |p|
               p.doc    = "enable puppetmaster server"
               p.groups = ["Advanced parameters:"]
             end,
-            Params::Integer.new(OpenStruct.new(:name => 'puppet'), 'port').tap do |p|
+            Param.new(OpenStruct.new(:name => 'puppet'), 'port', 'Integer').tap do |p|
               p.doc    = "puppetmaster port"
               p.groups = ["Advanced parameters:"]
             end,
