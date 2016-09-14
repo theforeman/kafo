@@ -20,7 +20,7 @@ module Kafo
 
     # we use @value_set flag because even nil can be valid value
     def value
-      @value_set ? @type.typecast(@value) : default
+      @type.typecast(@value_set ? @value : default)
     end
 
     def value=(value)
