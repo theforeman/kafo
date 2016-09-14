@@ -1,6 +1,7 @@
 # encoding: UTF-8
 require 'kafo/condition'
 require 'kafo/validator'
+require 'kafo/data_type'
 
 module Kafo
   class Param
