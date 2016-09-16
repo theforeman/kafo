@@ -197,6 +197,10 @@ module Kafo
       self.class.exit(:unknown_module)
     end
 
+    def enabled_params
+      params.select { |p| p.module.enabled? }
+    end
+
     def reset_params_cache
       @params = nil
       params
@@ -391,7 +395,7 @@ module Kafo
 
     def validate_all(logging = true)
       logger.info 'Running validation checks'
-      results = params.map do |param|
+      results = enabled_params.map do |param|
         result = param.valid?
         errors = param.validation_errors.join(', ')
         progress_log(:error, "Parameter #{with_prefix(param)} invalid: #{errors}") if logging && !result
