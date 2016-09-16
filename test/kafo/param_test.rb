@@ -158,6 +158,14 @@ module Kafo
         end
       end
 
+      describe "with default value needing typecasting" do
+        let(:param) { Param.new(mod, 'test', 'Integer') }
+        let(:validations) { [] }
+        before { param.default = '2' }
+        specify { param.valid?.must_equal true }
+        specify { param.value.must_equal 2 }
+      end
+
       private
 
       def create_validation(function, function_args)
