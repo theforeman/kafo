@@ -1,5 +1,6 @@
 # encoding: UTF-8
 require 'kafo/condition'
+require 'kafo/data_type'
 require 'kafo/validator'
 
 module Kafo
