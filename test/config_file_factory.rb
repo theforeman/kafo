@@ -9,9 +9,10 @@ class ConfigFileFactory
   end
 
   def self.build_file(content)
-    match = /:answer_file:\ (.*)/.match(content)
+    match = /answer_file:\ (.*)/.match(content)
+    filepath = match[1].tr('"', '')
     if match
-      content.gsub!(/:answer_file:\ .*/, ":answer_file: #{answers(match[1]).path}")
+      content.gsub!(/:answer_file:\ .*/, ":answer_file: #{answers(filepath).path}")
     end
     temp_file('testing_config', content)
   end

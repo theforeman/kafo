@@ -179,6 +179,8 @@ module Kafo
     end
 
     describe "#validations" do
+      next if Gem::Specification.find_all_by_name('puppet').sort_by(&:version).last.version >= Gem::Version.new('4.0.0')
+
       let(:all_validations) { parsed.validations }
       specify { all_validations.size.must_be :>, 0 }
 
@@ -212,6 +214,8 @@ module Kafo
 
       specify { params_hash['version'].must_equal '1.0' }
       specify { params_hash['undef'].must_equal :undef }
+      # does not work with puppet 4 which support native types
+      next if Gem::Specification.find_all_by_name('puppet').sort_by(&:version).last.version >= Gem::Version.new('4.0.0')
       specify { params_hash['typed'].must_equal true }
     end
 

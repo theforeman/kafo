@@ -150,6 +150,9 @@ module Kafo
         end
         let(:param) { Param.new(mod, 'db_type', 'String') }
         specify { param.value = 'sqlite'; param.valid?.must_equal true }
+
+        next if Gem::Specification.find_all_by_name('puppet').sort_by(&:version).last.version >= Gem::Version.new('4.0.0')
+
         specify do
           param.value = 'wrong'
           logger = MiniTest::Mock.new

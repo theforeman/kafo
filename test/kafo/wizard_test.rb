@@ -136,7 +136,7 @@ module Kafo
       describe "#display_hash" do
         it "dumps parameters" do
           wizard.send :display_hash
-          must_be_on_stdout(output, 'puppet:', 'version: "1.0"')
+          must_be_on_stdout(output, 'puppet:', 'version:', '1.0')
         end
       end
 
