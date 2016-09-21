@@ -15,7 +15,7 @@ module Kafo
     end
 
     describe "#generate_data" do
-      let(:puppet_module) { PuppetModule.new('testing', TestParser.new(BASIC_MANIFEST)).tap { |m| m.enable }.parse }
+      let(:puppet_module) { @@puppet_module ||= PuppetModule.new('testing', TestParser.new(BASIC_MANIFEST)).tap { |m| m.enable }.parse }
       specify { puppet_module.enabled?.must_equal true }
       specify { subject.generate_data([puppet_module])['classes'].must_equal ['testing'] }
       specify { subject.generate_data([puppet_module])['testing::version'].must_equal '1.0' }

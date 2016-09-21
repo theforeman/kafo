@@ -10,7 +10,7 @@ module Kafo
     let(:input) { StringIO.new }
     let(:output) { StringIO.new }
 
-    let(:puppet_module) { PuppetModule.new('puppet', TestParser.new(BASIC_MANIFEST)).parse }
+    let(:puppet_module) { @@puppet_module_cache ||= PuppetModule.new('puppet', TestParser.new(BASIC_MANIFEST)).parse }
     let(:kafo) do
       kafo                     = OpenStruct.new
       kafo.config              = KafoConfigure.config
@@ -136,7 +136,7 @@ module Kafo
       describe "#display_hash" do
         it "dumps parameters" do
           wizard.send :display_hash
-          must_be_on_stdout(output, 'puppet:', 'version: "1.0"')
+          must_be_on_stdout(output, 'puppet:', 'version:', '1.0')
         end
       end
 
@@ -235,6 +235,10 @@ module Kafo
             it "should change value" do
               wizard.send :configure, single
               single.value.must_equal('changed')
+            end
+
+            after do
+              single.value = '1.0'
             end
           end
 

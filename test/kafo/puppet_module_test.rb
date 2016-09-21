@@ -98,10 +98,11 @@ module Kafo
           KafoConfigure.config.app[:parser_cache_path] = ParserCacheFactory.build(
             {:files => {"puppet" => {:data => {:parameters => [], :groups => []}}}}
           ).path
+          @@parsed_cache_with_cache ||= parsed
         end
 
-        specify { parsed.raw_data[:parameters].must_equal [] }
-        specify { parsed.raw_data[:groups].must_equal [] }
+        specify { @@parsed_cache_with_cache.raw_data[:parameters].must_equal [] }
+        specify { @@parsed_cache_with_cache.raw_data[:groups].must_equal [] }
       end
 
       describe "with nil parser and no cache" do
@@ -115,7 +116,8 @@ module Kafo
       end
 
       describe "with groups" do
-        let(:groups) { parsed.groups.map(&:name) }
+        before { @@parsed_cache_with_groups ||= parsed }
+        let(:groups) { @@parsed_cache_with_groups.groups.map(&:name) }
         specify { groups.must_include('Parameters') }
         specify { groups.must_include('Advanced parameters') }
         specify { groups.must_include('Extra parameters') }
@@ -124,7 +126,8 @@ module Kafo
       end
 
       describe "parses parameter names" do
-        let(:param_names) { parsed.params.map(&:name) }
+        before { @@parsed_cache_parameter_names ||= parsed }
+        let(:param_names) { @@parsed_cache_parameter_names.params.map(&:name) }
         specify { param_names.must_include('version') }
         specify { param_names.must_include('debug') }
         specify { param_names.must_include('remote') }
@@ -134,7 +137,8 @@ module Kafo
     end
 
     describe "#primary_parameter_group" do
-      let(:primary_params) { parsed.primary_parameter_group.params.map(&:name) }
+      before { @@parsed_cache_primary ||= parsed }
+      let(:primary_params) { @@parsed_cache_primary.primary_parameter_group.params.map(&:name) }
       specify { primary_params.must_include('version') }
       specify { primary_params.must_include('undef') }
       specify { primary_params.must_include('multiline') }
@@ -158,7 +162,7 @@ module Kafo
       specify { advanced_params.wont_include('log_level') }
 
       describe "manifest without primary group" do
-        let(:mod_wo_prim) { PuppetModule.new('puppet', TestParser.new(MANIFEST_WITHOUT_PRIMARY_GROUP)).parse }
+        let(:mod_wo_prim) { @@mod_wo_prim ||= PuppetModule.new('puppet', TestParser.new(MANIFEST_WITHOUT_PRIMARY_GROUP)).parse }
         let(:primary_group) { mod_wo_prim.primary_parameter_group }
         specify { primary_group.params.must_be_empty }
         let(:children_group_names) { primary_group.children.map(&:name) }
@@ -167,7 +171,7 @@ module Kafo
       end
 
       describe "manifest without any group" do
-        let(:mod_wo_any) { PuppetModule.new('puppet', TestParser.new(MANIFEST_WITHOUT_ANY_GROUP)).parse }
+        let(:mod_wo_any) { @@mod_wo_any ||= PuppetModule.new('puppet', TestParser.new(MANIFEST_WITHOUT_ANY_GROUP)).parse }
         let(:primary_group) { mod_wo_any.primary_parameter_group }
         let(:primary_params) { primary_group.params }
         specify { primary_params.wont_be_empty }
@@ -179,6 +183,8 @@ module Kafo
     end
 
     describe "#validations" do
+      next if Gem::Specification.find_all_by_name('puppet').sort_by(&:version).last.version >= Gem::Version.new('4.0.0')
+
       let(:all_validations) { parsed.validations }
       specify { all_validations.size.must_be :>, 0 }
 
@@ -196,7 +202,8 @@ module Kafo
     end
 
     describe "#params_hash" do
-      let(:params_hash) { parsed.params_hash }
+      before { @@parsed_cache_params_hash ||= parsed }
+      let(:params_hash) { @@parsed_cache_params_hash.params_hash }
       let(:keys) { params_hash.keys }
       specify { keys.must_include 'version' }
       specify { keys.must_include 'undocumented' }
@@ -212,6 +219,8 @@ module Kafo
 
       specify { params_hash['version'].must_equal '1.0' }
       specify { params_hash['undef'].must_equal :undef }
+      # does not work with puppet 4 which support native types
+      next if Gem::Specification.find_all_by_name('puppet').sort_by(&:version).last.version >= Gem::Version.new('4.0.0')
       specify { params_hash['typed'].must_equal true }
     end
 
