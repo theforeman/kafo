@@ -12,3 +12,11 @@ gemspec
     gem 'highline', '>= 1.6.21', '< 1.7'
     gem 'json_pure', '< 2.0.0'
   end
+
+puppet_version = ENV['PUPPET_VERSION']
+puppet_spec = puppet_version ? "~> #{puppet_version}" : '< 5.0.0'
+gem 'puppet', puppet_spec
+
+if puppet_version.nil? || puppet_version >= '4.0'
+  gem 'puppet-strings'
+end
