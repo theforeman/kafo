@@ -13,13 +13,28 @@ module Kafo
     end
 
     describe ".new_from_string" do
-      let(:data_type) { MiniTest::Mock.new }
-      before { DataType.register_type('Example', data_type) }
-      after { DataType.unregister_type('Example') }
+      let(:data_type) do
+        dt = MiniTest::Mock.new
+        dt.expect(:is_a?, false, [String])
+        dt
+      end
+      before do
+        DataType.register_type('Example', data_type)
+        DataType.register_type('Alias', 'Example')
+      end
+      after do
+        DataType.unregister_type('Example')
+        DataType.unregister_type('Alias')
+      end
 
       it 'instantiates type with no arguments' do
         data_type.expect(:new, 'instance', [])
         DataType.new_from_string('Example').must_equal 'instance'
+      end
+
+      it 'instantiates alias with no type arguments' do
+        data_type.expect(:new, 'instance', [])
+        DataType.new_from_string('Alias').must_equal 'instance'
       end
 
       it 'instantiates type with one argument' do

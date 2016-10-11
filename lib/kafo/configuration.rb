@@ -4,6 +4,7 @@ require 'tmpdir'
 require 'kafo/puppet_module'
 require 'kafo/password_manager'
 require 'kafo/color_scheme'
+require 'kafo/data_type_parser'
 
 module Kafo
   class Configuration
@@ -86,7 +87,10 @@ module Kafo
     end
 
     def modules
-      @modules ||= @data.keys.map { |mod| PuppetModule.new(mod, PuppetModule.find_parser, self).parse }.sort
+      @modules ||= begin
+        register_data_types
+        @data.keys.map { |mod| PuppetModule.new(mod, PuppetModule.find_parser, self).parse }.sort
+      end
     end
 
     def module(name)
@@ -302,6 +306,14 @@ module Kafo
 
     def load_yaml_file(filename)
       YAML.load_file(filename)
+    end
+
+    def register_data_types
+      module_dirs.each do |module_dir|
+        Dir[File.join(module_dir, '*', 'types', '**', '*.pp')].each do |type_file|
+          DataTypeParser.new(File.read(type_file)).register
+        end
+      end
     end
   end
 end
