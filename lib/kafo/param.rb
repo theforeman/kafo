@@ -26,8 +26,7 @@ module Kafo
 
     def value=(value)
       @value_set = true
-      value      = value.to_s if value.is_a?(::HighLine::String)  # don't persist highline extensions
-      @value     = value
+      @value     = normalize_value(value)
     end
 
     def unset_value
@@ -142,6 +141,19 @@ module Kafo
         end
       end.map do |arg|
         arg == :undef ? nil : arg
+      end
+    end
+
+    def normalize_value(value)
+      case value
+        when ::HighLine::String  # don't persist highline extensions
+          value.to_s
+        when Array
+          value.map { |v| normalize_value(v) }
+        when Hash
+          Hash[value.map { |k,v| [normalize_value(k), normalize_value(v)] }]
+        else
+          value
       end
     end
   end
