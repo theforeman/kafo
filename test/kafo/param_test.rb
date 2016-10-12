@@ -193,6 +193,11 @@ module Kafo
       specify { param.tap { |p| p.value = 'UNDEF' }.value_set.must_equal true }
       specify { param.tap { |p| p.value = ::HighLine::String('foo') }.value.must_equal 'foo' }
       specify { param.tap { |p| p.value = ::HighLine::String('foo') }.value.class.must_equal ::String }
+      specify { param.tap { |p| p.value = [::HighLine::String('foo')] }.value.must_equal ['foo'] }
+      specify { param.tap { |p| p.value = [::HighLine::String('foo')] }.value.first.class.must_equal ::String }
+      specify { param.tap { |p| p.value = {::HighLine::String('foo') => ::HighLine::String('bar')} }.value.must_equal({'foo' => 'bar'}) }
+      specify { param.tap { |p| p.value = {::HighLine::String('foo') => ::HighLine::String('bar')} }.value.keys.first.class.must_equal ::String }
+      specify { param.tap { |p| p.value = {::HighLine::String('foo') => ::HighLine::String('bar')} }.value.values.first.class.must_equal ::String }
     end
   end
 end
