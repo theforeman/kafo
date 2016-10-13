@@ -91,7 +91,7 @@ module Kafo
         (available_scenarios.keys.count == 1 && available_scenarios.keys.first) ||
         select_scenario_interactively
       if scenario.nil?
-        fail_now("No installation scenario was selected, the installer can not continue.\n" +
+        fail_now("No installation scenario was selected, the installer cannot continue.\n" +
           "       Even --help content is dependent on selected scenario.\n" +
           "       Select scenario with --scenario SCENARIO or list available scenarios with --list-scenarios.", :unset_scenario)
       elsif !scenario_enabled?(scenario)
@@ -148,7 +148,7 @@ module Kafo
         show_scenario_diff(@previous_scenario, new_scenario)
 
         wizard = KafoWizards.wizard(:cli, 'Confirm installation scenario selection',
-          :description => "You are trying to replace existing installation with different scenario. This may lead to unpredictable states. Please confirm that you want to proceed.")
+          :description => "You are trying to replace an existing installation with a different scenario. This may lead to unpredictable states. Please confirm that you want to proceed.")
         wizard.entries << wizard.factory.button(:proceed, :label => 'Proceed with selected installation scenario', :default => false)
         wizard.entries << wizard.factory.button(:cancel, :label => 'Cancel Installation', :default => true)
         result = wizard.run
