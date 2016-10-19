@@ -2,6 +2,8 @@
 
 module Kafo
   class SystemChecker
+    attr_reader :checkers
+
     def self.check
       KafoConfigure.check_dirs.all? do |dir|
         new(File.join(dir, '*')).check
@@ -9,7 +11,7 @@ module Kafo
     end
 
     def initialize(path)
-      @checkers = Dir.glob(path)
+      @checkers = Dir.glob(path).sort
     end
 
     def logger
