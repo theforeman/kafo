@@ -11,6 +11,7 @@ gemspec
     gem 'logging', '< 2.0.0'
     gem 'highline', '>= 1.6.21', '< 1.7'
     gem 'json_pure', '< 2.0.0'
+    gem 'hashie', '< 2.1.0'
   end
 
 puppet_version = ENV['PUPPET_VERSION']
