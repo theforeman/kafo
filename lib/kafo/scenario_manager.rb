@@ -198,8 +198,8 @@ module Kafo
     def link_last_scenario(config_file)
       link_path = last_scenario_link
       if last_scenario_link
-        File.delete(last_scenario_link) if File.exist?(last_scenario_link)
-        File.symlink(config_file, last_scenario_link)
+        File.delete(last_scenario_link) if File.symlink?(last_scenario_link)
+        File.symlink(File.basename(config_file), last_scenario_link)
       end
     end
 

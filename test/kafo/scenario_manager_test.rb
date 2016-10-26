@@ -24,7 +24,7 @@ module Kafo
 
         before do
           FileUtils.touch(scenario_path)
-          FileUtils.ln_s(scenario_path, File.join(tmpdir, 'last_scenario.yaml'))
+          FileUtils.ln_s('foreman.yaml', File.join(tmpdir, 'last_scenario.yaml'))
         end
         after { FileUtils.remove_entry_secure tmpdir }
 
@@ -36,6 +36,37 @@ module Kafo
 
     describe "#last_scenario_link" do
       specify { manager.last_scenario_link.must_equal '/path/to/scenarios.d/last_scenario.yaml' }
+    end
+
+    describe "#link_last_scenario" do
+      let(:tmpdir) { Dir.mktmpdir }
+      let(:scenario1_path) { File.join(tmpdir, 'foreman1.yaml') }
+      let(:scenario2_path) { File.join(tmpdir, 'foreman2.yaml') }
+      let(:last_path) { File.join(tmpdir, 'linked_scenario.yaml') }
+
+      before do
+        FileUtils.touch([scenario1_path, scenario2_path])
+        FileUtils.ln_s(last_target, last_path)
+      end
+      after { FileUtils.remove_entry_secure tmpdir }
+
+      describe "with existing symlink" do
+        let(:last_target) { 'foreman1.yaml' }
+        specify do
+          manager.stub(:last_scenario_link, last_path) { manager.link_last_scenario(scenario2_path) }
+          File.readlink(last_path).must_equal 'foreman2.yaml'
+          File.exist?(last_path).must_equal true
+        end
+      end
+
+      describe "with broken symlink" do
+        let(:last_target) { 'unknown.yaml' }
+        specify do
+          manager.stub(:last_scenario_link, last_path) { manager.link_last_scenario(scenario1_path) }
+          File.readlink(last_path).must_equal 'foreman1.yaml'
+          File.exist?(last_path).must_equal true
+        end
+      end
     end
 
     describe "#scenario_changed?" do
@@ -59,7 +90,7 @@ module Kafo
 
         before do
           FileUtils.touch(scenario_path)
-          FileUtils.ln_s(scenario_path, File.join(tmpdir, 'linked_foreman.yaml'))
+          FileUtils.ln_s('foreman.yaml', File.join(tmpdir, 'linked_foreman.yaml'))
         end
         after { FileUtils.remove_entry_secure tmpdir }
 
