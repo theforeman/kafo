@@ -2,30 +2,25 @@ module Kafo
   class DataType
     def self.new_from_string(str)
       keyword_re = /\A([\w:]+)(?:\[(.*)\])?\z/m.match(str)
-      if keyword_re
-        if (type = @keywords[keyword_re[1]])
-          args = if keyword_re[2]
-                   hash_re = keyword_re[2].match(/\A\s*{(.*)}\s*\z/m)
-                   if hash_re
-                     [parse_hash(hash_re[1])]
-                   else
-                     split_arguments(keyword_re[2])
-                   end
-                 else
-                   []
-                 end
-          type.new(*args)
-        elsif ['Data'].include?(keyword_re[1])
-          DataTypes::Any.new
-        elsif keyword_re[1] == 'Default'
-          DataTypes::Enum.new('default')
-        elsif @keywords[keyword_re[1].capitalize]  # pre-Puppet 4 data types
-          DataTypes::Optional.new(keyword_re[1].capitalize)
-        else
-          raise ConfigurationException, "unknown data type #{keyword_re[1]}"
-        end
+      raise ConfigurationException, "data type not recognized #{str}" unless keyword_re
+
+      type = @keywords[keyword_re[1]]
+      raise ConfigurationException, "unknown data type #{keyword_re[1]}" unless type
+
+      if type.is_a?(String)
+        new_from_string(type)
       else
-        raise ConfigurationException, "data type not recognized #{str}"
+        args = if keyword_re[2]
+                 hash_re = keyword_re[2].match(/\A\s*{(.*)}\s*\z/m)
+                 if hash_re
+                   [parse_hash(hash_re[1])]
+                 else
+                   split_arguments(keyword_re[2])
+                 end
+               else
+                 []
+               end
+        type.new(*args)
       end
     end
 
@@ -79,6 +74,7 @@ module Kafo
   end
 end
 
+require 'kafo/data_types/aliases'
 require 'kafo/data_types/any'
 require 'kafo/data_types/array'
 require 'kafo/data_types/boolean'

@@ -178,5 +178,33 @@ module Kafo
         end
       end
     end
+
+    describe '#modules' do
+      it 'returns array of parsed PuppetModules' do
+        mod = MiniTest::Mock.new
+        mod.expect(:parse, mod)
+        PuppetModule.stub(:new, mod) do
+          basic_config.modules.must_equal [mod]
+        end
+      end
+
+      describe 'with custom data types' do
+        after { DataType.unregister_type('Test') }
+
+        it 'finds types' do
+          Dir.stub(:[], Proc.new { |glob| ['type.pp'] if glob == File.expand_path('../../fixtures/modules/*/types/**/*.pp', __FILE__) }) do
+            File.stub(:read, Proc.new { |path| 'type Test = String' if path == 'type.pp' }) do
+              mod = MiniTest::Mock.new
+              mod.expect(:parse, mod)
+              PuppetModule.stub(:new, mod) do
+                basic_config.modules
+                DataType.types.must_include 'Test'
+                basic_config.modules  # must not register twice
+              end
+            end
+          end
+        end
+      end
+    end
   end
 end
