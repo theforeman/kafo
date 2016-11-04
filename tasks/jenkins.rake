@@ -6,6 +6,7 @@ begin
 
     namespace :setup do
       task :pre_ci do
+        ENV["CI_CAPTURE"] = 'off'  # prevent clash with minitest's capture_subprocess_io
         ENV["CI_REPORTS"] = 'jenkins/reports/unit/'
         gem 'ci_reporter'
       end
