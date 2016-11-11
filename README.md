@@ -1093,6 +1093,19 @@ Other exit codes that can be returned:
 
 As of Puppet 3.2, performance data can be gathered during a puppet run by adding the `--profile` option. See [Tune Puppet for Performance with Profiler](https://puppetlabs.com/blog/tune-puppet-performance-profiler) for more information from the Puppet team. Users who wish to perform a Kafo run and gather this type of profiling data to analyze can pass the same option to their installer. The profiling data will then be present in the normal Kafo logs.
 
+## Issue tracker
+
+Issues are tracked in Redmine, see:
+
+* [Open Kafo issues](http://projects.theforeman.org/projects/kafo/issues/)
+* [File new issue](http://projects.theforeman.org/projects/kafo/issues/new)
+
+## Related projects
+
+* [kafo_module_lint](https://github.com/domcleal/kafo_module_lint) will lint Puppet modules to ensure data types are specified correctly etc.
+* [kafo_parsers](https://github.com/theforeman/kafo_parsers) parses Puppet manifests for class documentation and parameter data
+* [puppet-lint-param-docs](https://github.com/voxpupuli/puppet-lint-param-docs) will lint Puppet modules to ensure all parameters are documented
+
 # License
 
 This project is licensed under the GPLv3+.
