@@ -46,6 +46,15 @@ module Kafo
         @module.configuration.app[:password]
       end
 
+      def internal_value_to_s(value)
+        if value.nil?
+          super
+        elsif value.empty?
+          ''.inspect
+        else
+          'REDACTED'
+        end
+      end
     end
   end
 end

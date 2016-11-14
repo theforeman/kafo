@@ -340,7 +340,8 @@ module Kafo
 
       describe "#reset_module_params(mod)" do
         before do
-          input.puts "Reset debug, current value: true, default value: true"
+          param = puppet_module.params.detect { |p| p.name == 'debug' }
+          input.puts "Reset debug, current value: #{param.value_to_s}, default value: #{param.default_to_s}"
           input.puts "Back to parent menu"
           input.rewind
         end

@@ -46,6 +46,14 @@ module Kafo
       "#<#{self.class}:#{self.object_id} @name=#{name.inspect} @default=#{default.inspect} @value=#{value.inspect} @type=#{@type}>"
     end
 
+    def default_to_s
+      internal_value_to_s(default)
+    end
+
+    def value_to_s
+      internal_value_to_s(value)
+    end
+
     def set_default(defaults)
       if default == 'UNSET'
         self.default = nil
@@ -155,6 +163,10 @@ module Kafo
         else
           value
       end
+    end
+
+    def internal_value_to_s(value)
+      value.nil? ? 'UNDEF' : value.inspect
     end
   end
 end
