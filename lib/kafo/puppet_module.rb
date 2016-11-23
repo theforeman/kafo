@@ -138,12 +138,12 @@ module Kafo
 
     # custom module directory name
     def get_dir_name
-      mapping[identifier].nil? ? name : mapping[identifier][:dir_name]
+      mapping[identifier].nil? ? default_dir_name : (mapping[identifier][:dir_name] || default_dir_name)
     end
 
     # custom manifest filename without .pp extension
     def get_manifest_name
-      mapping[identifier].nil? ? 'init' : mapping[identifier][:manifest_name]
+      mapping[identifier].nil? ? default_manifest_name : (mapping[identifier][:manifest_name] || default_manifest_name)
     end
 
     def get_class_name
@@ -155,8 +155,7 @@ module Kafo
     end
 
     def get_params_name
-      default = 'params'
-      mapping[identifier].nil? ? default : (mapping[identifier][:params_name] || default)
+      mapping[identifier].nil? ? default_params_name : (mapping[identifier][:params_name] || default_params_name)
     end
 
     def get_params_class_name
@@ -167,8 +166,20 @@ module Kafo
       "#{dir_name}/manifests/#{manifest_name}.pp"
     end
 
+    def default_dir_name
+      identifier.split('::').first
+    end
+
     def default_params_path
       "#{dir_name}/manifests/#{get_params_name}.pp"
+    end
+
+    def default_manifest_name
+      identifier.include?('::') ? identifier.split('::')[1..-1].join('/') : 'init'
+    end
+
+    def default_params_name
+      identifier.include?('::') ? (identifier.split('::')[1..-1] + ['params']).join('/') : 'params'
     end
 
     def get_name
