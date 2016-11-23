@@ -1,6 +1,7 @@
 # encoding: UTF-8
 require 'powerbar'
 require 'ansi/code'
+require 'set'
 
 module Kafo
 # Progress bar base class
@@ -9,10 +10,16 @@ module Kafo
 # #finite_template and #infinite_template methods. Also you may find useful to
 # change more methods like #done_message or #print_error
   class ProgressBar
+    MONITOR_RESOURCE = %r{\w*MONITOR_RESOURCE ([^\]]+\])}
+    EVALTRACE_START = %r{/(.+\]): Starting to evaluate the resource}
+    EVALTRACE_END = %r{/(.+\]): Evaluated in [\d\.]+ seconds}
+    PREFETCH = %r{Prefetching .* resources for}
+
     def initialize
       @lines                                    = 0
       @all_lines                                = 0
       @total                                    = :unknown
+      @resources                                = Set.new
       @term_width                               = HighLine::SystemExtensions.terminal_size[0] || 0
       @bar                                      = PowerBar.new
       @bar.settings.tty.infinite.template.main  = infinite_template
@@ -23,15 +30,41 @@ module Kafo
     end
 
     def update(line)
-      @total     = $1.to_i if line =~ /\w*START (\d+)/
-      @lines     += 1 if line.include?('RESOURCE') && @lines < @total - 1
       @all_lines += 1
 
-      # we print every 20th line during installation preparing otherwise we update every line
-      if @all_lines % 20 == 0 || @total != :unknown
+      # we print every 20th line during installation preparing otherwise only update at EVALTRACE_START
+      update_bar = (@total == :unknown && @all_lines % 20 == 0)
+      force_update = false
+
+      if (line_monitor = MONITOR_RESOURCE.match(line))
+        @resources << line_monitor[1]
+        @total = (@total == :unknown ? 1 : @total + 1)
+      end
+
+      if (line_start = EVALTRACE_START.match(line))
+        if (known_resource = find_known_resource(line_start[1]))
+          line = known_resource
+          update_bar = true
+          force_update = true
+        end
+      end
+
+      if (line_end = EVALTRACE_END.match(line)) && @lines < @total
+        if (known_resource = find_known_resource(line_end[1]))
+          @resources.delete(known_resource)  # ensure it's only counted once
+          @lines += 1
+        end
+      end
+
+      if PREFETCH =~ line
+        update_bar = true
+        force_update = true
+      end
+
+      if update_bar
         @bar.show({ :msg   => format(line),
                     :done  => @lines,
-                    :total => @total })
+                    :total => @total }, force_update)
       end
     end
 
@@ -67,6 +100,16 @@ module Kafo
 
     def infinite_template
       'Installing...'
+    end
+
+    def find_known_resource(resource)
+      loop do
+        return resource if @resources.include?(resource)
+        # continue to remove prefixes from /Stage[main]/Example/File[/etc/foo] until a resource name is found
+        break unless resource.include?('/')
+        resource = resource.sub %r{.*?/}, ''
+      end
+      nil
     end
 
   end
