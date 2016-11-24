@@ -52,6 +52,11 @@ module Kafo
         DataType.new_from_string("Example['test']").must_equal 'instance'
       end
 
+      it 'parses empty quotes from arguments' do
+        data_type.expect(:new, 'instance', [''])
+        DataType.new_from_string('Example[""]').must_equal 'instance'
+      end
+
       it 'instantiates type with multiple arguments' do
         data_type.expect(:new, 'instance', ['1', 'Float', '(regexp)', 'Enum["foo", \'bar\']', '2'])
         DataType.new_from_string('Example[1,Float, /(regexp)/, Enum["foo", \'bar\'],2]').must_equal 'instance'
