@@ -5,6 +5,11 @@ module Kafo
     let(:mod) { nil }
     let(:param) { Param.new(mod, 'test', 'Optional[String]') }
 
+    let(:with_params) { param.tap { |p| p.manifest_default = '$mod::params::test' } }
+    let(:with_undef) { param.tap { |p| p.manifest_default = :undef } }
+    let(:with_unset) { param.tap { |p| p.manifest_default = 'UNSET' } }
+    let(:with_value) { param.tap { |p| p.manifest_default = '42' } }
+
     describe "#visible?" do
       describe "without condition" do
         specify { param.must_be :visible? }
@@ -32,6 +37,25 @@ module Kafo
       specify { param.condition_value.must_be_kind_of String }
     end
 
+    describe "#default" do
+      specify { with_params.default.must_be_nil }
+      specify { with_params.tap { |p| p.default = 'test' }.default.must_equal 'test' }
+      specify { with_value.default.must_equal '42' }
+    end
+
+    describe "#default=" do
+      specify { with_params.tap { |p| p.default = 'test' }.default.must_equal 'test' }
+      specify { with_params.tap { |p| p.default = :undef }.default.must_be_nil }
+      specify { with_params.tap { |p| p.default = 'UNSET' }.default.must_be_nil }
+    end
+
+    describe "#dump_default_needed?" do
+      specify { with_params.dump_default_needed?.must_equal true }
+      specify { with_undef.dump_default_needed?.must_equal false }
+      specify { with_unset.dump_default_needed?.must_equal false }
+      specify { with_value.dump_default_needed?.must_equal false }
+    end
+
     describe "group" do
       it "should return empty array by default" do
         param.groups.must_equal []
@@ -48,6 +72,19 @@ module Kafo
         specify { group_names.must_include 'one' }
         specify { group_names.must_include 'two' }
       end
+    end
+
+    describe "#manifest_default=" do
+      specify { with_params.tap { |p| p.manifest_default = 'test' }.manifest_default.must_equal 'test' }
+      specify { with_params.tap { |p| p.manifest_default = :undef }.manifest_default.must_be_nil }
+      specify { with_params.tap { |p| p.manifest_default = 'UNSET' }.manifest_default.must_be_nil }
+    end
+
+    describe "#manifest_default_params_variable" do
+      specify { with_params.manifest_default_params_variable.must_equal 'mod::params::test' }
+      specify { with_value.manifest_default_params_variable.must_be_nil }
+      specify { with_undef.manifest_default_params_variable.must_be_nil }
+      specify { with_unset.manifest_default_params_variable.must_be_nil }
     end
 
     describe "#valid?" do
@@ -161,10 +198,21 @@ module Kafo
         end
       end
 
-      describe "with default value needing typecasting" do
+      describe "with manifest default value needing typecasting" do
         let(:param) { Param.new(mod, 'test', 'Integer') }
         let(:validations) { [] }
-        before { param.default = '2' }
+        before { param.manifest_default = '2' }
+        specify { param.valid?.must_equal true }
+        specify { param.value.must_equal 2 }
+      end
+
+      describe "with dumped default value needing typecasting" do
+        let(:param) { Param.new(mod, 'test', 'Integer') }
+        let(:validations) { [] }
+        before do
+          param.manifest_default = '$mod::params::test'
+          param.default = '2'
+        end
         specify { param.valid?.must_equal true }
         specify { param.value.must_equal 2 }
       end
@@ -180,25 +228,17 @@ module Kafo
       end
     end
 
-    describe '#set_default' do
-      let(:with_params) { param.tap { |p| p.default = 'mod::params::test' } }
-      let(:with_undef) { param.tap { |p| p.default = :undef } }
-      let(:with_unset) { param.tap { |p| p.default = 'UNSET' } }
-      let(:with_value) { param.tap { |p| p.default = 42 } }
-
-      specify { with_params.tap { |p| p.set_default({}) }.default.must_equal 'mod::params::test' }
-      specify { with_params.tap { |p| p.set_default({'mod::params::test' => 42}) }.default.must_equal 42 }
-      specify { with_params.tap { |p| p.set_default({'mod::params::test' => :undef}) }.default.must_be_nil }
-      specify { with_undef.tap { |p| p.set_default({}) }.default.must_be_nil }
-      specify { with_unset.tap { |p| p.set_default({}) }.default.must_be_nil }
-      specify { with_value.tap { |p| p.set_default({42 => :undefined}) }.default.must_equal 42 }
-      specify { with_value.tap { |p| p.set_default({}) }.default.must_equal 42 }
+    describe '#set_default_from_dump' do
+      specify { with_params.tap { |p| p.set_default_from_dump({}) }.default.must_be_nil }
+      specify { with_params.tap { |p| p.set_default_from_dump({'mod::params::test' => '42'}) }.default.must_equal '42' }
+      specify { with_params.tap { |p| p.set_default_from_dump({'mod::params::test' => :undef}) }.default.must_be_nil }
+      specify { with_value.tap { |p| p.set_default_from_dump({'42' => 'fail'}) }.default.must_equal '42' }
     end
 
     describe '#unset_value' do
       let(:unset) { param.tap { |p| p.unset_value } }
       specify do
-        param.default = 'def'
+        param.manifest_default = 'def'
         param.value = 'val'
         unset.value.must_equal 'def'
       end

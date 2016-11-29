@@ -13,7 +13,7 @@ module Kafo
         code.must_equal 0
         out.must_include "Usage:"
         out.must_include "kafo-configure [OPTIONS]"
-        out.must_match /--testing-version\s*some version number \(current: UNDEF\)/
+        out.must_match /--testing-version\s*some version number \(current: "1.0"\)/
         out.wont_include "--testing-db-type"
         out.wont_include "--reset-"
         out.must_include "Use --full-help to view the complete list."
@@ -27,11 +27,11 @@ module Kafo
         out.must_include "Usage:"
         out.must_include "kafo-configure [OPTIONS]"
         out.must_include "== Basic:"
-        out.must_match /--testing-version\s*some version number \(current: UNDEF\)/
-        out.must_match /--reset-testing-version\s*Reset version to the default value \(UNDEF\)/
+        out.must_match /--testing-version\s*some version number \(current: "1.0"\)/
+        out.must_match /--reset-testing-version\s*Reset version to the default value \("1.0"\)/
         out.must_include "== Advanced:"
-        out.must_match /--testing-db-type\s*can be mysql or sqlite \(current: UNDEF\)/
-        out.must_match /--reset-testing-db-type\s*Reset db_type to the default value \(UNDEF\)/
+        out.must_match /--testing-db-type\s*can be mysql or sqlite \(current: "mysql"\)/
+        out.must_match /--reset-testing-db-type\s*Reset db_type to the default value \("mysql"\)/
         out.wont_include "Use --full-help to view the complete list."
       end
     end

@@ -59,11 +59,11 @@ module Kafo
       else
         type = Param
       end
-      param           = type.new(@module, name, data_type)
-      param.default   = data[:values][name]
-      param.doc       = data[:docs][name]
-      param.groups    = data[:groups][name]
-      param.condition = data[:conditions][name]
+      param                  = type.new(@module, name, data_type)
+      param.manifest_default = data[:values][name]
+      param.doc              = data[:docs][name]
+      param.groups           = data[:groups][name]
+      param.condition        = data[:conditions][name]
       param
     end
 
