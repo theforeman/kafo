@@ -68,6 +68,11 @@ module Kafo
         specify { output.wont_include 'Advanced' }
         specify { output.must_match /Generic.*Module apache.*Module puppet/m}
       end
+
+      describe "#string" do
+        specify { builder.string.must_include 'Only commonly used options have been displayed' }
+        specify { builder.string.must_include 'Use --full-help to view the complete list.' }
+      end
     end
   end
 end
