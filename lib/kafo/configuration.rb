@@ -5,6 +5,7 @@ require 'kafo/puppet_module'
 require 'kafo/password_manager'
 require 'kafo/color_scheme'
 require 'kafo/data_type_parser'
+require 'kafo/puppet_configurer'
 
 module Kafo
   class Configuration
@@ -147,8 +148,12 @@ module Kafo
         @logger.debug "Creating tmp dir within #{app[:default_values_dir]}..."
         temp_dir = Dir.mktmpdir(nil, app[:default_values_dir])
         KafoConfigure.exit_handler.register_cleanup_path temp_dir
+
+        puppetconf = PuppetConfigurer.new('noop' => true)
+        KafoConfigure.exit_handler.register_cleanup_path puppetconf.config_path
+
         @logger.info 'Loading default values from puppet modules...'
-        command = PuppetCommand.new("$temp_dir=\"#{temp_dir}\" #{includes} dump_values(#{params_to_dump})", ['--noop', '--reports='], self).append('2>&1').command
+        command = PuppetCommand.new("$temp_dir=\"#{temp_dir}\" #{includes} dump_values(#{params_to_dump})", [], puppetconf, self).append('2>&1').command
         result = `#{command}`
         @logger.debug result
         unless $?.exitstatus == 0

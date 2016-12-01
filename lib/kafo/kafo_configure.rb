@@ -27,6 +27,7 @@ require 'kafo/hooking'
 require 'kafo/exit_handler'
 require 'kafo/scenario_manager'
 require 'kafo/hiera_configurer'
+require 'kafo/puppet_configurer'
 
 module Kafo
   class KafoConfigure < Clamp::Command
@@ -411,23 +412,26 @@ module Kafo
       hiera.write_configs
       self.class.exit_handler.register_cleanup_path(hiera.temp_dir)
 
+      puppetconf = PuppetConfigurer.new(
+        'color'        => false,
+        'evaltrace'    => !!@progress_bar,
+        'hiera_config' => hiera.config_path,
+        'noop'         => !!noop?,
+        'profile'      => !!profile?,
+        'show_diff'    => false
+      )
+      self.class.exit_handler.register_cleanup_path(puppetconf.config_path)
+
       exit_code   = 0
       exit_status = nil
       options     = [
           '--verbose',
           '--debug',
           '--trace',
-          '--color=false',
-          '--show_diff',
           '--detailed-exitcodes',
-          '--reports=',
-          "--hiera_config=#{hiera.config_path}",
       ]
-      options.push '--evaltrace' if @progress_bar
-      options.push '--noop' if noop?
-      options.push '--profile' if profile?
       begin
-        command = PuppetCommand.new('include kafo_configure', options).command
+        command = PuppetCommand.new('include kafo_configure', options, puppetconf).command
         log_parser = PuppetLogParser.new
         PTY.spawn(command) do |stdin, stdout, pid|
           begin
