@@ -15,6 +15,7 @@ module Kafo
         out.must_include "kafo-configure [OPTIONS]"
         out.must_match /--testing-version\s*some version number \(default: nil\)/
         out.wont_include "--testing-db-type"
+        out.must_include "Use --full-help to view the complete list."
       end
     end
 
@@ -28,6 +29,7 @@ module Kafo
         out.must_match /--testing-version\s*some version number \(default: nil\)/
         out.must_include "== Advanced:"
         out.must_match /--testing-db-type\s*can be mysql or sqlite \(default: nil\)/
+        out.wont_include "Use --full-help to view the complete list."
       end
     end
 

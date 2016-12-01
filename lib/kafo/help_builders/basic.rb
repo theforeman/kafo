@@ -8,6 +8,10 @@ module Kafo
         add_list(module_header(name), data['Basic'])
       end
 
+      def string
+        super + "\nOnly commonly used options have been displayed.\nUse --full-help to view the complete list."
+      end
+
       private
 
       def except_resets(items)
