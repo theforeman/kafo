@@ -39,7 +39,16 @@ module Kafo
     end
 
     def self.split_arguments(input)
-      input.scan(%r{\s*["'/]?([\w:]+(?:\[.+\])?|.+?)["'/]?\s*(?:,|$)}m).flatten
+      input.scan(%r{
+        \s*
+          (?:
+            ["'/](.*?)["'/] # quoted string, or regexp argument
+            |
+            ([\w:]+ (?:\[.+\])?) # bare words, or Type::Name, or Type::Name[args..]
+          )
+        \s*
+        (?:,|$) # match to end of comma-separated arg, or the last arg
+      }mx).flatten.compact
     end
 
     def self.parse_hash(input)
