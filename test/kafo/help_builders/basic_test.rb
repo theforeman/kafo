@@ -26,15 +26,15 @@ module Kafo
 
       let(:clamp_definitions) do
         [
-            OpenStruct.new(:help => ['--puppet-version', 'version parameter']),
-            OpenStruct.new(:help => ['--reset-puppet-version', 'Reset version to the default value']),
-            OpenStruct.new(:help => ['--puppet-server', 'enable puppetmaster server']),
-            OpenStruct.new(:help => ['--reset-puppet-server', 'Reset server to the default value']),
-            OpenStruct.new(:help => ['--puppet-port', 'puppetmaster port']),
-            OpenStruct.new(:help => ['--reset-puppet-port', 'Reset port to the default value']),
+            OpenStruct.new(:help => ['--puppet-version', 'version parameter (current: "foo")']),
+            OpenStruct.new(:help => ['--reset-puppet-version', 'Reset version to the default value (default: "bar")']),
+            OpenStruct.new(:help => ['--puppet-server', 'enable puppetmaster server (current: "foo")']),
+            OpenStruct.new(:help => ['--reset-puppet-server', 'Reset server to the default value (default: "bar")']),
+            OpenStruct.new(:help => ['--puppet-port', 'puppetmaster port (current: "foo")']),
+            OpenStruct.new(:help => ['--reset-puppet-port', 'Reset port to the default value (default: "bar")']),
             OpenStruct.new(:help => ['--no-colors', 'app wide argument, not a parameter']),
-            OpenStruct.new(:help => ['--apache-port', 'apache module parameter']),
-            OpenStruct.new(:help => ['--reset-apache-port', 'Reset port to the default value']),
+            OpenStruct.new(:help => ['--apache-port', 'apache module parameter (current: "foo")']),
+            OpenStruct.new(:help => ['--reset-apache-port', 'Reset port to the default value (default: "bar")']),
         ]
       end
 

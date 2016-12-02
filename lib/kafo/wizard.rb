@@ -114,7 +114,7 @@ END
     def render_params(params, menu)
       params.each do |param|
         if param.visible?(@kafo.params)
-          menu.choice "Set #{HighLine.color(param.name, :important)}, current value: #{HighLine.color(param.value.to_s, :info)}" do
+          menu.choice "Set #{HighLine.color(param.name, :important)}, current value: #{HighLine.color(param.value_to_s, :info)}" do
             configure(param)
           end
         end
@@ -141,13 +141,13 @@ END
     end
 
     def configure_single(param)
-      say "\ncurrent value: #{HighLine.color(param.value.to_s, :info)}"
+      say "\ncurrent value: #{HighLine.color(param.value_to_s, :info)}"
       ask("new value:")
     end
 
     def configure_multi(param)
       say HighLine.color('every line is a separate value, blank line to quit, for hash use key:value syntax', :info)
-      say "\ncurrent value: #{HighLine.color(param.value.to_s, :info)} %>"
+      say "\ncurrent value: #{HighLine.color(param.value_to_s, :info)} %>"
       ask("new value:") do |q|
         q.gather = ""
       end
@@ -164,7 +164,7 @@ END
         say "\n" + HighLine.color("Resetting parameters of module #{mod.name}", :headline)
         choose do |menu|
           mod.params.each do |param|
-            menu.choice "Reset #{HighLine.color(param.name, :important)}, current value: #{HighLine.color(param.value.to_s, :info)}, default value: #{HighLine.color(param.default.to_s, :info)}" do
+            menu.choice "Reset #{HighLine.color(param.name, :important)}, current value: #{HighLine.color(param.value_to_s, :info)}, default value: #{HighLine.color(param.default_to_s, :info)}" do
               reset(param)
             end if param.visible?(@kafo.params)
           end

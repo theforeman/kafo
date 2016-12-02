@@ -15,7 +15,7 @@ module Kafo
       private
 
       def except_resets(items)
-        items.select { |i| !i.help.first.strip.start_with?('--reset-') || !i.help.last.strip.end_with?('to the default value') }
+        items.select { |i| !i.help.first.strip.start_with?('--reset-') || !i.help.last.include?('to the default value (') }
       end
     end
   end
