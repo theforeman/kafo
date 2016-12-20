@@ -281,7 +281,7 @@ module Kafo
                             :default => !!config.app[:colors]
       self.class.app_option ['--color-of-background'], 'COLOR', 'Your terminal background is :bright or :dark',
                             :default => config.app[:color_of_background]
-      self.class.app_option ['-d', '--dont-save-answers'], :flag, "Skip saving answers to '#{self.class.config.answer_file}'?",
+      self.class.app_option ['--dont-save-answers'], :flag, "Skip saving answers to '#{self.class.config.answer_file}'?",
                             :default => !!config.app[:dont_save_answers]
       self.class.app_option '--ignore-undocumented', :flag, 'Ignore inconsistent parameter documentation',
                             :default => false

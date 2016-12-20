@@ -194,7 +194,7 @@ noop so no change will be done to your system. The default value here is set to
 false!
 
 Sometimes you may want kafo not to store answers from the current run. You can
-disable saving answer by passing a ```--dont-save-answers``` argument (or -d for short).
+disable saving answers by passing a ```--dont-save-answers``` argument.
 
 Note that running ```--noop``` implies ```--dont-save-answers```.
 
