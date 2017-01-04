@@ -1,14 +1,16 @@
 # encoding: UTF-8
 module Kafo
   class PuppetCommand
-    def initialize(command, options = [], configuration = KafoConfigure.config)
+    def initialize(command, options = [], puppet_config = nil, configuration = KafoConfigure.config)
       @configuration = configuration
       @command = command
+      @puppet_config = puppet_config
 
       # Expand the modules_path to work around the fact that Puppet doesn't
       # allow modulepath to contain relative (i.e ..) directory references as
       # of 2.7.23.
       @options = options.push("--modulepath #{File.expand_path(modules_path)}")
+      @options.push("--config=#{puppet_config.config_path}") if puppet_config
       @logger  = KafoConfigure.logger
     end
 
@@ -17,6 +19,7 @@ module Kafo
     end
 
     def command
+      @puppet_config.write_config if @puppet_config
       result = [
           "echo '$kafo_config_file=\"#{@configuration.config_file}\" #{add_progress} #{@command}'",
           '|',

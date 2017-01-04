@@ -18,6 +18,19 @@ module Kafo
 
         specify { PuppetCommand.stub(:search_puppet_path, '/opt/puppetlabs/bin/puppet') { pc.command.must_include '/opt/puppetlabs/bin/puppet apply' } }
       end
+
+      describe "with PuppetConfigurer" do
+        let(:puppetconf) { MiniTest::Mock.new }
+        let(:pc) { PuppetCommand.new '', [], puppetconf }
+
+        specify do
+          puppetconf.expect(:config_path, '/tmp/puppet.conf') do
+            puppetconf.expect(:write_config, nil) do
+              pc.command.must_include ' --config=/tmp/puppet.conf '
+            end
+          end
+        end
+      end
     end
 
     describe '.search_puppet_path' do
