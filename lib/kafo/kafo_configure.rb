@@ -235,6 +235,12 @@ module Kafo
     def setup_config(conf_file)
       self.class.config_file      = conf_file
       self.class.config           = Configuration.new(self.class.config_file)
+
+      if self.class.config.parser_cache
+        self.class.config.parser_cache.force = true if ARGV.include?('--parser-cache')
+        self.class.config.parser_cache.force = false if ARGV.include?('--no-parser-cache')
+      end
+
       self.class.root_dir         = self.class.config.root_dir
       self.class.check_dirs       = self.class.config.check_dirs
       self.class.module_dirs      = self.class.config.module_dirs
@@ -304,6 +310,7 @@ module Kafo
       self.class.app_option ['--force'], :flag, 'Force change of installation scenaraio'
       self.class.app_option ['--compare-scenarios'], :flag, 'Show changes between last used scenario and the scenario specified with -S or --scenario argument'
       self.class.app_option ['--migrations-only'], :flag, 'Apply migrations to a selected scenario and exit'
+      self.class.app_option ['--[no-]parser-cache'], :flag, 'Force use or bypass of Puppet module parser cache'
     end
 
     def set_options

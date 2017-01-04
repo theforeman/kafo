@@ -2,6 +2,8 @@ require 'kafo/version'
 
 module Kafo
   class ParserCacheReader
+    attr_accessor :force
+
     def self.new_from_file(cache_paths)
       cache_paths = [cache_paths].compact unless cache_paths.is_a?(Array)
       if cache_paths.empty?
@@ -38,8 +40,9 @@ module Kafo
       KafoConfigure.logger
     end
 
-    def initialize(cache)
+    def initialize(cache, options = {})
       @cache = cache
+      @force = options[:force]
     end
 
     def logger
@@ -47,11 +50,20 @@ module Kafo
     end
 
     def get(key, manifest_path)
+      if @force == false
+        logger.debug "Skipping parser cache for #{manifest_path}, forced off"
+        return nil
+      end
+
       return nil unless @cache[:files].has_key?(key)
 
       if @cache[:files][key][:mtime] && File.mtime(manifest_path).to_i > @cache[:files][key][:mtime]
-        logger.debug "Parser cache for #{manifest_path} is outdated, ignoring cache entry"
-        return nil
+        if @force
+          logger.warn "Parser cache for #{manifest_path} is outdated, forced to use it anyway"
+        else
+          logger.debug "Parser cache for #{manifest_path} is outdated, ignoring cache entry"
+          return nil
+        end
       end
 
       @cache[:files][key][:data]

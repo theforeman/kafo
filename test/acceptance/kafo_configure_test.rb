@@ -94,5 +94,33 @@ module Kafo
         end
       end
     end
+
+    describe 'with parser cache' do
+      before do
+        File.open(KAFO_CONFIG, 'a') { |f| f.puts ":parser_cache_path: #{INSTALLER_HOME}/parser_cache.json" }
+        code, out, err = run_command("kafo-export-params -f parsercache -c #{KAFO_CONFIG} -o #{INSTALLER_HOME}/parser_cache.json")
+        code.must_equal 0
+      end
+
+      it 'must use cache' do
+        code, out, err = run_command 'bin/kafo-configure -v -l debug'
+        code.must_equal 0
+        out.must_include "Using #{INSTALLER_HOME}/parser_cache.json cache with parsed modules"
+      end
+
+      it 'with --parser-cache forces use of cache' do
+        FileUtils.touch(File.join(MANIFEST_PATH, 'init.pp'), :mtime => Time.now + 3600)
+        code, out, err = run_command 'bin/kafo-configure -v -l debug --parser-cache'
+        code.must_equal 0
+        out.must_include "Parser cache for #{MANIFEST_PATH}/init.pp is outdated, forced to use it anyway"
+      end
+
+      it 'with --no-parser-cache skips cache' do
+        FileUtils.touch(File.join(MANIFEST_PATH, 'init.pp'), :mtime => Time.now + 3600)
+        code, out, err = run_command 'bin/kafo-configure -v -l debug --no-parser-cache'
+        code.must_equal 0
+        out.must_include "Skipping parser cache for #{MANIFEST_PATH}/init.pp, forced off"
+      end
+    end
   end
 end
