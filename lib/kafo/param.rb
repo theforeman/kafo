@@ -5,8 +5,10 @@ require 'kafo/validator'
 
 module Kafo
   class Param
-    attr_reader :name, :module, :type
-    attr_accessor :default, :doc, :value_set, :condition
+    UNSET_VALUES = ['UNSET', :undef]
+
+    attr_reader :name, :module, :type, :manifest_default
+    attr_accessor :doc, :value_set, :condition
     attr_writer :groups
 
     def initialize(builder, name, type)
@@ -20,8 +22,9 @@ module Kafo
     end
 
     # we use @value_set flag because even nil can be valid value
+    # Order of descending precedence: @value, @default (from dump), @manifest_default
     def value
-      @type.typecast(@value_set ? @value : default)
+      @value_set ? @type.typecast(@value) : default
     end
 
     def value=(value)
@@ -34,8 +37,34 @@ module Kafo
       @value     = nil
     end
 
+    # For literal default values, only use 'manifest_default'. For variable values, use the value
+    # loaded back from the dump in 'default'.
+    def default
+      @type.typecast(dump_default_needed? ? @default : manifest_default)
+    end
+
+    def default=(default)
+      default = nil if UNSET_VALUES.include?(default)
+      @default = default
+    end
+
+    # manifest_default may be a variable ($foo::params::bar) and need dumping from Puppet to get
+    # the actual default value
+    def dump_default_needed?
+      manifest_default.to_s.start_with?('$')
+    end
+
     def dump_default
-      @type.dump_default(default)
+      @type.dump_default(manifest_default_params_variable)
+    end
+
+    def manifest_default=(default)
+      default = nil if UNSET_VALUES.include?(default)
+      @manifest_default = default
+    end
+
+    def manifest_default_params_variable
+      manifest_default[1..-1] if dump_default_needed?
     end
 
     def module_name
@@ -54,28 +83,12 @@ module Kafo
       internal_value_to_s(value)
     end
 
-    def set_default(defaults)
-      if default == 'UNSET'
-        self.default = nil
-      else
-        # if we don't have default value from dump (can happen for modules added from hooks,
-        # or without using a params class), the existing default value from the manifest will
-        # be used. On calling #value, the default will be returned if no overriding value is set.
-        value = defaults.has_key?(default) ? defaults[default] : default
-        case value
-          when :undef
-            # value can be set to :undef if value is not defined
-            # (e.g. puppetmaster = $::puppetmaster which is not defined yet)
-            self.default = nil
-          when :undefined
-            # in puppet 2.7 :undefined means that it's param which value is
-            # not set by another parameter (e.g. foreman_group = 'something')
-            # which means, default is sensible unlike dumped default
-            # newer puppet has default dump in format 'value' => 'value' so
-            # it's handled correctly by else branch
-          else
-            self.default = value
-        end
+    def set_default_from_dump(defaults)
+      # if we don't have default value from dump (can happen for modules added from hooks,
+      # or without using a params class), the existing default value from the manifest will
+      # be used. On calling #value, the default will be returned if no overriding value is set.
+      if dump_default_needed? && defaults.has_key?(manifest_default_params_variable)
+        self.default = defaults[manifest_default_params_variable]
       end
     end
 

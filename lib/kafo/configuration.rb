@@ -206,7 +206,7 @@ module Kafo
     def preset_defaults_from_puppet
       # set values based on default_values
       params.each do |param|
-        param.set_default(params_default_values)
+        param.set_default_from_dump(params_default_values)
       end
     end
 
@@ -301,8 +301,7 @@ module Kafo
     end
 
     def params_to_dump
-      parameters = params.select { |p| p.default != 'UNSET' }
-      parameters.map { |param| "#{param.dump_default}" }.join(',')
+      params.select(&:dump_default_needed?).map(&:dump_default).join(',')
     end
 
     def format(data)
