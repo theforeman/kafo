@@ -760,7 +760,7 @@ purpose you can use `EMPTY_ARRAY` string as a value. Similarly you can use
 ## Hooks
 
 You may need to add new features to the installer. Kafo provides a simple hook
-mechanism that allows you to run custom code at 6 different occasions.
+mechanism that allows you to run custom code at several different occasions.
 We currently support the following hooks.
 
 * pre_migrations - just after kafo reads its configuration - useful for config file updates. Only in this stage it is posible to request config reload (`Kafo.request_config_reload`) to get in our changes
@@ -771,6 +771,8 @@ We currently support the following hooks.
 * pre_commit - after validations or interactive wizard have completed, all parameter values are set but not yet stored in the answer file
 * pre  - just before puppet is executed to converge system, after parameter values are stored in the answer file
 * post  - just after puppet is executed to converge system
+
+For better understanding when the hooks are executed see the [diagram](doc/kafo_run.png).
 
 Let's assume we want to add the ```--reset-foreman-db``` option to our
 foreman-installer. We could add the following lines to the generated

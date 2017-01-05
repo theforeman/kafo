@@ -1,0 +1,109 @@
+/'Use PlantUML (http://plantuml.com/starting) to render this file to other formats like PNG, SVG, EPS'/
+@startuml
+  |initialize|
+  start
+  :scenario manager setup;
+  note right
+    * guess scenario dir
+    * detect last used scenario
+  end note
+  #LightGrey:--list-scenarios>
+  :get config file;
+  note right
+    One of the following in this order
+    # **CONFIG_FILE**
+    # **--scenario** or **-S** in installer arguments
+    # previous scenarios
+    # any available scenario if there is *just one*
+    # select scenario if installer is in interactive mode
+  end note
+
+  if (no config file?)
+    stop
+  endif
+
+  :load configuration;
+  note right
+    * load configuration
+    * merge defaults
+    * save configuration
+    * load answer file
+    * setup kafo dirs
+    * setup hooks
+    * setup key-value store
+  end note
+
+  #greenyellow:**pre_migrations**|
+  note right: here the 6.1 configs get turned into 6.2 scenarios
+
+  :load configuration;
+  note right: if migrations requested reload
+
+  :execute scenario migrations;
+
+  #LightGrey:--migrations-only>
+  :load configuration;
+  note right: if any migration was applied
+
+  if (previous scenario != current scenario) then (scenario\nchanged)
+    #LightGrey:--compare-scenarios>
+    :load previous scenario;
+    :run scenario migrations
+     on previous scenario;
+    :migrate data from previous scenario
+    configuration to the current one;
+    :load configuration;
+  endif
+
+  :clamp init;
+
+  #Greenyellow:**boot**|
+
+  :define installer options;
+  :pre-parse ARGV to finish installer configuration;
+
+  #Greenyellow:**init**|
+
+  :load defaults from puppet;
+  #Greenyellow:**pre_values**|
+  :load values from answer file;
+  :load values from previous answer file;
+  note right: if previous scenraio != current scenario
+
+  :update help with default values;
+  |execute|
+  :parse values from CLI arguments;
+
+  :init progress bar;
+
+  #LightBlue:**run system checks**>
+  #Greenyellow:**pre_validations**|
+
+  if (interactive?) then (yes)
+    :run wizard;
+  else
+    :run validations;
+  endif
+
+  #Greenyellow:**pre_commit**|
+
+  :save answers;
+  note right: unless noop or dont-save-answers
+  :save current scenario as the last used one;
+  note right: unless noop or dont-save-answers
+
+  #Greenyellow:**pre**|
+
+  :setup HieraConfigurer and save configs;
+
+  #Gold:run puppet;
+  repeat
+    :parse puppet output;
+    :update installer logs;
+    :update progress bar;
+  repeat while (puppet runs?)
+
+  #Greenyellow:**post**|
+
+  stop
+@enduml
