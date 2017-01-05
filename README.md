@@ -1034,7 +1034,8 @@ configure it in config/kafo.yaml with:
 ```
 
 The cache will be skipped if the file modification time of the manifest is
-greater than the mtime recorded in the cache.
+greater than the mtime recorded in the cache. Using `--parser-cache` will force
+the use of an outdated cache, but this should be used with caution.
 
 ## Configuring Hiera
 

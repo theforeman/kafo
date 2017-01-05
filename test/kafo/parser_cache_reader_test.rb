@@ -47,6 +47,14 @@ module Kafo
       specify { subject.new({:files => {'test' => {:data => {:parameters => []}}}}).get('test', '/test/file.pp').must_equal(:parameters => []) }
       specify { File.stub(:mtime, 1) { subject.new({:files => {'test' => {:mtime => 1, :data => :test}}}).get('test', '/test/file.pp').must_equal(:test) } }
       specify { File.stub(:mtime, 2) { subject.new({:files => {'test' => {:mtime => 1, :data => :test}}}).get('test', '/test/file.pp').must_be_nil } }
+
+      describe "with force=true" do
+        specify { File.stub(:mtime, 2) { subject.new({:files => {'test' => {:mtime => 1, :data => :test}}}, :force => true).get('test', '/test/file.pp').must_equal(:test) } }
+      end
+
+      describe "with force=false" do
+        specify { File.stub(:mtime, 1) { subject.new({:files => {'test' => {:mtime => 1, :data => :test}}}, :force => false).get('test', '/test/file.pp').must_be_nil } }
+      end
     end
 
     describe "compatibility with writer" do

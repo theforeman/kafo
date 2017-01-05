@@ -5,6 +5,7 @@ TMPDIR = File.expand_path('../../tmp', __FILE__)
 INSTALLER_HOME = File.join(TMPDIR, 'installer')
 KAFO_CONFIG = File.join(INSTALLER_HOME, 'config', 'installer-scenarios.d', 'default.yaml')
 KAFO_ANSWERS = File.join(INSTALLER_HOME, 'config', 'installer-scenarios.d', 'default-answers.yaml')
+MANIFEST_PATH = File.join(INSTALLER_HOME, 'modules', 'testing', 'manifests')
 
 def run_command(command, opts = {})
   opts = {:be => true, :capture => true, :dir => INSTALLER_HOME}.merge(opts)
@@ -48,9 +49,8 @@ def generate_installer
 end
 
 def add_manifest(name = 'basic')
-  manifest_path = File.join(INSTALLER_HOME, 'modules', 'testing', 'manifests')
-  FileUtils.mkdir_p manifest_path
-  FileUtils.cp File.expand_path("../../fixtures/manifests/#{name}.pp", __FILE__), File.join(manifest_path, 'init.pp')
+  FileUtils.mkdir_p MANIFEST_PATH
+  FileUtils.cp File.expand_path("../../fixtures/manifests/#{name}.pp", __FILE__), File.join(MANIFEST_PATH, 'init.pp')
   unless File.exist?(KAFO_ANSWERS) && File.read(KAFO_ANSWERS).include?('testing:')
     File.open(KAFO_ANSWERS, 'a') do |answers|
       answers.write "testing:\n  base_dir: #{INSTALLER_HOME}\n"
