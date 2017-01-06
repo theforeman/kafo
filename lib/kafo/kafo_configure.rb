@@ -425,7 +425,7 @@ module Kafo
         'hiera_config' => hiera.config_path,
         'noop'         => !!noop?,
         'profile'      => !!profile?,
-        'show_diff'    => false
+        'show_diff'    => true
       )
       self.class.exit_handler.register_cleanup_path(puppetconf.config_path)
 
