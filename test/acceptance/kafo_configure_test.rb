@@ -1,4 +1,5 @@
 require 'acceptance/test_helper'
+require 'puppet/version'
 
 module Kafo
   describe 'kafo-configure' do
@@ -120,6 +121,21 @@ module Kafo
         code, out, err = run_command 'bin/kafo-configure -v -l debug --no-parser-cache'
         code.must_equal 0
         out.must_include "Skipping parser cache for #{MANIFEST_PATH}/init.pp, forced off"
+      end
+    end
+
+    describe 'with module data' do
+      before do
+        add_manifest('basic_module_data')
+        add_module_data
+      end
+
+      it 'must create file' do
+        skip 'Requires Puppet 4.5+ for data in modules' if Puppet::PUPPETVERSION < '4.5.0'
+        code, out, err = run_command 'bin/kafo-configure'
+        code.must_equal 0
+        File.exist?("#{INSTALLER_HOME}/testing").must_equal true
+        File.read("#{INSTALLER_HOME}/testing").must_equal '1.0'
       end
     end
   end

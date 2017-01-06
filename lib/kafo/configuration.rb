@@ -24,7 +24,6 @@ module Kafo
         :answer_file          => './config/answers.yaml',
         :installer_dir        => '.',
         :module_dirs          => ['./modules'],
-        :default_values_dir   => '/tmp',
         :colors               => Kafo::ColorScheme.colors_possible?,
         :color_of_background  => :dark,
         :hook_dirs            => [],
@@ -133,7 +132,7 @@ module Kafo
 
     def migrate_configuration(from_config, options={})
       keys_to_skip = options.fetch(:skip, [])
-      keys = [:log_dir, :log_name, :log_level, :no_prefix, :default_values_dir,
+      keys = [:log_dir, :log_name, :log_level, :no_prefix,
         :colors, :color_of_background, :custom, :password, :verbose_log_level]
       keys += options.fetch(:with, [])
       keys.each do |key|
@@ -145,15 +144,19 @@ module Kafo
 
     def params_default_values
       @params_default_values ||= begin
-        @logger.debug "Creating tmp dir within #{app[:default_values_dir]}..."
-        temp_dir = Dir.mktmpdir(nil, app[:default_values_dir])
-        KafoConfigure.exit_handler.register_cleanup_path temp_dir
-
         puppetconf = PuppetConfigurer.new('noop' => true)
         KafoConfigure.exit_handler.register_cleanup_path puppetconf.config_path
 
+        dump_manifest = <<EOS
+          #{includes}
+          class { '::kafo_configure::dump_values':
+            lookups   => [#{param_lookups_to_dump}],
+            variables => [#{params_to_dump}],
+          }
+EOS
+
         @logger.info 'Loading default values from puppet modules...'
-        command = PuppetCommand.new("$temp_dir=\"#{temp_dir}\" #{includes} dump_values(#{params_to_dump})", [], puppetconf, self).append('2>&1').command
+        command = PuppetCommand.new(dump_manifest, [], puppetconf, self).append('2>&1').command
         result = `#{command}`
         @logger.debug result
         unless $?.exitstatus == 0
@@ -165,7 +168,8 @@ module Kafo
           KafoConfigure.exit(:defaults_error)
         end
         @logger.info "... finished"
-        load_yaml_file(File.join(temp_dir, 'default_values.yaml'))
+
+        load_yaml_from_output(result.split($/))
       end
     end
 
@@ -304,12 +308,28 @@ module Kafo
       params.select(&:dump_default_needed?).map(&:dump_default).join(',')
     end
 
+    def param_lookups_to_dump
+      params.select { |p| p.manifest_default.nil? }.map { |p| %{"#{p.identifier}"} }.join(',')
+    end
+
     def format(data)
       data.gsub('!ruby/sym ', ':')
     end
 
     def load_yaml_file(filename)
       YAML.load_file(filename)
+    end
+
+    # Loads YAML from mixed output, finding the "---" and "..." document start/end delimiters
+    def load_yaml_from_output(lines)
+      start = lines.find_index { |l| l.start_with?('---') }
+      last = lines[start..-1].find_index("...")
+      if start.nil? || last.nil?
+        puts "Could not find default values in output"
+        @logger.error 'Could not find default values in Puppet output, cannot continue'
+        KafoConfigure.exit(:defaults_error)
+      end
+      YAML.load(lines[start,last].join($/))
     end
 
     def register_data_types

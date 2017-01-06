@@ -93,7 +93,7 @@ module Kafo
 
     describe '#migrate_configuration' do
 
-      let(:keys) { [:log_dir, :log_name, :log_level, :no_prefix, :default_values_dir,
+      let(:keys) { [:log_dir, :log_name, :log_level, :no_prefix,
           :colors, :color_of_background, :custom, :password, :verbose_log_level] }
 
       before do

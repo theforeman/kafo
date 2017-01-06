@@ -17,6 +17,10 @@ module Kafo
       @type   = DataType.new_from_string(type)
     end
 
+    def identifier
+      @module ? "#{@module.identifier}::#{name}" : name
+    end
+
     def groups
       @groups || []
     end
@@ -37,10 +41,10 @@ module Kafo
       @value     = nil
     end
 
-    # For literal default values, only use 'manifest_default'. For variable values, use the value
-    # loaded back from the dump in 'default'.
+    # For literal default values, only use 'manifest_default'. For variable or values from a data
+    # lookup, use the value loaded back from the dump in 'default'.
     def default
-      @type.typecast(dump_default_needed? ? @default : manifest_default)
+      @type.typecast(dump_default_needed? || !@default.nil? ? @default : manifest_default)
     end
 
     def default=(default)
@@ -89,6 +93,8 @@ module Kafo
       # be used. On calling #value, the default will be returned if no overriding value is set.
       if dump_default_needed? && defaults.has_key?(manifest_default_params_variable)
         self.default = defaults[manifest_default_params_variable]
+      elsif defaults.has_key?(identifier)
+        self.default = defaults[identifier]
       end
     end
 

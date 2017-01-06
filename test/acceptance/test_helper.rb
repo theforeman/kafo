@@ -5,7 +5,8 @@ TMPDIR = File.expand_path('../../tmp', __FILE__)
 INSTALLER_HOME = File.join(TMPDIR, 'installer')
 KAFO_CONFIG = File.join(INSTALLER_HOME, 'config', 'installer-scenarios.d', 'default.yaml')
 KAFO_ANSWERS = File.join(INSTALLER_HOME, 'config', 'installer-scenarios.d', 'default-answers.yaml')
-MANIFEST_PATH = File.join(INSTALLER_HOME, 'modules', 'testing', 'manifests')
+TEST_MODULE_PATH = File.join(INSTALLER_HOME, 'modules', 'testing')
+MANIFEST_PATH = File.join(TEST_MODULE_PATH, 'manifests')
 
 def run_command(command, opts = {})
   opts = {:be => true, :capture => true, :dir => INSTALLER_HOME}.merge(opts)
@@ -56,4 +57,9 @@ def add_manifest(name = 'basic')
       answers.write "testing:\n  base_dir: #{INSTALLER_HOME}\n"
     end
   end
+end
+
+def add_module_data(name = 'basic')
+  FileUtils.mkdir_p TEST_MODULE_PATH
+  FileUtils.cp_r File.expand_path("../../fixtures/module_data/#{name}", __FILE__) + '/.', TEST_MODULE_PATH
 end
