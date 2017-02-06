@@ -2,6 +2,7 @@
 require 'kafo/condition'
 require 'kafo/data_type'
 require 'kafo/validator'
+require 'kafo/data_type'
 
 module Kafo
   class Param
