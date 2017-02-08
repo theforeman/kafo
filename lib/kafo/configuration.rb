@@ -52,9 +52,14 @@ module Kafo
 
     def save_configuration(configuration)
       return true unless @persist
-      FileUtils.touch @config_file
-      File.chmod 0600, @config_file
-      File.open(@config_file, 'w') { |file| file.write(format(YAML.dump(configuration))) }
+      begin
+        FileUtils.touch @config_file
+        File.chmod 0600, @config_file
+        File.open(@config_file, 'w') { |file| file.write(format(YAML.dump(configuration))) }
+      rescue Errno::EACCES
+        puts "Insufficient permissions to write to #{@config_file}, can not continue"
+        KafoConfigure.exit(:insufficient_permissions)
+      end
     end
 
     def configure_application
