@@ -113,6 +113,14 @@ module Kafo
       self.class.logger
     end
 
+    def run(*args)
+      started_at = Time.now
+      logger.info("Running installer with args #{args.inspect}")
+      super
+    ensure
+      logger.info("Installer finished in #{Time.now - started_at} seconds")
+    end
+
     def execute
       parse_cli_arguments
 
