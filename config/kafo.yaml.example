@@ -36,9 +36,6 @@
 # :log_name: configure.log
 # :log_level: :info
 
-# Change if you want to debug default answers for you modules, this directory holds default answers
-# :default_values_dir: /tmp
-
 ## Advanced configuration - if not set it's ignored
 # :log_owner: root
 # :log_group: root

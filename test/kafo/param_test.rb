@@ -9,6 +9,7 @@ module Kafo
     let(:with_undef) { param.tap { |p| p.manifest_default = :undef } }
     let(:with_unset) { param.tap { |p| p.manifest_default = 'UNSET' } }
     let(:with_value) { param.tap { |p| p.manifest_default = '42' } }
+    let(:with_module_data) { param.tap { |p| p.default = '42' } }
 
     describe "#visible?" do
       describe "without condition" do
@@ -41,6 +42,7 @@ module Kafo
       specify { with_params.default.must_be_nil }
       specify { with_params.tap { |p| p.default = 'test' }.default.must_equal 'test' }
       specify { with_value.default.must_equal '42' }
+      specify { with_module_data.default.must_equal '42' }
     end
 
     describe "#default=" do
@@ -54,6 +56,7 @@ module Kafo
       specify { with_undef.dump_default_needed?.must_equal false }
       specify { with_unset.dump_default_needed?.must_equal false }
       specify { with_value.dump_default_needed?.must_equal false }
+      specify { with_module_data.dump_default_needed?.must_equal false }
     end
 
     describe "group" do
@@ -71,6 +74,19 @@ module Kafo
         let(:group_names) { param.groups.map(&:name) }
         specify { group_names.must_include 'one' }
         specify { group_names.must_include 'two' }
+      end
+    end
+
+    describe "#identifier" do
+      specify { param.identifier.must_equal 'test' }
+
+      describe "with module" do
+        let(:mod) do
+          mod = MiniTest::Mock.new
+          mod.expect(:identifier, 'examplemod')
+          mod
+        end
+        specify { param.identifier.must_equal 'examplemod::test' }
       end
     end
 
@@ -233,6 +249,7 @@ module Kafo
       specify { with_params.tap { |p| p.set_default_from_dump({'mod::params::test' => '42'}) }.default.must_equal '42' }
       specify { with_params.tap { |p| p.set_default_from_dump({'mod::params::test' => :undef}) }.default.must_be_nil }
       specify { with_value.tap { |p| p.set_default_from_dump({'42' => 'fail'}) }.default.must_equal '42' }
+      specify { param.tap { |p| p.set_default_from_dump({'test' => '42'}) }.default.must_equal '42' }
     end
 
     describe '#unset_value' do

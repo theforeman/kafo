@@ -552,6 +552,40 @@ as key:value.
 When parsing the value, the first colon divides key and value. All other
 colons are ignored.
 
+## Default values
+
+Default values for parameters are read from the class definitions in the
+manifests. If values are given inline then these will be stored by Kafo as the
+initial value of the parameter (unless set in the answers file or later changed
+by the user), e.g.
+
+```puppet
+class foreman(
+  $foreman_url = 'https://example.com'
+) {
+```
+
+If the "params" pattern is used, where the default parameter values are defined
+in another class then Kafo will attempt to retrieve them by running Puppet,
+using `include` on the params class and then getting the variable value. This
+will retrieve default values set by conditionals correctly, e.g.
+
+```puppet
+class foreman(
+  $foreman_url = $::foreman::params::foreman_url,
+) inherits foreman::params {
+```
+
+```puppet
+class foreman::params {
+  $foreman_url = 'https://example.com'
+}
+```
+
+If no inline default is given in the manifest and on Puppet 4.5+, then Kafo will
+attempt to look up a default value using [data stored in the module](https://docs.puppet.com/puppet/latest/lookup_quick_module.html). This can be specified with Hiera data files (or even a data function) in the
+module under `data/`.
+
 ## Resetting an argument
 
 Existing stored parameters can be reset back to their default value from the
