@@ -18,7 +18,8 @@ module Kafo
           :defaults_error => 25,
           :unset_scenario => 26,
           :scenario_error => 27,
-          :missing_argument => 28
+          :missing_argument => 28,
+          :insufficient_permissions => 29
       }
     end
 
