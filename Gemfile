@@ -16,6 +16,7 @@ gemspec
   end
 
 gem 'rdoc', '< 4.3.0' if RUBY_VERSION < '1.9'
+gem 'clamp', '< 1.1.2' if RUBY_VERSION < '1.9'
 
 puppet_version = ENV['PUPPET_VERSION']
 puppet_spec = puppet_version ? "~> #{puppet_version}" : '< 5.0.0'
