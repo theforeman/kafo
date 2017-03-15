@@ -1090,6 +1090,7 @@ Other exit codes that can be returned:
 * '26' means that kafo could not find the specified scenario
 * '27' means that kafo found found scenario configuration error that prevents installation from continuing
 * '28' means that a value is missing for a parameter given on the command line
+* '29' means that effective user that ran the installer does not have permission to update the answer file
 * '130' user interrupt (^C)
 
 ## Running Puppet Profiling
