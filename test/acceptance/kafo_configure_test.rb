@@ -1,5 +1,4 @@
 require 'acceptance/test_helper'
-require 'puppet/version'
 
 module Kafo
   describe 'kafo-configure' do
@@ -131,7 +130,7 @@ module Kafo
       end
 
       it 'must create file' do
-        skip 'Requires Puppet 4.5+ for data in modules' if Puppet::PUPPETVERSION < '4.5.0'
+        skip 'Requires Puppet 4.5+ for data in modules' if Gem::Specification.find_all_by_name('puppet').sort_by(&:version).last.version < Gem::Version.new('4.5.0')
         code, out, err = run_command 'bin/kafo-configure'
         code.must_equal 0
         File.exist?("#{INSTALLER_HOME}/testing").must_equal true
