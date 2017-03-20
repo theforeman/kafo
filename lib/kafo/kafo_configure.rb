@@ -330,7 +330,7 @@ module Kafo
       modules.each do |mod|
         self.class.option d("--[no-]enable-#{mod.name}"),
                           :flag,
-                          "Enable '#{mod.name}' puppet module",
+                          "Enable '#{mod.name}' module",
                           :default => mod.enabled?
       end
 
