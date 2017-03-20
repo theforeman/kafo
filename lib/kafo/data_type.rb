@@ -11,7 +11,7 @@ module Kafo
         new_from_string(type)
       else
         args = if keyword_re[2]
-                 hash_re = keyword_re[2].match(/\A\s*{(.*)}\s*\z/m)
+                 hash_re = keyword_re[2].match(/\A\s*\{(.*)\}\s*\z/m)
                  if hash_re
                    [parse_hash(hash_re[1])]
                  else
