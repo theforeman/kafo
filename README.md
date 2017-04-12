@@ -1125,6 +1125,7 @@ Other exit codes that can be returned:
 * '27' means that kafo found found scenario configuration error that prevents installation from continuing
 * '28' means that a value is missing for a parameter given on the command line
 * '29' means that effective user that ran the installer does not have permission to update the answer file
+* '30' means that the version of Puppet is incompatible with a module, according to its [metadata.json](https://docs.puppet.com/puppet/latest/modules_metadata.html)
 * '130' user interrupt (^C)
 
 ## Running Puppet Profiling

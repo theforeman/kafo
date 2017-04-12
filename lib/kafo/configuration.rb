@@ -29,7 +29,8 @@ module Kafo
         :hook_dirs            => [],
         :custom               => {},
         :low_priority_modules => [],
-        :verbose_log_level    => 'info'
+        :verbose_log_level    => 'info',
+        :skip_puppet_version_check => false
     }
 
     def initialize(file, persist = true)
@@ -166,11 +167,19 @@ EOS
         @logger.debug result
         unless $?.exitstatus == 0
           log = app[:log_dir] + '/' + app[:log_name]
-          puts "Could not get default values, check log file at #{log} for more information"
-          @logger.error command
-          @logger.error result
-          @logger.error 'Could not get default values, cannot continue'
-          KafoConfigure.exit(:defaults_error)
+          if (version_mismatch = /kafo_configure::puppet_version_failure: (.+?\))/.match(result))
+            puts version_mismatch[1]
+            puts "Cannot continue due to incompatible version of Puppet. Use --skip-puppet-version-check to disable this check."
+            @logger.error version_mismatch[1]
+            @logger.error 'Incompatible version of Puppet used, cannot continue'
+            KafoConfigure.exit(:puppet_version_error)
+          else
+            puts "Could not get default values, check log file at #{log} for more information"
+            @logger.error command
+            @logger.error result
+            @logger.error 'Could not get default values, cannot continue'
+            KafoConfigure.exit(:defaults_error)
+          end
         end
         @logger.info "... finished"
 
