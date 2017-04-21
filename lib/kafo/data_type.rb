@@ -1,3 +1,5 @@
+require 'strscan'
+
 module Kafo
   class DataType
     def self.new_from_string(str)
@@ -39,16 +41,42 @@ module Kafo
     end
 
     def self.split_arguments(input)
-      input.scan(%r{
-        \s*
-          (?:
-            ["'/](.*?)["'/] # quoted string, or regexp argument
-            |
-            ([\w:]+ (?:\[.+\])?) # bare words, or Type::Name, or Type::Name[args..]
-          )
-        \s*
-        (?:,|$) # match to end of comma-separated arg, or the last arg
-      }mx).flatten.compact
+      scanner = StringScanner.new(input)
+      args = []
+
+      until scanner.eos?
+        scanner.skip(/\s*/)
+
+        if %w(' " /).include?(quote = scanner.peek(1)) # quoted string, or regexp argument
+          scanner.getch  # skip first quote
+          quoted = scanner.scan_until(/(?:^|[^\\])#{quote}/) or raise ConfigurationException, "missing end quote in argument #{args.count + 1} in data type #{input}"
+          args << quoted[0..-2]  # store unquoted value
+
+        else # bare words, or Type::Name, or Type::Name[args..]
+          type = scanner.scan(/[\w:-]+/) or raise ConfigurationException, "missing argument #{args.count + 1} to data type #{input}"#
+
+          # store inner arguments as a continuation of the type string
+          if scanner.peek(1) == '['
+            type << scanner.getch
+            bracket_count = 1
+            until bracket_count.zero?
+              next_bracket = scanner.scan_until(/[\[\]]/) or raise ConfigurationException, "missing close bracket in argument #{args.count + 1} in data type #{input}"
+              case next_bracket[-1..-1]
+              when '['
+                bracket_count += 1
+              when ']'
+                bracket_count -= 1
+              end
+              type << next_bracket
+            end
+          end
+          args << type
+        end
+
+        scanner.skip(/\s*,?/)
+      end
+
+      args
     end
 
     def self.parse_hash(input)

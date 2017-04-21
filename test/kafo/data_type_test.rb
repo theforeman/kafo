@@ -58,8 +58,23 @@ module Kafo
       end
 
       it 'instantiates type with multiple arguments' do
-        data_type.expect(:new, 'instance', ['1', 'Float', '(regexp)', 'Enum["foo", \'bar\']', '2'])
-        DataType.new_from_string('Example[1,Float, /(regexp)/, Enum["foo", \'bar\'],2]').must_equal 'instance'
+        data_type.expect(:new, 'instance', ['1', 'Float', '(regexp)', 'Enum["foo", \'bar\']', '-2'])
+        DataType.new_from_string('Example[1,Float, /(regexp)/, Enum["foo", \'bar\'],-2]').must_equal 'instance'
+      end
+
+      it 'instantiates type with multiple nested arguments' do
+        data_type.expect(:new, 'instance', ['Hash[String, String]', 'Hash[String, String]'])
+        DataType.new_from_string('Example[Hash[String, String], Hash[String, String]]').must_equal 'instance'
+      end
+
+      it 'instantiates type with multiple nested arguments (2 levels)' do
+        data_type.expect(:new, 'instance', ['Hash[Array[String], Array[String]]', 'Hash[Array[String], Array[String]]'])
+        DataType.new_from_string('Example[Hash[Array[String], Array[String]], Hash[Array[String], Array[String]]]').must_equal 'instance'
+      end
+
+      it 'instantiates type with escaped regexes in arguments' do
+        data_type.expect(:new, 'instance', ['https?:\/\/\w+\.com', 'String'])
+        DataType.new_from_string('Example[/https?:\/\/\w+\.com/, String]').must_equal 'instance'
       end
 
       it 'instantiates type with hash arguments' do
@@ -69,6 +84,18 @@ module Kafo
         DataType.new_from_string('Example[{mode            => Enum[read, write, update],
                                            path            => Optional[String[1]],
                                            NotUndef[owner] => Optional[String[1]]}]').must_equal 'instance'
+      end
+
+      it 'raises error parsing types with mismatched quotes' do
+        Proc.new { DataType.new_from_string('Example["test]') }.must_raise ConfigurationException
+      end
+
+      it 'raises error parsing types with mismatched brackets' do
+        Proc.new { DataType.new_from_string('Example[Array[String]') }.must_raise ConfigurationException
+      end
+
+      it 'raises error parsing types with unknown argument' do
+        Proc.new { DataType.new_from_string('Example[&]') }.must_raise ConfigurationException
       end
 
       it 'aliases Data to Any' do
