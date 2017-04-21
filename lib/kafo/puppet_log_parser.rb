@@ -5,6 +5,7 @@ module Kafo
     end
 
     def parse(line)
+      line = normalize_encoding(line)
       method, message = case
                           when line =~ /^Error:(.*)/i || line =~ /^Err:(.*)/i
                             [:error, $1]
@@ -20,6 +21,16 @@ module Kafo
 
       @last_level = method
       return [method, message.chomp]
+    end
+
+    private
+
+    def normalize_encoding(line)
+      if line.respond_to?(:encode) && line.respond_to?(:valid_encoding?)
+        line.valid_encoding? ? line : line.encode('UTF-16be', :invalid => :replace, :replace => '?').encode('UTF-8')
+      else  # Ruby 1.8.7, doesn't worry about invalid encodings
+        line
+      end
     end
   end
 end
