@@ -16,7 +16,6 @@ module Kafo
         subject.parse('Debug: foo').must_equal [:debug, ' foo']
         subject.parse('bar').must_equal [:debug, 'bar']
       end
-      specify { subject.parse("Error: invalid \255 byte").must_equal [:error, RUBY_VERSION.start_with?('1.8') ? " invalid \255 byte" : ' invalid ? byte'] }
     end
   end
 end

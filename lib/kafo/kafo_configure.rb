@@ -451,6 +451,7 @@ module Kafo
         PTY.spawn(command) do |stdin, stdout, pid|
           begin
             stdin.each do |line|
+              line = normalize_encoding(line)
               progress_log(*log_parser.parse(line))
               @progress_bar.update(line) if @progress_bar
             end
@@ -512,6 +513,16 @@ module Kafo
       ColorScheme.new(
         :background => config.app[:color_of_background],
         :colors => use_colors?).setup
+    end
+
+    private
+
+    def normalize_encoding(line)
+      if line.respond_to?(:encode) && line.respond_to?(:valid_encoding?)
+        line.valid_encoding? ? line : line.encode('UTF-16be', :invalid => :replace, :replace => '?').encode('UTF-8')
+      else  # Ruby 1.8.7, doesn't worry about invalid encodings
+        line
+      end
     end
   end
 end
