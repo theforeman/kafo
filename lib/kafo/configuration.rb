@@ -111,7 +111,7 @@ module Kafo
     end
 
     def module_dirs
-      [app[:module_dirs] || (app[:installer_dir] + '/modules')].flatten.map { |dir| File.expand_path(dir) }
+      [app[:module_dirs] || (app[:installer_dir] + '/modules')].flatten.map { |dir| File.expand_path(dir) }.uniq
     end
 
     def gem_root
