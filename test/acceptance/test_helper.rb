@@ -63,3 +63,8 @@ def add_module_data(name = 'basic')
   FileUtils.mkdir_p TEST_MODULE_PATH
   FileUtils.cp_r File.expand_path("../../fixtures/module_data/#{name}", __FILE__) + '/.', TEST_MODULE_PATH
 end
+
+def add_metadata(name = 'basic')
+  FileUtils.mkdir_p TEST_MODULE_PATH
+  FileUtils.cp File.expand_path("../../fixtures/metadata/#{name}.json", __FILE__), File.join(TEST_MODULE_PATH, 'metadata.json')
+end

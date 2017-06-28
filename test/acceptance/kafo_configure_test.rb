@@ -137,5 +137,39 @@ module Kafo
         File.read("#{INSTALLER_HOME}/testing").must_equal '1.0'
       end
     end
+
+    describe 'with Puppet version requirements' do
+      it 'must run if they are met' do
+        add_metadata('basic')
+        code, out, err = run_command 'bin/kafo-configure'
+        code.exitstatus.must_equal 0
+        File.exist?("#{INSTALLER_HOME}/testing").must_equal true
+      end
+
+      it 'must fail if minimum version is not met' do
+        add_metadata('with_minimum_puppet')
+        code, out, err = run_command 'bin/kafo-configure'
+        code.exitstatus.must_equal 30
+        out.must_match /^Puppet [0-9\.]+ does not meet (\w+ )?requirements? for theforeman-testing/
+        out.must_include 'Use --skip-puppet-version-check to disable this check'
+        File.exist?("#{INSTALLER_HOME}/testing").must_equal false
+      end
+
+      it 'must fail if maximum version is not met' do
+        add_metadata('with_maximum_puppet')
+        code, out, err = run_command 'bin/kafo-configure'
+        code.exitstatus.must_equal 30
+        out.must_match /^Puppet [0-9\.]+ does not meet (\w+ )?requirements? for theforeman-testing/
+        out.must_include 'Use --skip-puppet-version-check to disable this check'
+        File.exist?("#{INSTALLER_HOME}/testing").must_equal false
+      end
+
+      it 'must run with --skip-puppet-version-check' do
+        add_metadata('with_maximum_puppet')
+        code, out, err = run_command 'bin/kafo-configure --skip-puppet-version-check'
+        code.exitstatus.must_equal 0
+        File.exist?("#{INSTALLER_HOME}/testing").must_equal true
+      end
+    end
   end
 end

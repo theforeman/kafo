@@ -1,0 +1,18 @@
+{
+  "name": "theforeman-testing",
+  "version": "0.0.1",
+  "author": "The Foreman",
+  "license": "GPL-3.0",
+  "summary": "Testing module",
+  "source": "https://github.com/theforeman/kafo",
+  "project_page": "https://github.com/theforeman/kafo",
+  "issues_url": "http://projects.theforeman.org/projects/kafo/issues/",
+  "tags": ["kafo"],
+  "dependencies": [],
+  "requirements": [
+    {
+      "name": "puppet",
+      "version_requirement": ">= 3.0.0 < 999.0.0"
+    }
+  ]
+}

@@ -12,6 +12,7 @@ module Kafo
       describe "with defaults" do
         specify { pc.command.must_be_kind_of String }
         specify { pc.command.must_include 'puppet apply --modulepath /' }
+        specify { pc.command.wont_include 'kafo_configure::puppet_version' }
 
         specify { KafoConfigure.stub(:verbose, false) { pc.command.must_include '$kafo_add_progress="true"' } }
         specify { KafoConfigure.stub(:verbose, true) { pc.command.must_include '$kafo_add_progress="false"' } }
@@ -27,6 +28,29 @@ module Kafo
           puppetconf.expect(:config_path, '/tmp/puppet.conf') do
             puppetconf.expect(:write_config, nil) do
               pc.command.must_include ' --config=/tmp/puppet.conf '
+            end
+          end
+        end
+      end
+
+      describe "with version checks" do
+        specify do
+          pc.stub(:modules_path, ['/modules']) do
+            Dir.stub(:[], ['./test/fixtures/metadata/basic.json']) do
+              pc.command.must_include 'kafo_configure::puppet_version_semver { "theforeman-testing":'
+              pc.command.must_include 'requirement => ">= 3.0.0 < 999.0.0"'
+              pc.command.must_include 'kafo_configure::puppet_version_versioncmp { "theforeman-testing":'
+              pc.command.must_include 'minimum => "3.0.0",'
+              pc.command.must_include 'maximum => "999.0.0",'
+            end
+          end
+        end
+
+        specify do
+          KafoConfigure.config.app[:skip_puppet_version_check] = true
+          pc.stub(:modules_path, ['/modules']) do
+            Dir.stub(:[], ['./test/fixtures/metadata/basic.json']) do
+              pc.command.wont_include 'kafo_configure::puppet_version'
             end
           end
         end
