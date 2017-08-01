@@ -221,3 +221,12 @@ end
 def fake_param(name, value)
   OpenStruct.new( { :name => name, :value => value } )
 end
+
+def with_captured_stderr
+  old_handle = $stderr
+  $stderr = StringIO.new
+  yield
+  $stderr.string
+ensure
+  $stderr = old_handle
+end

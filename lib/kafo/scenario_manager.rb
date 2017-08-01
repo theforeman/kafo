@@ -217,7 +217,7 @@ module Kafo
     private
 
     def fail_now(message, exit_code)
-      say "ERROR: #{message}"
+      $stderr.puts "ERROR: #{message}"
       KafoConfigure.logger.error message
       KafoConfigure.exit(exit_code)
     end
