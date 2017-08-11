@@ -167,16 +167,16 @@ module Kafo
       end
 
       it 'fails if disabled scenario is selected' do
-        disabled_answers = ConfigFileFactory.build_answers('disabled', {}.to_yaml)
-        disabled_scn = { :name => 'Disabled', :description => 'Disabled scenario', :answer_file => disabled_answers.path, :enabled => false }
-        scn_file = ConfigFileFactory.build('disabled', disabled_scn.to_yaml).path
+        error_text = with_captured_stderr do
+          disabled_answers = ConfigFileFactory.build_answers('disabled', {}.to_yaml)
+          disabled_scn = { :name => 'Disabled', :description => 'Disabled scenario', :answer_file => disabled_answers.path, :enabled => false }
+          scn_file = ConfigFileFactory.build('disabled', disabled_scn.to_yaml).path
 
-        manager.stub(:scenario_from_args, scn_file) do
-          must_exit_with_code(:scenario_error) { manager.select_scenario }
-          must_be_on_stdout(output, 'Selected scenario is DISABLED, can not continue.')
-          must_be_on_stdout(output, 'Use --list-scenarios to list available options.')
-          must_be_on_stdout(output, 'You can also --enable-scenario SCENARIO to make the selected scenario available.')
+          manager.stub(:scenario_from_args, scn_file) do
+            must_exit_with_code(:scenario_error) { manager.select_scenario }
+          end
         end
+        assert_match /ERROR: Selected scenario is DISABLED, can not continue/, error_text
       end
     end
 
