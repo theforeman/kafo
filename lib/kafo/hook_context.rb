@@ -77,7 +77,7 @@ module Kafo
     #   exit(0)
     #   exit(:manifest_error)
     def exit(code)
-      self.kafo.exit(code)
+      self.kafo.class.exit(code)
     end
 
     # You can load a custom config value that has been saved using store_custom_config
