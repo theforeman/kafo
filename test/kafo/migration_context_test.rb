@@ -4,6 +4,8 @@ module Kafo
   describe MigrationContext do
     let(:context) { MigrationContext.new({}, {}) }
 
+    before(:each) { MigrationContext.clear_caches }
+
     describe "api" do
       specify { context.respond_to?(:logger) }
       specify { context.respond_to?(:scenario) }
@@ -16,12 +18,19 @@ module Kafo
     end
 
     describe '.facts' do
-      specify { MigrationContext.stub(:`, {'foo' => 'bar'}.to_yaml) { MigrationContext.facts.must_equal(:foo => 'bar') } }
+      specify { MigrationContext.stub(:`, {'foo' => 'bar'}.to_json) { MigrationContext.facts.must_equal(:foo => 'bar') } }
+
       specify do
         PuppetCommand.stub(:search_puppet_path, Proc.new { |bin| '/opt/puppetlabs/bin/facter' if bin == 'facter' }) do
-          MigrationContext.stub(:`, Proc.new { |cmd| {'foo' => 'bar'}.to_yaml if cmd == '/opt/puppetlabs/bin/facter --yaml' }) do
-            MigrationContext.facts.must_equal(:foo => 'bar')
+          MigrationContext.stub(:`, Proc.new { |cmd| {'puppet' => 'labs'}.to_json if cmd == '/opt/puppetlabs/bin/facter --json' }) do
+            MigrationContext.facts.must_equal(:puppet => 'labs')
           end
+        end
+      end
+
+      specify do
+        MigrationContext.stub(:`, {'foo' => 'bar', 'first' => {'second' => ['value']}}.to_json) do
+          MigrationContext.facts.must_equal(:foo => 'bar', :first => {:second => ['value']})
         end
       end
     end
