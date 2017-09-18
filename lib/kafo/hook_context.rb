@@ -90,5 +90,10 @@ module Kafo
     def store_custom_config(key, value)
       self.kafo.config.set_custom(key, value)
     end
+
+    # Return the path to the current scenario
+    def scenario
+      self.kafo.class.scenario_manager.select_scenario
+    end
   end
 end
