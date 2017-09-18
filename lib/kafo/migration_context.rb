@@ -1,5 +1,7 @@
+require 'kafo/base_context'
+
 module Kafo
-  class MigrationContext
+  class MigrationContext < BaseContext
 
     attr_accessor :scenario, :answers
 
@@ -16,22 +18,6 @@ module Kafo
 
     def logger
       KafoConfigure.logger
-    end
-
-    def facts
-      self.class.facts
-    end
-
-    private
-
-    def self.facts
-      @facts ||= begin
-        YAML.load(`#{facter_path} --yaml`).inject({}) { |facts,(k,v)| facts.update(k.to_sym => v) }
-      end
-    end
-
-    def self.facter_path
-      @facter_path ||= PuppetCommand.search_puppet_path('facter')
     end
   end
 end
