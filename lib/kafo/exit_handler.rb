@@ -34,7 +34,7 @@ module Kafo
     end
 
     def translate_exit_code(code)
-      return code if code.is_a?(Fixnum)
+      return code if code.is_a?(Integer)
       if error_codes.has_key?(code)
         return error_codes[code]
       else
