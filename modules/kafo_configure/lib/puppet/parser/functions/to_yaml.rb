@@ -2,7 +2,7 @@
 # document marker.
 #
 module Puppet::Parser::Functions
-  newfunction(:to_yaml, :type => :rvalue) do |args|
+  newfunction(:foreman_to_yaml, :type => :rvalue) do |args|
     dump = if args.all? { |a| a.is_a?(Hash) }
              args.inject({}) { |m,a| m.merge(a) }
            else

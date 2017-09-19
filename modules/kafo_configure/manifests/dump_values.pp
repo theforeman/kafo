@@ -12,9 +12,9 @@ class kafo_configure::dump_values($variables, $lookups) {
   # default/undef instead of an empty hash.
   if versioncmp($::puppetversion, '4.5') >= 0 {
     $dumped_lookups = dump_lookups($lookups)
-    $dumped = to_yaml($dumped_vars, $dumped_lookups)
+    $dumped = foreman_to_yaml($dumped_vars, $dumped_lookups)
   } else {
-    $dumped = to_yaml($dumped_vars)
+    $dumped = foreman_to_yaml($dumped_vars)
   }
 
   notice("\n${dumped}")
