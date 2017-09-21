@@ -23,10 +23,10 @@ module Kafo
     end
 
     def aes_encrypt(text, passphrase)
-      cipher = OpenSSL::Cipher::Cipher.new("aes-256-cbc")
+      cipher = OpenSSL::Cipher.new("aes-256-cbc")
       cipher.encrypt
-      cipher.key = Digest::SHA2.hexdigest(passphrase)
-      cipher.iv  = Digest::SHA2.hexdigest(passphrase + passphrase)
+      cipher.key = Digest::SHA2.hexdigest(passphrase)[0..31]
+      cipher.iv  = Digest::SHA2.hexdigest(passphrase + passphrase)[0..15]
 
       encrypted = cipher.update(text)
       encrypted << cipher.final
@@ -34,10 +34,10 @@ module Kafo
     end
 
     def aes_decrypt(text, passphrase)
-      cipher = OpenSSL::Cipher::Cipher.new("aes-256-cbc")
+      cipher = OpenSSL::Cipher.new("aes-256-cbc")
       cipher.decrypt
-      cipher.key = Digest::SHA2.hexdigest(passphrase)
-      cipher.iv  = Digest::SHA2.hexdigest(passphrase + passphrase)
+      cipher.key = Digest::SHA2.hexdigest(passphrase)[0..31]
+      cipher.iv  = Digest::SHA2.hexdigest(passphrase + passphrase)[0..15]
 
       decrypted = cipher.update(Base64.decode64(text))
       decrypted << cipher.final
