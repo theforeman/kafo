@@ -24,7 +24,7 @@ module Kafo
     end
 
     def load
-      base_dirs = [File.join([KafoConfigure.root_dir, 'hooks']), KafoConfigure.config.app[:hook_dirs]]
+      base_dirs = [File.join([KafoConfigure.root_dir, 'hooks']), KafoConfigure.config.app[:hook_dirs]].flatten
       base_dirs.each do |base_dir|
         TYPES.each do |hook_type|
           dir = File.join(base_dir, hook_type.to_s)
