@@ -93,8 +93,13 @@ module Kafo
     end
 
     # Return the path to the current scenario
-    def scenario
+    def scenario_path
       self.kafo.class.scenario_manager.select_scenario
+    end
+
+    # Return the actual data in the current scenario
+    def scenario_data
+      YAML.load(File.read(scenario_path))
     end
   end
 end
