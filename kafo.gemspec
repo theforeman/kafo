@@ -17,11 +17,13 @@ Gem::Specification.new do |spec|
   spec.test_files    = spec.files.grep(%r{^(test|spec|features)/})
   spec.require_paths = ["lib"]
 
+  spec.required_ruby_version = '>= 2.0.0'
+
   spec.add_development_dependency 'bundler', '~> 1.3'
-  spec.add_development_dependency 'rake', '< 11.0.0' # rake >= 11.0.0 drops support for ruby 1.8.7
-  spec.add_development_dependency 'minitest', '~> 4.0'
-  spec.add_development_dependency 'simplecov', '< 0.9'
-  spec.add_development_dependency 'ci_reporter', '~> 1.9.0'
+  spec.add_development_dependency 'rake'
+  spec.add_development_dependency 'minitest'
+  spec.add_development_dependency 'simplecov'
+  spec.add_development_dependency 'ci_reporter_minitest', '>= 1.0'
 
   spec.add_dependency 'kafo_wizards'
   spec.add_dependency 'ansi'
