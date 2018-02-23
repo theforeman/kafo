@@ -176,7 +176,7 @@ module Kafo
             must_exit_with_code(:scenario_error) { manager.select_scenario }
           end
         end
-        assert_match /ERROR: Selected scenario is DISABLED, can not continue/, error_text
+        assert_match(/ERROR: Selected scenario is DISABLED, can not continue/, error_text)
       end
     end
 
@@ -202,7 +202,7 @@ module Kafo
         end
         log_device.rewind
         errors = log_device.error.read
-        errors.must_match /You are trying to replace existing installation with different scenario. This may lead to unpredictable states. Use --force to override. You can use --compare-scenarios to see the differences/
+        errors.must_match(/You are trying to replace existing installation with different scenario. This may lead to unpredictable states. Use --force to override. You can use --compare-scenarios to see the differences/)
       end
 
       it 'passes when forced (--force)' do

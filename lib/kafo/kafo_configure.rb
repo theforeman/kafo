@@ -161,7 +161,7 @@ module Kafo
 
     def self.run
       return super
-    rescue SystemExit => e
+    rescue SystemExit
       self.exit_handler.exit(self.exit_code) # fail in initialize
     end
 
@@ -505,7 +505,7 @@ module Kafo
     end
 
     def self.preset_color_scheme
-      match = ARGV.join(' ').match /--color-of-background[ =](\w+)/
+      match = ARGV.join(' ').match(/--color-of-background[ =](\w+)/)
       background = match && match[1]
       ColorScheme.new(:background => background, :colors => use_colors?).setup
     end

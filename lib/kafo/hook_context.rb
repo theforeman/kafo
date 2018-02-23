@@ -34,7 +34,7 @@ module Kafo
     #   app_option '--log-level', 'LEVEL', 'Log level for log file output', :default => config.app[:log_level]:
     #   app_option ['-n', '--noop'], :flag, 'Run puppet in noop mode?', :default => false
     def app_option(*args)
-      self.kafo.class.app_option *args
+      self.kafo.class.app_option(*args)
     end
 
     # examples:

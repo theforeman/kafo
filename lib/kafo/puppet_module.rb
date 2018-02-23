@@ -46,6 +46,8 @@ module Kafo
       @groups            = {}
       @params_path       = get_params_path
       @params_class_name = get_params_class_name
+      @raw_data          = nil
+      @enabled           = nil
     end
 
     def enabled?
