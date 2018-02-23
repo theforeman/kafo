@@ -50,24 +50,19 @@ BASIC_MANIFEST = <<EOS
 #                    documentation
 #                    consisting of 3 lines
 # $typed::           something having it's type explicitly set
-#                    type:boolean
 # $multivalue::      list of users
-#                    type:array
 # === Advanced parameters
 #
 # $debug::           we have advanced parameter, yay!
-#                    type:boolean
 # $db_type::         can be mysql or sqlite
 #
 # ==== MySQL         condition: $db_type == 'mysql'
 #
 # $remote::          socket or remote connection
-#                    type: boolean
 # $server::          hostname
 #                    condition: $remote
 # $username::        username
 # $pool_size::       DB pool size
-#                    type:integer
 #
 # ==== Sqlite        condition: $db_type == 'sqlite'
 #
@@ -83,23 +78,16 @@ class testing(
   $undocumented = 'does not have documentation',
   $undef = undef,
   $multiline = undef,
-  $typed = true,
-  $multivalue = ['x', 'y'],
-  $debug = true,
-  $db_type = 'mysql',
-  $remote = true,
+  Boolean $typed = true,
+  Array $multivalue = ['x', 'y'],
+  Boolean $debug = true,
+  Enum['mysql', 'sqlite'] $db_type = 'mysql',
+  Boolean $remote = true,
   $server = 'mysql.example.com',
   $username = 'root',
-  $pool_size = 10,
+  Integer[1, 100] $pool_size = 10,
   $file = undef,
   $m_i_a = 'test') {
-
-  validate_string($undocumented)
-  validate_integer($pool_size, 100, 1)
-  if $version == '1.0' {
-    # this must be ignored since we can't evaluate conditions
-    validate_bool($undef)
-  }
 
   package {"testing":
     ensure => present

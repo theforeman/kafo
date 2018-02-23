@@ -1,7 +1,6 @@
 # encoding: UTF-8
 require 'kafo/condition'
 require 'kafo/data_type'
-require 'kafo/validator'
 
 module Kafo
   class Param
@@ -104,22 +103,7 @@ module Kafo
     end
 
     def valid?
-      # we get validations that can also run on other arguments, we need to take only current param
-      # also we want to clone validations so we don't interfere
-      validations = self.module.validations(self).map do |v|
-        # These functions do not take more variables as arguments, instead we need to pass all arguments
-        if v.name == 'validate_re' || v.name == 'validate_integer'
-          args = v.arguments.to_a
-        else
-          args = v.arguments.select { |a| a.to_s == "$#{self.name}" }
-        end
-        {:name => v.name, :arguments => interpret_validation_args(args)}
-      end
-
-      # run old style validation functions
-      @validator = Validator.new
-      validations.each { |v| @validator.send(v[:name], v[:arguments]) }
-      @validation_errors = @validator.errors.dup
+      @validation_errors = []
 
       # run data type based validations, append errors
       @type.valid?(value, @validation_errors)

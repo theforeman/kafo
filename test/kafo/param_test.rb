@@ -105,142 +105,32 @@ module Kafo
 
     describe "#valid?" do
       let(:mod) do
-        mod = MiniTest::Mock.new
-        mod.expect(:validations, validations.dup) { |args| args == [param] }
-        mod
+        MiniTest::Mock.new
       end
 
-      describe "with no validations" do
-        let(:validations) { [] }
+      describe "with correct data type" do
         specify { param.valid?.must_equal true }
       end
 
-      describe "with no validation functions, but data type validation" do
-        let(:validations) { [] }
+      describe "with invalid data type" do
         before { param.value = 1 }
         specify { param.valid?.must_equal false }
         specify { param.tap { |p| p.valid? }.validation_errors.must_equal ['1 is not a valid string'] }
       end
 
-      describe "with a passing validation" do
-        before { param.value = 'foo' }
-        let(:validations) do
-          [create_validation('validate_string', ['$test'])]
-        end
-        specify { param.valid?.must_equal true }
-      end
-
-      describe "with a failing validation" do
-        before { param.value = 'foo' }
-        let(:validations) do
-          [create_validation('validate_integer', ['$test']),
-           create_validation('validate_string', ['$test'])]
-        end
-        specify { param.valid?.must_equal false }
-        specify { param.tap { |p| p.valid?}.validation_errors.must_equal ['"foo" is not a valid integer'] }
-      end
-
-      describe "with validation on multiple parameters" do
-        before { param.value = 'foo' }
-        let(:validations) do
-          [create_validation('validate_string', ['$extra', '$test'])]
-        end
-        specify do
-          v = MiniTest::Mock.new
-          v.expect(:send, true, ['validate_string', ['foo']])
-          v.expect(:errors, [])
-          Validator.stub(:new, v) do
-            param.valid?.must_equal true
-          end
-        end
-      end
-
-      describe "with validate_integer" do
-        before { param.value = '2' }
-        let(:validations) do
-          [create_validation('validate_integer', ['$test', '3', '1'])]
-        end
-        specify { param.valid?.must_equal true }
-      end
-
-      describe "with validate_integer and undef arguments" do
-        before { param.value = '2' }
-        let(:validations) do
-          [create_validation('validate_integer', ['$test', :undef, '1'])]
-        end
-        specify { param.valid?.must_equal true }
-      end
-
-      describe "with validate_re" do
-        before { param.value = 'foo' }
-        let(:validations) do
-          [create_validation('validate_re', ['$test', '^foo$'])]
-        end
-        specify { param.valid?.must_equal true }
-      end
-
-      describe "with Puppet parser" do
-        before { param.value = '5' }
-        let(:validations) do
-          TestParser.new(BASIC_MANIFEST).parse(nil)[:validations].select do |v|
-            v.arguments.map(&:to_s).include?('$pool_size')
-          end
-        end
-        let(:param) { Param.new(mod, 'pool_size', 'String') }
-        specify { param.valid?.must_equal true }
-      end
-
-      describe "validate_re with Puppet parser, array argument and message" do
-        let(:manifest) do
-          BASIC_MANIFEST.
-            sub(/(validate)/, %{validate_re($db_type, ["^mysql$", "^sqlite$"], "invalid $db_type DB type")\n\\1}).
-            sub('class testing', 'class testing_re')
-        end
-        let(:validations) do
-          TestParser.new(manifest).parse(nil)[:validations].select do |v|
-            v.arguments.map(&:to_s).include?('$db_type')
-          end
-        end
-        let(:param) { Param.new(mod, 'db_type', 'String') }
-        specify { param.value = 'sqlite'; param.valid?.must_equal true }
-
-        next if Gem::Specification.find_all_by_name('puppet').sort_by(&:version).last.version >= Gem::Version.new('4.0.0')
-
-        specify do
-          param.value = 'wrong'
-          logger = MiniTest::Mock.new
-          logger.expect(:error, true, ['Validation error: invalid wrong DB type'])
-          KafoConfigure.stub(:logger, logger) { param.valid?.must_equal false }
-        end
-      end
-
       describe "with manifest default value needing typecasting" do
         let(:param) { Param.new(mod, 'test', 'Integer') }
-        let(:validations) { [] }
         before { param.manifest_default = '2' }
         specify { param.valid?.must_equal true }
-        specify { param.value.must_equal 2 }
       end
 
       describe "with dumped default value needing typecasting" do
         let(:param) { Param.new(mod, 'test', 'Integer') }
-        let(:validations) { [] }
         before do
           param.manifest_default = '$mod::params::test'
           param.default = '2'
         end
         specify { param.valid?.must_equal true }
-        specify { param.value.must_equal 2 }
-      end
-
-      private
-
-      def create_validation(function, function_args)
-        validation = MiniTest::Mock.new
-        validation.expect(:clone, validation)
-        3.times { validation.expect(:name, function) }
-        2.times { validation.expect(:arguments, function_args) }
-        validation
       end
     end
 

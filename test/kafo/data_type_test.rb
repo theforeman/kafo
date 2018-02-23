@@ -106,31 +106,6 @@ module Kafo
         DataType.new_from_string('Default').must_be_instance_of DataTypes::Enum
       end
 
-      it 'aliases "string" to Optional[String]' do
-        DataType.new_from_string('string').must_be_instance_of DataTypes::Optional
-        DataType.new_from_string('string').inner_type.must_be_instance_of DataTypes::String
-      end
-
-      it 'aliases "boolean" to Optional[Boolean]' do
-        DataType.new_from_string('boolean').must_be_instance_of DataTypes::Optional
-        DataType.new_from_string('boolean').inner_type.must_be_instance_of DataTypes::Boolean
-      end
-
-      it 'aliases "integer" to Optional[Integer]' do
-        DataType.new_from_string('integer').must_be_instance_of DataTypes::Optional
-        DataType.new_from_string('integer').inner_type.must_be_instance_of DataTypes::Integer
-      end
-
-      it 'aliases "array" to Optional[Array]' do
-        DataType.new_from_string('array').must_be_instance_of DataTypes::Optional
-        DataType.new_from_string('array').inner_type.must_be_instance_of DataTypes::Array
-      end
-
-      it 'aliases "hash" to Optional[Hash]' do
-        DataType.new_from_string('hash').must_be_instance_of DataTypes::Optional
-        DataType.new_from_string('hash').inner_type.must_be_instance_of DataTypes::Hash
-      end
-
       it { Proc.new { DataType.new_from_string('') }.must_raise ConfigurationException }
       it { Proc.new { DataType.new_from_string('Unknown') }.must_raise ConfigurationException }
     end

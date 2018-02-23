@@ -460,21 +460,6 @@ class example (
 ) {
 ```
 
-When using Puppet 3, data types can be specified in the manifest documentation
-rather than the parameter list, like this:
-
-```puppet
-# $param::        Some documentation for param
-                  type:Array[String]
-```
-
-For compatibility with older Kafo releases, additional types are supported:
-string, boolean, integer, array, hash. These are equivalent to their Puppet 4
-namesakes, plus wrapped in `Optional[..]` to permit `undef`.
-
-If the data type is given in both the manifest documentation and the parameter
-list, then the manifest documentation will be preferred.
-
 Note that all arguments that are nil (have no value in answers.yaml or you
 set them UNDEF (see below)) are translated to ```undef``` in puppet.
 
@@ -639,7 +624,6 @@ $db_type is not set 'mysql'. Let's look at following example
 # == Parameters:
 #
 # $use_db::                  use database?
-#                            type:boolean
 #
 # == Database parameters:    condition: $use_db
 #
@@ -648,7 +632,6 @@ $db_type is not set 'mysql'. Let's look at following example
 # === MySQL:                 condition: $database_type == 'mysql'
 #
 # $remote::                  use remote connection
-#                            type:boolean
 # $host                      server to connect to
 #                            condition: $remote
 # $socket                    server to connect to
