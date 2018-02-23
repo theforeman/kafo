@@ -41,21 +41,21 @@ module Kafo
 
         it "logs error twice" do
           errors = log_device.error.read.tr("\n", '')
-          errors.must_match /.*error.*error.*/
+          errors.must_match(/.*error.*error.*/)
 
           fatals = log_device.fatal.read.tr("\n", '')
-          fatals.must_match /.*fatal.*fatal.*/
+          fatals.must_match(/.*fatal.*fatal.*/)
         end
 
         it "logs normal messages just once" do
           debug = log_device.debug.read
-          debug.wont_match /.*debug.*debug.*/
+          debug.wont_match(/.*debug.*debug.*/)
 
           info = log_device.info.read
-          info.wont_match /.*info.*info.*/
+          info.wont_match(/.*info.*info.*/)
 
           warn = log_device.warn.read
-          warn.wont_match /.*warn.*warn.*/
+          warn.wont_match(/.*warn.*warn.*/)
         end
       end
     end

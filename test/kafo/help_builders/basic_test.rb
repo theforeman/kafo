@@ -66,7 +66,7 @@ module Kafo
         specify { output.wont_include 'reset puppet-port' }
         specify { output.wont_include 'Basic' }
         specify { output.wont_include 'Advanced' }
-        specify { output.must_match /Generic.*Module apache.*Module puppet/m}
+        specify { output.must_match(/Generic.*Module apache.*Module puppet/m) }
       end
 
       describe "#string" do

@@ -16,7 +16,7 @@ module Kafo
 
       it 'executes all the migrations' do
         dummy_logger.rewind
-        dummy_logger.error.read.must_match /.*s1.*s2.*/m
+        dummy_logger.error.read.must_match(/.*s1.*s2.*/m)
       end
 
       it 'knows the applied migrations' do

@@ -87,7 +87,7 @@ module Kafo
 
         let(:mod) { PuppetModule.new 'puppet', TestParser.new(NO_DOC_MANIFEST) }
         let(:docs) { parsed.params.map(&:doc) }
-        specify { docs.each { |doc| doc.must_be_nil } }
+        specify { docs.each { |doc| assert_nil doc } }
       end
 
       describe "with not ignoring docs inconsitency" do
@@ -229,7 +229,7 @@ module Kafo
       specify { keys.wont_include 'documented' }
 
       specify { params_hash['version'].must_equal '1.0' }
-      specify { params_hash['undef'].must_equal nil }
+      specify { assert_nil params_hash['undef'] }
       # does not work with puppet 4 which support native types
       next if Gem::Specification.find_all_by_name('puppet').sort_by(&:version).last.version >= Gem::Version.new('4.0.0')
       specify { params_hash['typed'].must_equal true }

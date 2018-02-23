@@ -125,7 +125,7 @@ module Kafo
       end
 
       after do
-        FileUtils.rm_rf( @tmp_dir ) if File.exists?( @tmp_dir )
+        FileUtils.rm_rf( @tmp_dir ) if File.exist?( @tmp_dir )
       end
 
       it "runs the migrations" do
@@ -149,7 +149,7 @@ module Kafo
     end
 
     describe '#migrations_dir' do
-      specify { basic_config.migrations_dir.must_match /\/tmp\/testing_config.*\.migrations$/ }
+      specify { basic_config.migrations_dir.must_match(%r{/tmp/testing_config.*\.migrations$}) }
     end
 
     describe '#module' do

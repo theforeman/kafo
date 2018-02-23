@@ -32,7 +32,7 @@ module Kafo
         specify { dummy_logger.error.read.must_include 's1' }
         specify { dummy_logger.error.read.must_include 'r1' }
         specify { dummy_logger.error.read.must_include 'r2' }
-        specify { dummy_logger.error.read.must_match /.*s1.*s2.*r1.*r2.*/m }
+        specify { dummy_logger.error.read.must_match(/.*s1.*s2.*r1.*r2.*/m) }
       end
 
       describe "#execute(:post)" do

@@ -19,4 +19,8 @@ class DummyLogger
   def dump_errors
     true
   end
+
+  def name
+    'DummyLogger'
+  end
 end

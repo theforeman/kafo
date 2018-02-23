@@ -4,7 +4,7 @@ module Kafo
   describe 'kafo-export-params' do
     describe '--help' do
       it 'outputs usage' do
-        code, out, err = run_command('bin/kafo-export-params --help', :dir => Dir.pwd)
+        code, out, _ = run_command('bin/kafo-export-params --help', :dir => Dir.pwd)
         code.must_equal 0
         out.must_include 'Usage:'
         out.must_include 'kafo-export-params [OPTIONS]'
@@ -16,10 +16,10 @@ module Kafo
         generate_installer
         add_manifest
 
-        code, out, err = run_command "kafo-export-params -f md -c #{KAFO_CONFIG}"
+        code, out, _ = run_command "kafo-export-params -f md -c #{KAFO_CONFIG}"
         code.must_equal 0
-        out.must_match /\| Parameter name\s*\| Description\s*\|/
-        out.must_match /\| --testing-db-type\s*\| can be mysql or sqlite\s*\|/
+        out.must_match(/\| Parameter name\s*\| Description\s*\|/)
+        out.must_match(/\| --testing-db-type\s*\| can be mysql or sqlite\s*\|/)
       end
     end
 
@@ -34,8 +34,8 @@ module Kafo
       describe 'md' do
         let(:format) { 'md' }
         it 'must output markdown' do
-          command[1].must_match /\| Parameter name\s*\| Description\s*\|/
-          command[1].must_match /\| --testing-db-type\s*\| can be mysql or sqlite\s*\|/
+          command[1].must_match(/\| Parameter name\s*\| Description\s*\|/)
+          command[1].must_match(/\| --testing-db-type\s*\| can be mysql or sqlite\s*\|/)
         end
       end
 
@@ -89,22 +89,22 @@ module Kafo
       end
 
       it 'forces cache with --parser-cache' do
-        code, out, err = run_command("kafo-export-params -f parsercache -c #{KAFO_CONFIG} -o #{INSTALLER_HOME}/parser_cache.json")
+        code, _, err = run_command("kafo-export-params -f parsercache -c #{KAFO_CONFIG} -o #{INSTALLER_HOME}/parser_cache.json")
         code.must_equal 0
         File.size?("#{INSTALLER_HOME}/parser_cache.json").wont_be_nil
         FileUtils.touch(File.join(MANIFEST_PATH, 'init.pp'), :mtime => Time.now + 3600)
 
-        code, out, err = run_command("kafo-export-params --parser-cache -f asciidoc -c #{KAFO_CONFIG}")
+        code, _, err = run_command("kafo-export-params --parser-cache -f asciidoc -c #{KAFO_CONFIG}")
         code.must_equal 0
         err.must_include "Parser cache for #{MANIFEST_PATH}/init.pp is outdated, forced to use it anyway"
       end
 
       it 'forces off cache with --no-parser-cache' do
-        code, out, err = run_command("kafo-export-params -f parsercache -c #{KAFO_CONFIG} -o #{INSTALLER_HOME}/parser_cache.json")
+        code, _, err = run_command("kafo-export-params -f parsercache -c #{KAFO_CONFIG} -o #{INSTALLER_HOME}/parser_cache.json")
         code.must_equal 0
         File.size?("#{INSTALLER_HOME}/parser_cache.json").wont_be_nil
 
-        code, out, err = run_command("kafo-export-params --no-parser-cache -f asciidoc -c #{KAFO_CONFIG}")
+        code, _, err = run_command("kafo-export-params --no-parser-cache -f asciidoc -c #{KAFO_CONFIG}")
         code.must_equal 0
         err.must_include "Skipping parser cache for #{MANIFEST_PATH}/init.pp, forced off"
       end

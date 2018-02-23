@@ -9,7 +9,7 @@ module Kafo
     def initialize(config, last_scenario_link_name='last_scenario.yaml')
       @config_dir = File.file?(config) ? File.dirname(config) : config
       @last_scenario_link = File.join(config_dir, last_scenario_link_name)
-      @previous_scenario = Pathname.new(last_scenario_link).realpath.to_s if File.exists?(last_scenario_link)
+      @previous_scenario = File.exist?(last_scenario_link) ? Pathname.new(last_scenario_link).realpath.to_s : nil
     end
 
     def available_scenarios
@@ -78,10 +78,10 @@ module Kafo
 
     def scenario_from_args(arg_name='--scenario|-S')
       # try scenario provided in the args via -S or --scenario
-      parsed = ARGV.join(" ").match /(#{arg_name})(\s+|[=]?)(\S+)/
+      parsed = ARGV.join(" ").match(/(#{arg_name})(\s+|[=]?)(\S+)/)
       if parsed
         scenario_file = File.join(config_dir, "#{parsed[3]}.yaml")
-        return scenario_file if File.exists?(scenario_file)
+        return scenario_file if File.exist?(scenario_file)
         fail_now("Scenario (#{scenario_file}) was not found, can not continue", :unset_scenario)
       end
     end
@@ -197,9 +197,9 @@ module Kafo
 
     def link_last_scenario(config_file)
       link_path = last_scenario_link
-      if last_scenario_link
-        File.delete(last_scenario_link) if File.symlink?(last_scenario_link)
-        File.symlink(File.basename(config_file), last_scenario_link)
+      if link_path
+        File.delete(link_path) if File.symlink?(link_path)
+        File.symlink(File.basename(config_file), link_path)
       end
     end
 

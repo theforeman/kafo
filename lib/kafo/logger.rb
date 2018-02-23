@@ -47,7 +47,7 @@ module Kafo
     def self.setup
       begin
         FileUtils.mkdir_p(KafoConfigure.config.app[:log_dir], :mode => 0750)
-      rescue Errno::EACCES => e
+      rescue Errno::EACCES
         puts "No permissions to create log dir #{KafoConfigure.config.app[:log_dir]}"
       end
 
@@ -61,7 +61,7 @@ module Kafo
         )
         # set owner and group (it's ignored if attribute is nil)
         FileUtils.chown KafoConfigure.config.app[:log_owner], KafoConfigure.config.app[:log_group], filename
-      rescue ArgumentError => e
+      rescue ArgumentError
         puts "File #{filename} not writeable, won't log anything to file!"
       end
 

@@ -33,7 +33,7 @@ module Kafo
       end
 
       it 'returns nil for non-existing key' do
-        store.get('key1').must_equal nil
+        assert_nil store.get('key1')
       end
     end
   end

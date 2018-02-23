@@ -14,6 +14,10 @@ module Kafo
       @name   = name
       @module = builder
       @type   = DataType.new_from_string(type)
+      @default = nil
+      @value_set = false
+      @groups = nil
+      @validation_errors = []
     end
 
     def identifier
@@ -112,7 +116,7 @@ module Kafo
     end
 
     def validation_errors
-      @validation_errors || []
+      @validation_errors
     end
 
     def multivalued?

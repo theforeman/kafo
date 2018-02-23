@@ -10,6 +10,7 @@ module Kafo
       @options.push("--config=#{puppet_config.config_path}") if puppet_config
       @logger  = KafoConfigure.logger
       @puppet_version_check = !configuration.app[:skip_puppet_version_check]
+      @suffix = nil
     end
 
     def command

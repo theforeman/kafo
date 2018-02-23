@@ -41,7 +41,7 @@ module Kafo
       @answer_file = app[:answer_file]
       begin
         @data = load_yaml_file(@answer_file)
-      rescue Errno::ENOENT => e
+      rescue Errno::ENOENT
         puts "No answer file at #{@answer_file} found, can not continue"
         KafoConfigure.exit(:no_answer_file)
       end
@@ -71,7 +71,7 @@ module Kafo
       @app ||= begin
         begin
           configuration = load_yaml_file(@config_file)
-        rescue => e
+        rescue
           configuration = {}
         end
 
@@ -199,7 +199,7 @@ EOS
 
     def config_header
       files          = [app[:config_header_file], File.join(gem_root, '/config/config_header.txt')].compact
-      file           = files.select { |f| File.exists?(f) }.first
+      file           = files.find { |f| File.exist?(f) }
       @config_header ||= file.nil? ? '' : File.read(file)
     end
 
@@ -207,7 +207,7 @@ EOS
       filename = file || answer_file
       FileUtils.touch filename
       File.chmod 0600, filename
-      File.open(filename, 'w') { |file| file.write(config_header + format(YAML.dump(data))) }
+      File.open(filename, 'w') { |f| f.write(config_header + format(YAML.dump(data))) }
     end
 
     def params
