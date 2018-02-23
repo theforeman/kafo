@@ -3,7 +3,6 @@ require 'kafo/param'
 require 'kafo/param_builder'
 require 'kafo/parser_cache_reader'
 require 'kafo_parsers/parsers'
-require 'kafo/validator'
 
 module Kafo
   class PuppetModule
@@ -43,7 +42,6 @@ module Kafo
       @manifest_path     = File.join(module_dir, module_manifest_path)
       @parser            = parser
       @parser_cache      = @configuration.parser_cache
-      @validations       = []
       @logger            = KafoConfigure.logger
       @groups            = {}
       @params_path       = get_params_path
@@ -73,7 +71,6 @@ module Kafo
       end
 
       builder      = builder_klass.new(self, @raw_data)
-      @validations = @raw_data[:validations]
 
       builder.validate
       @params = builder.build_params
@@ -91,16 +88,6 @@ module Kafo
 
     def other_parameter_groups
       @groups.select { |g| g.formatted_name != PRIMARY_GROUP_NAME }
-    end
-
-    def validations(param = nil)
-      if param.nil?
-        @validations
-      else
-        @validations.select do |validation|
-          validation.arguments.map(&:to_s).include?("$#{param.name}")
-        end
-      end
     end
 
     def params_hash
