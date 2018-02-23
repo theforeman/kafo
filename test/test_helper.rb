@@ -34,8 +34,6 @@ BASIC_CONFIGURATION = <<EOS
     :manifest_name: plugin/custom_chef
     :params_path: custom/plugin/chef/params.pp
     :params_name: params
-
-:password: secret
 EOS
 
 BASIC_MANIFEST = <<EOS
@@ -68,8 +66,6 @@ BASIC_MANIFEST = <<EOS
 # $server::          hostname
 #                    condition: $remote
 # $username::        username
-# $password::        type:password
-#                    condition:$username != 'root'
 # $pool_size::       DB pool size
 #                    type:integer
 #
@@ -94,7 +90,6 @@ class testing(
   $remote = true,
   $server = 'mysql.example.com',
   $username = 'root',
-  $password = 'toor',
   $pool_size = 10,
   $file = undef,
   $m_i_a = 'test') {

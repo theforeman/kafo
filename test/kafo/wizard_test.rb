@@ -309,7 +309,6 @@ module Kafo
           end
           must_be_on_stdout(output, 'configure executed')
           must_be_on_stdout(output, 'debug', 'db_type', 'remote', 'server', 'username')
-          wont_be_on_stdout(output, 'password', 'file') # because of condition
           must_be_on_stdout(output, 'Configure testing')
         end
       end
@@ -352,7 +351,6 @@ module Kafo
           end
           must_be_on_stdout(output, 'reset executed')
           must_be_on_stdout(output, 'debug', 'db_type', 'remote', 'server', 'username')
-          wont_be_on_stdout(output, 'password', 'file') # because of condition
           must_be_on_stdout(output, 'Resetting parameters of module puppet')
         end
       end

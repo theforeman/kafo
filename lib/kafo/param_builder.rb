@@ -52,14 +52,7 @@ module Kafo
     end
 
     def build(name, data)
-      data_type = data[:types][name] || 'Data'
-      if data_type == 'password'
-        type = Params::Password
-        data_type = 'String'
-      else
-        type = Param
-      end
-      param                  = type.new(@module, name, data_type)
+      param                  = Param.new(@module, name, data[:types][name] || 'Data')
       param.manifest_default = data[:values][name]
       param.doc              = data[:docs][name]
       param.groups           = data[:groups][name]

@@ -469,8 +469,8 @@ rather than the parameter list, like this:
 ```
 
 For compatibility with older Kafo releases, additional types are supported:
-string, boolean, integer, array, password, hash. These are equivalent to their
-Puppet 4 namesakes, plus wrapped in `Optional[..]` to permit `undef`.
+string, boolean, integer, array, hash. These are equivalent to their Puppet 4
+namesakes, plus wrapped in `Optional[..]` to permit `undef`.
 
 If the data type is given in both the manifest documentation and the parameter
 list, then the manifest documentation will be preferred.
@@ -483,48 +483,6 @@ of DataType which implement validation and typecasting. This can be added to a
 `boot` hook by calling:
 
     Kafo::DataType.register_type('YourType', Kafo::DataType::YourType)
-
-## Password arguments
-
-Kafo supports password arguments. It's adding some level of protection for your
-passwords. Usually people generate random strings for passwords. However all
-values are stored in config/answers.yaml which may introduce a security risk.
-
-If this is something to consider for you, you can use the password type (see
-Argument types for more info how to define parameter type). It will
-generate a secure (random) password with a length of 32 chars and encrypts
-it using AES 256 in CBC mode. It uses a passphrase that is stored in
-config/kafo.yaml so if anyone gets an access to this file, he can read all
-the passwords from the answers.yaml, too. A random password is generated and stored
-if there is none in kafo.yaml yet.
-
-When Kafo runs puppet, puppet will read this password from config/kafo.yaml.
-It runs under the same user so it should have read access by default. The Kafo
-puppet module also provides a function that you can use to decrypt such
-parameters. You can use it like this
-
-```erb
-password: <%= scope.function_decrypt([scope.lookupvar("::foreman::db_password"))]) -%>
-```
-
-Also you can take advantage of already encrypted passwords and store since it is
-(encrypted). Your application can decrypt it as long as it knows the
-passphrase. The passphrase can be obtained from $kafo_configure::password.
-
-Note that we use a bit extraordinary form of encrypted passwords. All our
-encrypted passwords look like "$1$base64encodeddata". As you can see we
-use the $1$ as prefix by which we can detect that it is our specially encrypted password.
-The form has nothing common with Modular Crypt Format. Also our AES output
-is base64 encoded. To get a password from this format you can do something
-like this in your application
-
-```ruby
-require 'base64'
-encrypted = "$1$base64encodeddata"
-encrypted = encrypted[3..-1]           # strip $1$ prefix
-encrypted = Base64.decode64(encrypted) # decode base64 string
-result    = aes_decrypt(encrypted)     # for example how to implement aes_decrypt see lib/kafo/password_manager.rb
-```
 
 ## Array arguments
 

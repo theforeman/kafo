@@ -2,7 +2,6 @@
 require 'yaml'
 require 'tmpdir'
 require 'kafo/puppet_module'
-require 'kafo/password_manager'
 require 'kafo/color_scheme'
 require 'kafo/data_type_parser'
 require 'kafo/puppet_configurer'
@@ -77,7 +76,6 @@ module Kafo
         end
 
         result            = DEFAULT.merge(configuration || {})
-        result[:password] ||= PasswordManager.new.password
         result[:module_dirs] = result[:modules_dir] || result[:module_dirs]
         result.delete(:modules_dir)
         result
@@ -139,7 +137,7 @@ module Kafo
     def migrate_configuration(from_config, options={})
       keys_to_skip = options.fetch(:skip, [])
       keys = [:log_dir, :log_name, :log_level, :no_prefix,
-        :colors, :color_of_background, :custom, :password, :verbose_log_level]
+        :colors, :color_of_background, :custom, :verbose_log_level]
       keys += options.fetch(:with, [])
       keys.each do |key|
         next if keys_to_skip.include?(key)

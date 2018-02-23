@@ -10,6 +10,5 @@ class kafo_configure {
     add_progress()
   }
 
-  $password = load_kafo_password()
   hiera_include('classes')
 }
