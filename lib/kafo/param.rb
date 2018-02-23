@@ -189,5 +189,3 @@ module Kafo
     end
   end
 end
-
-require 'kafo/params/password'

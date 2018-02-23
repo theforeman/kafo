@@ -9,6 +9,5 @@ module Kafo
   DataType.register_type('boolean', 'Optional[Boolean]')
   DataType.register_type('hash', 'Optional[Hash]')
   DataType.register_type('integer', 'Optional[Integer]')
-  DataType.register_type('password', 'Optional[String]')
   DataType.register_type('string', 'Optional[String]')
 end
