@@ -131,7 +131,7 @@ module Kafo
       end
 
       unless skip_checks_i_know_better?
-        unless SystemChecker.check
+        unless SystemChecker.check(skip_check_list)
           puts "Your system does not meet configuration criteria"
           self.class.exit(:invalid_system)
         end
@@ -308,6 +308,7 @@ module Kafo
       self.class.app_option ['-p', '--profile'], :flag, 'Run puppet in profile mode?',
                             :default => false
       self.class.app_option ['-s', '--skip-checks-i-know-better'], :flag, 'Skip all system checks', :default => false
+      self.class.app_option ['--skip-check'], 'CHECK', 'Skip system check', :multivalued => true
       self.class.app_option ['--skip-puppet-version-check'], :flag, 'Skip check for compatible Puppet versions', :default => false
       self.class.app_option ['-v', '--verbose'], :flag, 'Display log on STDOUT instead of progressbar'
       self.class.app_option ['-l', '--verbose-log-level'], 'LEVEL', 'Log level for verbose mode output',

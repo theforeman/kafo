@@ -7,7 +7,7 @@ module Kafo
     it "returns loads checks in order" do
       KafoConfigure.stub(:check_dirs, [PATH]) do
         expected = ["./test/fixtures/checks/pass/pass.sh", "./test/fixtures/checks/pass/this_also_passes.sh"]
-        assert_equal expected, SystemChecker.new(File.join(PATH, '*')).checkers
+        assert_equal expected, SystemChecker.new(File.join(PATH, '*'), []).checkers
       end
     end
 
@@ -25,6 +25,17 @@ module Kafo
 
       KafoConfigure.stub(:check_dirs, dirs) do
         refute SystemChecker.check
+      end
+    end
+
+    it "skips any skipped checks" do
+      dirs = [
+        './test/fixtures/checks/fail',
+        './test/fixtures/checks/pass'
+      ]
+
+      KafoConfigure.stub(:check_dirs, dirs) do
+        assert SystemChecker.check(['fail.sh'])
       end
     end
 

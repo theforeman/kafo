@@ -3,15 +3,17 @@
 module Kafo
   class SystemChecker
     attr_reader :checkers
+    attr_reader :skipped
 
-    def self.check
+    def self.check(skipped=[])
       KafoConfigure.check_dirs.all? do |dir|
-        new(File.join(dir, '*')).check
+        new(File.join(dir, '*'), skipped).check
       end
     end
 
-    def initialize(path)
+    def initialize(path, skipped)
       @checkers = Dir.glob(path).sort
+      @skipped = skipped
     end
 
     def logger
@@ -20,10 +22,15 @@ module Kafo
 
     def check
       @checkers.map! do |checker|
-        logger.debug "Executing checker: #{checker}"
-        stdout = `#{checker}`
-        logger.error stdout unless stdout.empty?
-        $?.exitstatus == 0
+        if @skipped.include?(File.basename(checker))
+          logger.debug "Skipping checker: #{checker}"
+          true
+        else
+          logger.debug "Executing checker: #{checker}"
+          stdout = `#{checker}`
+          logger.error stdout unless stdout.empty?
+          $?.exitstatus == 0
+        end
       end
 
       @checkers.all?
