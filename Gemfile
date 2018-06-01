@@ -12,10 +12,10 @@ elsif RUBY_VERSION < '2.2'
   gem 'rdoc', '< 6.0.0'
 end
 
-puppet_version = ENV['PUPPET_VERSION']
-puppet_spec = puppet_version ? "~> #{puppet_version}" : '< 6.0.0'
-gem 'puppet', puppet_spec
-
-if puppet_version.nil? || puppet_version >= '4.0'
-  gem 'puppet-strings'
+if ENV['PUPPET_VERSION']
+  gem 'puppet', "~> #{ENV['PUPPET_VERSION']}"
+else
+  gem 'puppet', '>= 4.5.0', '< 6.0.0'
 end
+
+gem 'puppet-strings', RUBY_VERSION >= '2.1' ? '>= 1.2.1' : '~> 1.2.1'
