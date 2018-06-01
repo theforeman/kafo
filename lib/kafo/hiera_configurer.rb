@@ -5,11 +5,12 @@ module Kafo
   class HieraConfigurer
     attr_reader :temp_dir, :config_path, :data_dir, :logger
 
-    def initialize(user_config_path, modules, modules_order)
+    def initialize(user_config_path, modules, modules_order, module_dirs, puppet_version_check)
       @user_config_path = user_config_path
       @modules = modules
       @modules_order = modules_order
       @logger = KafoConfigure.logger
+      @module_dirs = puppet_version_check ? module_dirs : []
     end
 
     def write_configs
@@ -69,7 +70,28 @@ module Kafo
         config.update(Hash[mod.params_hash.map { |k, v| ["#{mod.class_name}::#{k}", v] }])
       end
       data['classes'] = @modules_order ? sort_modules(classes, @modules_order) : classes
+
+      data['kafo_configure::add_progress'] = add_progress
+      data['kafo_configure::module_requirements'] = module_requirements
+
       data
+    end
+
+    def module_requirements
+      checks = {}
+
+      @module_dirs.each do |modulepath|
+        Dir[File.join(modulepath, '*', 'metadata.json')].sort.each do |metadata_json|
+          metadata = JSON.load(File.read(metadata_json))
+          next unless metadata['requirements'] && metadata['requirements'].is_a?(Array)
+
+          metadata['requirements'].select { |req| req['name'] == 'puppet' && req['version_requirement'] }.each do |req|
+            checks[metadata['name']] = req['version_requirement']
+          end
+        end
+      end
+
+      checks
     end
 
     def sort_modules(modules, order)
@@ -78,6 +100,10 @@ module Kafo
 
     def format_yaml_symbols(data)
       data.gsub('!ruby/sym ', ':')
+    end
+
+    def add_progress
+      !KafoConfigure.verbose
     end
   end
 end

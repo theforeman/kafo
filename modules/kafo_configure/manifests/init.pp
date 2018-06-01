@@ -4,9 +4,18 @@
 #   $modulepath/config/answers.yaml
 #   /etc/kafo-configure/answers.yaml
 #
-class kafo_configure {
+class kafo_configure(
+  Boolean $add_progress = false,
+  Hash[String, String] $module_requirements = {},
+) {
 
-  if $kafo_add_progress == 'true' {
+  $module_requirements.each |$module, $requirement| {
+    unless SemVer($facts['puppetversion']) =~ SemVerRange($requirement) {
+      fail("kafo_configure::puppet_version_failure: Puppet ${facts['puppetversion']} does not meet requirements for ${module} (${requirement})")
+    }
+  }
+
+  if $add_progress {
     add_progress()
   }
 
