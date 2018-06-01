@@ -193,25 +193,6 @@ module Kafo
       end
     end
 
-    describe "#validations" do
-      next if Gem::Specification.find_all_by_name('puppet').sort_by(&:version).last.version >= Gem::Version.new('4.0.0')
-
-      let(:all_validations) { parsed.validations }
-      specify { all_validations.size.must_be :>, 0 }
-
-      let(:undocumented_param) { Param.new(nil, 'undocumented', 'String') }
-      let(:undocumented_validations) { parsed.validations(undocumented_param) }
-      specify { undocumented_validations.wont_be_empty }
-      let(:string_validation_of_undocumented) { undocumented_validations.first }
-      specify { string_validation_of_undocumented.name.must_equal 'validate_string' }
-      specify { all_validations.must_include string_validation_of_undocumented }
-
-      # we don't support validations in nested block (conditions)
-      let(:undef_param) { Param.new(nil, 'undef', 'Optional[String]') }
-      let(:undef_validations) { parsed.validations(undef_param) }
-      specify { undef_validations.must_be_empty }
-    end
-
     describe "#params_hash" do
       before { @@parsed_cache_params_hash ||= parsed }
       let(:params_hash) { @@parsed_cache_params_hash.params_hash }
@@ -230,9 +211,6 @@ module Kafo
 
       specify { params_hash['version'].must_equal '1.0' }
       specify { assert_nil params_hash['undef'] }
-      # does not work with puppet 4 which support native types
-      next if Gem::Specification.find_all_by_name('puppet').sort_by(&:version).last.version >= Gem::Version.new('4.0.0')
-      specify { params_hash['typed'].must_equal true }
     end
 
     describe "#<=>" do

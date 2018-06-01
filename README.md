@@ -445,8 +445,8 @@ the particular parameter belongs.
 
 ## Argument types
 
-When using Puppet 4 or newer, the data type will be read from the parameter
-list and defaults to Puppet's [Any](https://docs.puppet.com/puppet/latest/reference/lang_data_abstract.html#any)
+The data type will be read from the parameter list and defaults to Puppet's
+[Any](https://docs.puppet.com/puppet/latest/reference/lang_data_abstract.html#any)
 data type, which Kafo handles as a basic string with no validation.
 
 If more specific data types, such as `Optional[Array[2]]` or similar are
