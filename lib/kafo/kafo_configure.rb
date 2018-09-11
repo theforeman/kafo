@@ -429,12 +429,13 @@ module Kafo
       self.class.exit_handler.register_cleanup_path(hiera.temp_dir)
 
       puppetconf = PuppetConfigurer.new(
-        'color'        => false,
-        'evaltrace'    => !!@progress_bar,
-        'hiera_config' => hiera.config_path,
-        'noop'         => !!noop?,
-        'profile'      => !!profile?,
-        'show_diff'    => true
+        'color'           => false,
+        'evaltrace'       => !!@progress_bar,
+        'hiera_config'    => hiera.config_path,
+        'noop'            => !!noop?,
+        'profile'         => !!profile?,
+        'show_diff'       => true,
+        'environmentpath' => hiera.temp_dir,
       )
       self.class.exit_handler.register_cleanup_path(puppetconf.config_path)
 
