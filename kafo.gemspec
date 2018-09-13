@@ -9,7 +9,7 @@ Gem::Specification.new do |spec|
   spec.description   = %q{A gem for making installations based on puppet user friendly}
   spec.summary       = %q{If you write puppet modules for installing your software, you can use kafo to create powerful installer}
   spec.homepage      = "https://github.com/theforeman/kafo"
-  spec.license       = "GPLv3+"
+  spec.license       = "GPL-3.0-or-later"
 
   spec.files         = Dir['bin/*'] + Dir['config/*'] + Dir['lib/**/*'] + Dir['modules/**/*'] + Dir['doc/*'] +
                        ['LICENSE.txt', 'Rakefile', 'README.md']
