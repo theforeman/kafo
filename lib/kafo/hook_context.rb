@@ -68,7 +68,8 @@ module Kafo
     # examples:
     #   module_enabled?('example')
     def module_enabled?(module_name)
-      self.kafo.module(module_name).enabled?
+      mod = self.kafo.module(module_name)
+      !mod.nil? && mod.enabled?
     end
 
     # You can trigger installer exit by this method. You must specify exit code as a first

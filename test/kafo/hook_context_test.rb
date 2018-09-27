@@ -2,7 +2,8 @@ require 'test_helper'
 
 module Kafo
   describe HookContext do
-    let(:context) { HookContext.new(Object.new) }
+    let(:kafo) { Minitest::Mock.new }
+    let(:context) { HookContext.new(kafo) }
 
     describe "api" do
       specify { context.respond_to?(:logger).must_equal true }
@@ -28,6 +29,21 @@ module Kafo
             assert_equal context.scenario_data, {'foo' => 'bar'}
           end
         end
+      end
+    end
+
+    describe "#module_enabled?" do
+      specify do
+        kafo.expect :module, nil, ['unknown_module']
+        assert_equal context.module_enabled?('unknown_module'), false
+      end
+
+      specify do
+        mod = Minitest::Mock.new
+        mod.expect :nil?, false
+        mod.expect :enabled?, true
+        kafo.expect :module, mod, ['known_module']
+        assert_equal context.module_enabled?('known_module'), true
       end
     end
   end
