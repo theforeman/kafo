@@ -26,8 +26,9 @@ module Kafo
           cfg = { :modules_dir => './my_modules',
                   :answer_file => 'test/fixtures/basic_answers.yaml',
                   :log_dir => log_dir }
-          config_file = ConfigFileFactory.build('modules_dir', cfg.to_yaml).path
+          config_file = ConfigFileFactory.build('log_dir', cfg.to_yaml).path
           config = Kafo::Configuration.new(config_file, false)
+          assert_equal File.join(log_dir, 'configuration.log'), config.log_file
           refute config.log_exists?
           File.open(config.log_file, 'w') { |f| f.write 'non-empty-log' }
           assert config.log_exists?
@@ -43,14 +44,14 @@ module Kafo
     describe '#module_dirs' do
       it 'takes modules_dir' do
         cfg = { :modules_dir => './my_modules', :answer_file => 'test/fixtures/basic_answers.yaml'}
-        config_file = ConfigFileFactory.build('modules_dir', cfg.to_yaml).path
+        config_file = ConfigFileFactory.build('modules_dir_single', cfg.to_yaml).path
         config = Kafo::Configuration.new(config_file, false)
         assert_equal [File.join(current_dir, 'my_modules')], config.module_dirs
       end
 
       it 'takes module_dirs' do
         cfg = { :module_dirs => ['./my_modules','./their_modules'] , :answer_file => 'test/fixtures/basic_answers.yaml'}
-        config_file = ConfigFileFactory.build('module_dirs', cfg.to_yaml).path
+        config_file = ConfigFileFactory.build('module_dirs_plural', cfg.to_yaml).path
         config = Kafo::Configuration.new(config_file, false)
         assert_equal [File.join(current_dir, 'my_modules'), File.join(current_dir, 'their_modules')], config.module_dirs
       end
