@@ -13,8 +13,8 @@ module Kafo
     end
 
     def setup
+      HighLine.color_scheme = build_color_scheme
       if @colors
-        HighLine.color_scheme = build_color_scheme
         HighLine.use_color = true
       else
         HighLine.use_color = false
@@ -25,8 +25,8 @@ module Kafo
 
     def build_color_scheme
       HighLine::ColorScheme.new do |cs|
-        color_hash.keys.each do |key|
-          cs[key] = color_hash[key]
+        color_hash.each do |key, value|
+          cs[key] = value
         end
       end
     end
