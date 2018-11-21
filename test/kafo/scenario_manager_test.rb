@@ -200,7 +200,7 @@ module Kafo
         log_device = DummyLogger.new
         Logger.loggers = [log_device]
         must_exit_with_code(Kafo::ExitHandler.new.error_codes[:scenario_error]) do
-          capture_io { manager.confirm_scenario_change(new_config) }
+          capture_subprocess_io { manager.confirm_scenario_change(new_config) }
         end
         log_device.rewind
         errors = log_device.error.read
