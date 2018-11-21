@@ -140,6 +140,7 @@ module Kafo
         }
       end
       before do
+        ColorScheme.new(:colors => false).setup
         $terminal.instance_variable_set '@output', output
       end
 
@@ -163,6 +164,7 @@ module Kafo
       let(:input) { StringIO.new }
       let(:output) { StringIO.new }
       before do
+        ColorScheme.new(:colors => false).setup
         $terminal.instance_variable_set '@output', output
       end
 
@@ -241,6 +243,7 @@ module Kafo
       let(:input) { StringIO.new }
       let(:output) { StringIO.new }
       before do
+        ColorScheme.new(:colors => false).setup
         $terminal.instance_variable_set '@output', output
       end
 
