@@ -25,8 +25,6 @@ BASIC_CONFIGURATION = <<EOS
 :mapping: {}
 :order:
 
-:default_values_dir: /tmp
-
 :dont_save_answers: true
 :ignore_undocumented: true
 
