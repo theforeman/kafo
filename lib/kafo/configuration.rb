@@ -3,6 +3,7 @@ require 'yaml'
 require 'tmpdir'
 require 'kafo/puppet_module'
 require 'kafo/color_scheme'
+require 'kafo/data_type'
 require 'kafo/data_type_parser'
 require 'kafo/puppet_configurer'
 
@@ -345,6 +346,7 @@ EOS
     end
 
     def register_data_types
+      DataType.unregister_types
       module_dirs.each do |module_dir|
         Dir[File.join(module_dir, '*', 'types', '**', '*.pp')].each do |type_file|
           DataTypeParser.new(File.read(type_file)).register

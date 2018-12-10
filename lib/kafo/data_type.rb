@@ -40,6 +40,10 @@ module Kafo
       @keywords.delete(keyword) if @keywords
     end
 
+    def self.unregister_types
+      @keywords.clear
+    end
+
     def self.split_arguments(input)
       scanner = StringScanner.new(input)
       args = []
