@@ -6,7 +6,7 @@
 #
 class kafo_configure {
 
-  if $kafo_add_progress == 'true' {
+  if $kafo_add_progress == 'true' and SemVer($facts['puppetversion']) =~ SemVerRange('< 6.0.0') {
     add_progress()
   }
 
