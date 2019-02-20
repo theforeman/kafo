@@ -1,0 +1,4 @@
+---
+classes:
+  - dummy
+my_module::param: override

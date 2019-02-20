@@ -1,0 +1,10 @@
+source 'https://rubygems.org'
+
+gem 'metadata-json-lint'
+gem 'puppetlabs_spec_helper'
+
+if ENV['PUPPET_VERSION']
+  gem 'puppet', "~> #{ENV['PUPPET_VERSION']}"
+else
+  gem 'puppet', '>= 4.5.0', '< 7.0.0'
+end
