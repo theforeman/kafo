@@ -8,14 +8,15 @@ class kafo_configure(
   Boolean $add_progress = false,
   Hash[String, String] $module_requirements = {},
 ) {
+  $puppet_version = SemVer($facts['puppetversion'])
 
   $module_requirements.each |$module, $requirement| {
-    unless SemVer($facts['puppetversion']) =~ SemVerRange($requirement) {
+    unless $puppet_version =~ SemVerRange($requirement) {
       fail("kafo_configure::puppet_version_failure: Puppet ${facts['puppetversion']} does not meet requirements for ${module} (${requirement})")
     }
   }
 
-  if $add_progress {
+  if $puppet_version =~ SemVerRange('< 6.0') and $add_progress {
     add_progress()
   }
 
