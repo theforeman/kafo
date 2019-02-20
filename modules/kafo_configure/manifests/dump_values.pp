@@ -13,7 +13,7 @@ class kafo_configure::dump_values(
   Array[String] $lookups = [],
 ) {
   $dumped_vars = kafo_configure::dump_variables($variables)
-  $dumped_lookups = dump_lookups($lookups)
+  $dumped_lookups = kafo_configure::dump_lookups($lookups)
   $dumped = kafo_configure::to_yaml($dumped_vars, $dumped_lookups)
 
   notice("\n${dumped}")
