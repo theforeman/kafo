@@ -14,6 +14,17 @@ Rake::TestTask.new('test:acceptance') do |t|
   t.verbose = true
 end
 
+namespace 'test' do
+  desc 'Run Puppet module tests'
+  task :puppet_modules do
+    Dir['modules/*'].each do |mod|
+      Dir.chdir(mod) do
+        `rake release_checks`
+      end
+    end
+  end
+end
+
 CLEAN.include 'test/tmp'
 
-task :test => ['test:unit', 'test:acceptance']
+task :test => ['test:unit', 'test:acceptance', 'test:puppet_modules']
