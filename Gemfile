@@ -19,3 +19,8 @@ else
 end
 
 gem 'puppet-strings', RUBY_VERSION >= '2.1' ? '>= 1.2.1' : '~> 1.2.1'
+
+group :puppet_module do
+  gem 'metadata-json-lint'
+  gem 'puppetlabs_spec_helper'
+end

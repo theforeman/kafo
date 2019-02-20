@@ -1,0 +1,15 @@
+{
+  "name": "theforeman-kafo_configure",
+  "version": "1.0.0",
+  "author": "theforeman",
+  "license": "GPL-3.0+",
+  "summary": "An internal module to kafo",
+  "source": "https://github.com/theforeman/kafo",
+  "dependencies": [],
+  "requirements": [
+    {
+      "name": "puppet",
+      "version_requirement": ">= 4.5.0 < 7.0.0"
+    }
+  ]
+}

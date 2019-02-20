@@ -12,7 +12,7 @@ module Kafo
       describe "with defaults" do
         specify { pc.command.must_be_kind_of String }
         specify { pc.command.must_include 'puppet apply --modulepath /' }
-        specify { pc.command.wont_include 'kafo_configure::puppet_version' }
+        specify { pc.command.must_include 'kafo_configure::puppet_version_semver { "theforeman-kafo_configure":' }
 
         specify { KafoConfigure.stub(:verbose, false) { pc.command.must_include '$kafo_add_progress="true"' } }
         specify { KafoConfigure.stub(:verbose, true) { pc.command.must_include '$kafo_add_progress="false"' } }
