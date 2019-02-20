@@ -12,7 +12,7 @@ class kafo_configure::dump_values(
   Array[String] $variables = [],
   Array[String] $lookups = [],
 ) {
-  $dumped_vars = dump_values($variables)
+  $dumped_vars = kafo_configure::dump_variables($variables)
   $dumped_lookups = dump_lookups($lookups)
   $dumped = foreman_to_yaml($dumped_vars, $dumped_lookups)
 
