@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe 'dump_values' do
+describe 'kafo_configure::dump_variables' do
   it { is_expected.to run.with_params([]).and_return({}) }
 
   context 'with values' do
