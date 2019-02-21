@@ -1,8 +1,6 @@
 require 'spec_helper'
 
 describe 'kafo_configure::dump_values' do
-  let(:facts) { {puppetversion: Puppet.version} }
-
   context 'without parameters' do
     let(:params) do
       {

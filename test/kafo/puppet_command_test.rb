@@ -39,9 +39,6 @@ module Kafo
             Dir.stub(:[], ['./test/fixtures/metadata/basic.json']) do
               pc.command.must_include 'kafo_configure::puppet_version_semver { "theforeman-testing":'
               pc.command.must_include 'requirement => ">= 3.0.0 < 999.0.0"'
-              pc.command.must_include 'kafo_configure::puppet_version_versioncmp { "theforeman-testing":'
-              pc.command.must_include 'minimum => "3.0.0",'
-              pc.command.must_include 'maximum => "999.0.0",'
             end
           end
         end
