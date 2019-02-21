@@ -5,13 +5,13 @@ describe 'kafo_configure' do
   let(:facts) { { puppetversion: Puppet.version } }
 
   context 'without parameters' do
-    let(:pre_condition) { '$kafo_add_progress = "false"' }
+    let(:params) { {add_progress: false} }
     it { is_expected.to compile.with_all_deps }
     it { is_expected.to contain_class('dummy') }
   end
 
   context 'with progress' do
-    let(:pre_condition) { '$kafo_add_progress = "true"' }
+    let(:params) { {add_progress: true} }
     it { is_expected.to compile.with_all_deps }
   end
 end

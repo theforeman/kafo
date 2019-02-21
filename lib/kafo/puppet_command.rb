@@ -49,7 +49,7 @@ module Kafo
     end
 
     def add_progress
-      %{$kafo_add_progress="#{!KafoConfigure.verbose}"}
+      %{$kafo_add_progress=#{!KafoConfigure.verbose}}
     end
 
     def generate_version_checks
