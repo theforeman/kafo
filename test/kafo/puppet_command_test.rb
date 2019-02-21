@@ -14,8 +14,8 @@ module Kafo
         specify { pc.command.must_include 'puppet apply --modulepath /' }
         specify { pc.command.must_include 'kafo_configure::puppet_version_semver { "theforeman-kafo_configure":' }
 
-        specify { KafoConfigure.stub(:verbose, false) { pc.command.must_include '$kafo_add_progress="true"' } }
-        specify { KafoConfigure.stub(:verbose, true) { pc.command.must_include '$kafo_add_progress="false"' } }
+        specify { KafoConfigure.stub(:verbose, false) { pc.command.must_include '$kafo_add_progress=true' } }
+        specify { KafoConfigure.stub(:verbose, true) { pc.command.must_include '$kafo_add_progress=false' } }
 
         specify { PuppetCommand.stub(:search_puppet_path, '/opt/puppetlabs/bin/puppet') { pc.command.must_include '/opt/puppetlabs/bin/puppet apply' } }
       end
