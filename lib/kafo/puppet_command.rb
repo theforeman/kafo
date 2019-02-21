@@ -68,27 +68,9 @@ module Kafo
     end
 
     def versioncmp(id, version_req)
-      # Parse the common ">= x.y < x.y" version requirement to support pre-Puppet 4.5
-      # checks with versioncmp. Newer versions use SemVerRange for full support.
-      if (version_match = /\A>=\s*([0-9\.]+)(?:\s+<\s*([0-9\.]+))?/.match(version_req))
-        minimum = %{minimum => "#{version_match[1]}",}
-        maximum = version_match[2] ? %{maximum => "#{version_match[2]}",} : ''
-      else
-        minimum = ''
-        maximum = ''
-      end
-
-      # SemVerRange is isolated inside a defined type to prevent parse errors on old versions
       <<-EOS
-        if versioncmp($::puppetversion, "4.5.0") >= 0 {
-          kafo_configure::puppet_version_semver { "#{id}":
-            requirement => "#{version_req}",
-          }
-        } else {
-          kafo_configure::puppet_version_versioncmp { "#{id}":
-            #{minimum}
-            #{maximum}
-          }
+        kafo_configure::puppet_version_semver { "#{id}":
+          requirement => "#{version_req}",
         }
       EOS
     end
