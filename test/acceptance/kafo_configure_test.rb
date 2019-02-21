@@ -9,8 +9,8 @@ module Kafo
 
     describe '--help' do
       it 'includes usage and basic params' do
-        code, out, _ = run_command 'bin/kafo-configure --help'
-        code.must_equal 0
+        code, out, err = run_command 'bin/kafo-configure --help'
+        code.must_equal 0, err
         out.must_include "Usage:"
         out.must_include "kafo-configure [OPTIONS]"
         out.must_match(/--testing-version\s*some version number \(current: "1.0"\)/)
@@ -22,8 +22,8 @@ module Kafo
 
     describe '--full-help' do
       it 'includes all params' do
-        code, out, _ = run_command 'bin/kafo-configure --full-help'
-        code.must_equal 0
+        code, out, err = run_command 'bin/kafo-configure --full-help'
+        code.must_equal 0, err
         out.must_include "Usage:"
         out.must_include "kafo-configure [OPTIONS]"
         out.must_include "== Basic:"
@@ -38,15 +38,15 @@ module Kafo
 
     describe 'default args' do
       it 'must create file' do
-        code, _, _ = run_command 'bin/kafo-configure'
-        code.must_equal 0
+        code, _, err = run_command 'bin/kafo-configure'
+        code.must_equal 0, err
         File.exist?("#{INSTALLER_HOME}/testing").must_equal true
         File.read("#{INSTALLER_HOME}/testing").must_equal '1.0'
       end
 
       it 'must fail if validations fail' do
         code, _, err = run_command 'bin/kafo-configure --testing-pool-size=fail'
-        code.exitstatus.must_equal 21
+        code.exitstatus.must_equal 21, err
         err.must_include 'Parameter testing-pool-size invalid: "fail" is not a valid integer'
         File.exist?("#{INSTALLER_HOME}/testing").must_equal false
       end
@@ -54,28 +54,28 @@ module Kafo
       it 'must fail if system checks fail' do
         FileUtils.mkdir "#{INSTALLER_HOME}/checks"
         FileUtils.cp File.expand_path('../../fixtures/checks/fail/fail.sh', __FILE__), "#{INSTALLER_HOME}/checks"
-        code, _, _ = run_command 'bin/kafo-configure'
-        code.exitstatus.must_equal 20
+        code, _, err = run_command 'bin/kafo-configure'
+        code.exitstatus.must_equal 20, err
         File.exist?("#{INSTALLER_HOME}/testing").must_equal false
       end
     end
 
     describe '--noop' do
       it 'must not create file' do
-        code, _, _ = run_command 'bin/kafo-configure -n'
-        code.must_equal 0
+        code, _, err = run_command 'bin/kafo-configure -n'
+        code.must_equal 0, err
         File.exist?("#{INSTALLER_HOME}/testing").must_equal false
       end
     end
 
     describe 'with parameter argument' do
       it 'must apply and persist value' do
-        code, _, _ = run_command 'bin/kafo-configure --testing-version 2.0'
-        code.must_equal 0
+        code, _, err = run_command 'bin/kafo-configure --testing-version 2.0'
+        code.must_equal 0, err
         File.read("#{INSTALLER_HOME}/testing").must_equal '2.0'
 
-        code, _, _ = run_command 'bin/kafo-configure'
-        code.must_equal 0
+        code, _, err = run_command 'bin/kafo-configure'
+        code.must_equal 0, err
         File.read("#{INSTALLER_HOME}/testing").must_equal '2.0'
       end
 
@@ -83,8 +83,8 @@ module Kafo
         it 'must apply but not persist value' do
           File.open("#{INSTALLER_HOME}/testing", 'w') { |f| f.write('3.0') }
 
-          code, out, _ = run_command 'bin/kafo-configure -n -v --testing-version 2.0'
-          code.must_equal 0
+          code, out, err = run_command 'bin/kafo-configure -n -v --testing-version 2.0'
+          code.must_equal 0, err
           out.must_match %r{#{Regexp.escape(INSTALLER_HOME)}/testing.*content}
           File.read("#{INSTALLER_HOME}/testing").must_equal '3.0'
 
@@ -98,27 +98,27 @@ module Kafo
     describe 'with parser cache' do
       before do
         File.open(KAFO_CONFIG, 'a') { |f| f.puts ":parser_cache_path: #{INSTALLER_HOME}/parser_cache.json" }
-        code, _, _ = run_command("kafo-export-params -f parsercache -c #{KAFO_CONFIG} -o #{INSTALLER_HOME}/parser_cache.json")
-        code.must_equal 0
+        code, _, err = run_command("kafo-export-params -f parsercache -c #{KAFO_CONFIG} -o #{INSTALLER_HOME}/parser_cache.json")
+        code.must_equal 0, err
       end
 
       it 'must use cache' do
-        code, out, _ = run_command 'bin/kafo-configure -v -l debug'
-        code.must_equal 0
+        code, out, err = run_command 'bin/kafo-configure -v -l debug'
+        code.must_equal 0, err
         out.must_include "Using #{INSTALLER_HOME}/parser_cache.json cache with parsed modules"
       end
 
       it 'with --parser-cache forces use of cache' do
         FileUtils.touch(File.join(MANIFEST_PATH, 'init.pp'), :mtime => Time.now + 3600)
-        code, out, _ = run_command 'bin/kafo-configure -v -l debug --parser-cache'
-        code.must_equal 0
+        code, out, err = run_command 'bin/kafo-configure -v -l debug --parser-cache'
+        code.must_equal 0, err
         out.must_include "Parser cache for #{MANIFEST_PATH}/init.pp is outdated, forced to use it anyway"
       end
 
       it 'with --no-parser-cache skips cache' do
         FileUtils.touch(File.join(MANIFEST_PATH, 'init.pp'), :mtime => Time.now + 3600)
-        code, out, _ = run_command 'bin/kafo-configure -v -l debug --no-parser-cache'
-        code.must_equal 0
+        code, out, err = run_command 'bin/kafo-configure -v -l debug --no-parser-cache'
+        code.must_equal 0, err
         out.must_include "Skipping parser cache for #{MANIFEST_PATH}/init.pp, forced off"
       end
     end
@@ -130,8 +130,8 @@ module Kafo
       end
 
       it 'must create file' do
-        code, _, _ = run_command 'bin/kafo-configure'
-        code.must_equal 0
+        code, _, err = run_command 'bin/kafo-configure'
+        code.must_equal 0, err
         File.exist?("#{INSTALLER_HOME}/testing").must_equal true
         File.read("#{INSTALLER_HOME}/testing").must_equal '1.0'
       end
@@ -140,15 +140,15 @@ module Kafo
     describe 'with Puppet version requirements' do
       it 'must run if they are met' do
         add_metadata('basic')
-        code, _, _ = run_command 'bin/kafo-configure'
-        code.exitstatus.must_equal 0
+        code, _, err = run_command 'bin/kafo-configure'
+        code.exitstatus.must_equal 0, err
         File.exist?("#{INSTALLER_HOME}/testing").must_equal true
       end
 
       it 'must fail if minimum version is not met' do
         add_metadata('with_minimum_puppet')
-        code, out, _ = run_command 'bin/kafo-configure'
-        code.exitstatus.must_equal 30
+        code, out, err = run_command 'bin/kafo-configure'
+        code.exitstatus.must_equal 30, err
         out.must_match(/^Puppet [0-9\.]+ does not meet (\w+ )?requirements? for theforeman-testing/)
         out.must_include 'Use --skip-puppet-version-check to disable this check'
         File.exist?("#{INSTALLER_HOME}/testing").must_equal false
@@ -156,8 +156,8 @@ module Kafo
 
       it 'must fail if maximum version is not met' do
         add_metadata('with_maximum_puppet')
-        code, out, _ = run_command 'bin/kafo-configure'
-        code.exitstatus.must_equal 30
+        code, out, err = run_command 'bin/kafo-configure'
+        code.exitstatus.must_equal 30, err
         out.must_match(/^Puppet [0-9\.]+ does not meet (\w+ )?requirements? for theforeman-testing/)
         out.must_include 'Use --skip-puppet-version-check to disable this check'
         File.exist?("#{INSTALLER_HOME}/testing").must_equal false
@@ -165,8 +165,8 @@ module Kafo
 
       it 'must run with --skip-puppet-version-check' do
         add_metadata('with_maximum_puppet')
-        code, _, _ = run_command 'bin/kafo-configure --skip-puppet-version-check'
-        code.exitstatus.must_equal 0
+        code, _, err = run_command 'bin/kafo-configure --skip-puppet-version-check'
+        code.exitstatus.must_equal 0, err
         File.exist?("#{INSTALLER_HOME}/testing").must_equal true
       end
     end
