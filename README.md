@@ -168,7 +168,7 @@ including official AIO packages.
 
 ## How do I report bugs or contribute?
 
-You can find our redmine issue tracker [here](http://projects.theforeman.org/projects/kafo),
+You can find our redmine issue tracker [here](https://projects.theforeman.org/projects/kafo),
 you can use your github account for logging in. When reporting new issues please
 don't forget to specify your:
   * puppet version
@@ -179,10 +179,10 @@ don't forget to specify your:
 Since Kafo is a side project of Foreman you can use its IRC channels to
 contact us on freenode. #theforeman is the channel for generic discussions
 and #theforeman-dev is reserved only for technical topics. Likewise you can use the Foreman
-mailing lists on googlegroups. For more information see [this page](http://theforeman.org/support.html)
+mailing lists on googlegroups. For more information see [this page](https://theforeman.org/support.html)
 
 Patches are always welcome. You can use instructions for Foreman, just
-substitute Foreman with Kafo. More details are [here](http://projects.theforeman.org/projects/foreman/wiki/Contribute#New-Way-github)
+substitute Foreman with Kafo. More details are [here](https://projects.theforeman.org/projects/foreman/wiki/Contribute#New-Way-github)
 
 # Advanced topics
 
@@ -525,9 +525,11 @@ class foreman::params {
 }
 ```
 
-If no inline default is given in the manifest and on Puppet 4.5+, then Kafo will
-attempt to look up a default value using [data stored in the module](https://docs.puppet.com/puppet/latest/lookup_quick_module.html). This can be specified with Hiera data files (or even a data function) in the
-module under `data/`.
+If no inline default is given in the manifest, then Kafo will attempt to look
+up a default value using [data stored in the
+module](https://docs.puppet.com/puppet/latest/lookup_quick_module.html). This
+can be specified with Hiera data files (or even a data function) in the module
+under `data/`.
 
 ## Resetting an argument
 
@@ -695,18 +697,8 @@ If you use "params_path" for this purpose, "params_name" is ignored.
 
 ## Validations
 
-If you specify validations of parameters in your init.pp manifest they
-will be replaced with your values even before Puppet is run. In order to do this
-you must follow a few rules however:
-
-* you must use standard validation functions (e.g. validate_array, validate_re, ...)
-
-These functions are re-implemented in Kafo from common stdlib functions, so please
-contribute any missing ones.
-
 If class parameters are declared with Puppet 4 data types then Kafo will
-validate user inputs against Puppet's type validation rules, which should
-replace the use of separate validation functions.
+validate user inputs against Puppet's type validation rules.
 
 ## Enabling or disabling module
 
@@ -1071,14 +1063,14 @@ Other exit codes that can be returned:
 
 ## Running Puppet Profiling
 
-As of Puppet 3.2, performance data can be gathered during a puppet run by adding the `--profile` option. See [Tune Puppet for Performance with Profiler](https://puppetlabs.com/blog/tune-puppet-performance-profiler) for more information from the Puppet team. Users who wish to perform a Kafo run and gather this type of profiling data to analyze can pass the same option to their installer. The profiling data will then be present in the normal Kafo logs.
+Performance data can be gathered during a Puppet run by adding the `--profile` option. See [Tune Puppet for Performance with Profiler](https://puppet.com/blog/tune-puppet-for-performance-profiler) for more information from the Puppet team. Users who wish to perform a Kafo run and gather this type of profiling data to analyze can pass the same option to their installer. The profiling data will then be present in the normal Kafo logs.
 
 ## Issue tracker
 
 Issues are tracked in Redmine, see:
 
-* [Open Kafo issues](http://projects.theforeman.org/projects/kafo/issues/)
-* [File new issue](http://projects.theforeman.org/projects/kafo/issues/new)
+* [Open Kafo issues](https://projects.theforeman.org/projects/kafo/issues/)
+* [File new issue](https://projects.theforeman.org/projects/kafo/issues/new)
 
 ## Related projects
 
