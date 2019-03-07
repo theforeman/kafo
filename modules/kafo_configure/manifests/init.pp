@@ -13,5 +13,5 @@ class kafo_configure(
     add_progress()
   }
 
-  hiera_include('classes')
+  lookup('classes', {merge => unique}).include
 }
