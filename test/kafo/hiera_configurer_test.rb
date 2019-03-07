@@ -3,15 +3,65 @@ require 'kafo/hiera_configurer'
 
 module Kafo
   describe HieraConfigurer do
-    subject { HieraConfigurer.new(nil, [], modules_order) }
+    subject { HieraConfigurer.new(user_config_path, [], modules_order) }
+    let(:user_config_path) { nil }
     let(:modules_order) { nil }
 
     describe "#generate_config" do
-      specify { subject.generate_config[:backends].must_equal ['yaml'] }
-      specify { subject.generate_config(:backends => ['json'])[:backends].must_equal ['json', 'yaml'] }
-      specify { subject.generate_config[:hierarchy].must_equal ['kafo_answers'] }
-      specify { subject.generate_config(:hierarchy => ['common'])[:hierarchy].must_equal ['kafo_answers', 'common'] }
-      specify { subject.generate_config[:yaml].keys.must_include(:datadir) }
+      before { subject.build_temp_dir }
+      after { FileUtils.rm_rf(subject.temp_dir) }
+
+      let(:kafo_hierarchy) do
+        {
+          'name' => 'Kafo Answers',
+          'path' => 'kafo_answers.yaml',
+          'datadir' => File.join(subject.temp_dir, 'data'),
+          'data_hash' => 'yaml_data',
+        }
+      end
+
+      specify 'without an existing config' do
+        subject.generate_config.must_equal({
+          'version' => 5,
+          'defaults' => {
+            'datadir' => File.join(subject.temp_dir, 'data'),
+            'data_hash' => 'yaml_data',
+          },
+          'hierarchy' => [kafo_hierarchy],
+        })
+      end
+
+      describe 'context an existing config' do
+        let(:user_config_path) { '/path/to/config/hiera.yaml' }
+
+        specify 'with a data directory' do
+          subject.generate_config('defaults' => {'datadir' => 'data'})['defaults']['datadir'].must_equal('/path/to/config/data')
+        end
+
+        specify 'with an empty hierarchy' do
+          hierarchy = []
+          expected = [kafo_hierarchy]
+          subject.generate_config('hierarchy' => hierarchy)['hierarchy'].must_equal(expected)
+        end
+
+        specify 'with a kafo hierarchy' do
+          hierarchy = [{'name' => 'Kafo Answers', 'datadir' => 'data'}]
+          expected = [kafo_hierarchy]
+          subject.generate_config('hierarchy' => hierarchy)['hierarchy'].must_equal(expected)
+        end
+
+        specify 'with a common hierarchy' do
+          hierarchy = [{'name' => 'Common', 'datadir' => 'data'}]
+          expected = [kafo_hierarchy, {'name' => 'Common', 'datadir' => '/path/to/config/data'}]
+          subject.generate_config('hierarchy' => hierarchy)['hierarchy'].must_equal(expected)
+        end
+
+        specify 'with a common and kafo hierarchy' do
+          hierarchy = [{'name' => 'Common'}, {'name' => 'Kafo Answers'}]
+          expected = [{'name' => 'Common'}, kafo_hierarchy]
+          subject.generate_config('hierarchy' => hierarchy)['hierarchy'].must_equal(expected)
+        end
+      end
     end
 
     describe "#generate_data" do
