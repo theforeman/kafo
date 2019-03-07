@@ -160,11 +160,9 @@ As you may have noticed there are several ways how to specify arguments. Here's 
 
 ## Requirements
 
-Kafo is supported with Puppet versions 3 and 4. Puppet 2 is no longer supported
-in current versions, use an older version of Kafo or update Puppet.
-
-Puppet may be installed as a gem (add it to Gemfile) or through a package,
-including official AIO packages.
+Kafo is supported with Puppet versions 4.9+, 5 and 6. Puppet may be installed
+as a gem (add it to Gemfile) or through a package, including official AIO
+packages.
 
 ## How do I report bugs or contribute?
 
@@ -1016,25 +1014,52 @@ being managed by Kafo. Set a custom Hiera config file in Kafo's config with:
 :hiera_config: /usr/share/kafo/hiera.yaml
 ```
 
-The contents of this file are as per the [hiera.yaml docs](https://docs.puppet.com/hiera/latest/configuring.html),
-but hierarchy should contain the item `kafo_answers` and the `yaml` backend
-should be enabled. Kafo will add these if they're missing.
+The contents of this file are as per the
+[hiera.yaml docs](https://docs.puppet.com/hiera/latest/configuring.html).
+Only Hiera version 5 is supported.
 
-When running Puppet, Kafo will copy the Hiera config and YAML data directory to
-a temporary location to include its data. The file `kafo_answers.yaml` will be
-generated containing _all_ default and overriden values for parameters managed
-by Kafo. This may change in the future to allow a more complex hierarchy. As an
-example, a hierarchy could be set up with:
+When running Puppet, Kafo will copy the Hiera config to a temporary location.
+Relative data directories will be changed to absolute paths. A
+`kafo_answers.yaml` file will be generated containing _all_ default and
+overriden values for parameters managed by Kafo. This may change in the future
+to allow a more complex hierarchy.
+
+The hierarchy can contain a special value with the name `Kafo Answers`. The
+exact values will be rewritten by Kafo, but it can be used to determine when
+the Kafo answers are loaded. Note the name is case sensitive. When it's
+missing, it will be added.
+
+As an example, a hierarchy could be set up with:
 
 ```yaml
-:hierarchy:
-  - kafo_answers
-  - "%{::osfamily}"
-  - common
+hierarchy:
+  - name: "Kafo Answers"
+  - name: "Other YAML hierarchy levels"
+    paths:
+      - "family/%{facts.os.family}.yaml"
+      - "common.yaml"
+```
+
+It is possible to include another file above answers:
+
+```yaml
+hierarchy:
+  - name: "Custom values"
+    datadir: "custom"
+    path: "override.yaml"
+  - name: "Kafo Answers"
+  - name: "Other YAML hierarchy levels"
+    datadir: "data"
+    paths:
+      - "family/%{facts.os.family}.yaml"
+      - "common.yaml"
 ```
 
 This would give precedence to all Kafo-managed parameter values, but for any
 others, would check for values per OS family, followed by a `common.yaml` file.
+
+[Migration from Hiera version 3](https://puppet.com/docs/puppet/4.9/hiera_migrate_v3_yaml.html)
+is documented by Puppet.
 
 ## Exit code
 
