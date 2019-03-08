@@ -6,8 +6,8 @@ Gem::Specification.new do |spec|
   spec.version       = Kafo::VERSION
   spec.authors       = ["Marek Hulan"]
   spec.email         = ["ares@igloonet.cz"]
-  spec.description   = %q{A gem for making installations based on puppet user friendly}
-  spec.summary       = %q{If you write puppet modules for installing your software, you can use kafo to create powerful installer}
+  spec.description   = %q{If you write puppet modules for installing your software, you can use kafo to create powerful installer}
+  spec.summary       = %q{A gem for making installations based on puppet user friendly}
   spec.homepage      = "https://github.com/theforeman/kafo"
   spec.license       = "GPL-3.0+"
 
