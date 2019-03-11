@@ -49,7 +49,7 @@ module Kafo
         end
       end
 
-      if (line_end = EVALTRACE_END.match(line)) && @lines < @total
+      if (line_end = EVALTRACE_END.match(line)) && @total != :unknown && @lines < @total
         if (known_resource = find_known_resource(line_end[1]))
           @resources.delete(known_resource)  # ensure it's only counted once
           @lines += 1
