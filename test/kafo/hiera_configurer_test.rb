@@ -3,10 +3,11 @@ require 'kafo/hiera_configurer'
 
 module Kafo
   describe HieraConfigurer do
-    subject { HieraConfigurer.new(user_config_path, modules, modules_order) }
+    subject { HieraConfigurer.new(user_config_path, modules, modules_order, additional_data) }
     let(:user_config_path) { nil }
     let(:modules) { [] }
     let(:modules_order) { nil }
+    let(:additional_data) { {} }
 
     describe "#generate_config" do
       before { subject.build_temp_dir }
@@ -66,19 +67,37 @@ module Kafo
     end
 
     describe "#generate_data" do
-      let(:puppet_module) { @@puppet_module ||= PuppetModule.new('testing', TestParser.new(BASIC_MANIFEST)).tap { |m| m.enable }.parse }
-      let(:modules) { [puppet_module] }
-      specify { puppet_module.enabled?.must_equal true }
-      specify { subject.generate_data['classes'].must_equal ['testing'] }
-      specify { subject.generate_data['testing::version'].must_equal '1.0' }
-      specify { subject.generate_data.size.must_equal (puppet_module.params.size + 1) }
+      specify { subject.generate_data.must_equal({'classes' => []}) }
 
-      describe 'with order' do
-        let(:modules_order) { ['testing', 'example'] }
-        specify do
-          subject.stub(:sort_modules, Proc.new { |modules, order|
-            ['testing'] if modules == ['testing'] && order == modules_order
-          }) { subject.generate_data['classes'].must_equal ['testing'] }
+      describe 'with additional data' do
+        let(:additional_data) { {'unmanaged_module::variable' => true} }
+        specify { subject.generate_data['unmanaged_module::variable'].must_equal(true) }
+        specify { subject.generate_data['classes'].must_equal([]) }
+        specify { subject.generate_data.size.must_equal(2) }
+      end
+
+      describe 'with puppet module' do
+        let(:puppet_module) { @@puppet_module ||= PuppetModule.new('testing', TestParser.new(BASIC_MANIFEST)).tap { |m| m.enable }.parse }
+        let(:modules) { [puppet_module] }
+        specify { puppet_module.enabled?.must_equal true }
+        specify { subject.generate_data['classes'].must_equal ['testing'] }
+        specify { subject.generate_data['testing::version'].must_equal '1.0' }
+        specify { subject.generate_data.size.must_equal (puppet_module.params.size + 1) }
+
+        describe 'with order' do
+          let(:modules_order) { ['testing', 'example'] }
+          specify do
+            subject.stub(:sort_modules, Proc.new { |modules, order|
+              ['testing'] if modules == ['testing'] && order == modules_order
+            }) { subject.generate_data['classes'].must_equal ['testing'] }
+          end
+        end
+
+        describe 'with additional data' do
+          let(:additional_data) { {'unmanaged_module::variable' => true} }
+          specify { subject.generate_data['unmanaged_module::variable'].must_equal(true) }
+          specify { subject.generate_data['classes'].must_equal ['testing'] }
+          specify { subject.generate_data.size.must_equal (puppet_module.params.size + 2) }
         end
       end
     end

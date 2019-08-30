@@ -8,10 +8,11 @@ module Kafo
 
     attr_reader :temp_dir, :config_path, :data_dir, :logger
 
-    def initialize(user_config_path, modules, modules_order)
+    def initialize(user_config_path, modules, modules_order, additional_data = {})
       @user_config_path = user_config_path
       @modules = modules
       @modules_order = modules_order
+      @additional_data = additional_data
       @logger = KafoConfigure.logger
     end
 
@@ -74,11 +75,18 @@ module Kafo
 
     def generate_data
       classes = []
-      data = @modules.select(&:enabled?).inject({}) do |config, mod|
+
+      data = @additional_data.clone
+
+      @modules.select(&:enabled?).map do |mod|
         classes << mod.class_name
-        config.update(Hash[mod.params_hash.map { |k, v| ["#{mod.class_name}::#{k}", v] }])
+        mod.params_hash.map do |variable, value|
+          data["#{mod.class_name}::#{variable}"] = value
+        end
       end
+
       data['classes'] = @modules_order ? sort_modules(classes, @modules_order) : classes
+
       data
     end
 
