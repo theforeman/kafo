@@ -424,7 +424,7 @@ module Kafo
     def run_installation
       self.class.hooking.execute(:pre)
 
-      hiera = HieraConfigurer.new(config.app[:hiera_config], config.modules, config.app[:order])
+      hiera = HieraConfigurer.new(config.app[:hiera_config], config.modules, config.app[:order], config.internal_hiera_variables)
       hiera.write_configs
       self.class.exit_handler.register_cleanup_path(hiera.temp_dir)
 

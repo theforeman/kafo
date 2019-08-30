@@ -29,6 +29,7 @@ module Kafo
         :custom               => {},
         :low_priority_modules => [],
         :verbose_log_level    => 'info',
+        :internal_hiera_variables => {},
         :skip_puppet_version_check => false
     }
 
@@ -88,6 +89,10 @@ module Kafo
 
     def set_custom(key, value)
       custom_storage[key.to_sym] = value
+    end
+
+    def internal_hiera_variables
+      app[:internal_hiera_variables]
     end
 
     def modules

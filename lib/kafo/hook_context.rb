@@ -93,6 +93,26 @@ module Kafo
       self.kafo.config.set_custom(key, value)
     end
 
+    # Load a Hiera variable from the internal store that has been set using
+    # set_internal_hiera_variable
+    def get_internal_hiera_variable(key)
+      self.kafo.config.internal_hiera_variables[key]
+    end
+
+    # Save any value as a Hiera variables. This is useful set variables for
+    # unmanaged modules or variables to use in the Hiera config.  These end up
+    # in the scenario configuration. Note that variables on modules that are
+    # exposed via the installer always have priority over the internal storage.
+    def set_internal_hiera_variable(key, value)
+      self.kafo.config.internal_hiera_variables[key] = value
+    end
+
+    # Clear a Hiera variable from the internal store that has been set using
+    # set_internal_hiera_variable
+    def unset_internal_hiera_variable(key)
+      self.kafo.config.internal_hiera_variables.delete(key)
+    end
+
     # Return the path to the current scenario
     def scenario_path
       self.kafo.class.scenario_manager.select_scenario

@@ -783,6 +783,8 @@ Note that the hook is evaluated in HookContext object which provides a DSL:
 * ```get_custom_config``` and ```store_custom_config``` access custom config storage which persists
   among kafo runs
 * ```logger``` is also available for writing log messages
+* ```set_internal_hiera_variable```, ```get_internal_hiera_variable```,
+  ```unset_internal_hiera_variable``` can be used to set additional hiera variables.
 
 For more details, see
 [hook_context.rb](https://github.com/theforeman/kafo/blob/master/lib/kafo/hook_context.rb).
