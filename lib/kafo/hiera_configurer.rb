@@ -34,7 +34,7 @@ module Kafo
       FileUtils.mkdir(data_dir)
 
       File.open(File.join(data_dir, HIERARCHY_FILENAME), 'w') do |f|
-        f.write(format_yaml_symbols(generate_data(@modules).to_yaml))
+        f.write(format_yaml_symbols(generate_data.to_yaml))
       end
     end
 
@@ -72,9 +72,9 @@ module Kafo
       config
     end
 
-    def generate_data(modules)
+    def generate_data
       classes = []
-      data = modules.select(&:enabled?).inject({}) do |config, mod|
+      data = @modules.select(&:enabled?).inject({}) do |config, mod|
         classes << mod.class_name
         config.update(Hash[mod.params_hash.map { |k, v| ["#{mod.class_name}::#{k}", v] }])
       end

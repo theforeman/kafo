@@ -3,8 +3,9 @@ require 'kafo/hiera_configurer'
 
 module Kafo
   describe HieraConfigurer do
-    subject { HieraConfigurer.new(user_config_path, [], modules_order) }
+    subject { HieraConfigurer.new(user_config_path, modules, modules_order) }
     let(:user_config_path) { nil }
+    let(:modules) { [] }
     let(:modules_order) { nil }
 
     describe "#generate_config" do
@@ -66,17 +67,18 @@ module Kafo
 
     describe "#generate_data" do
       let(:puppet_module) { @@puppet_module ||= PuppetModule.new('testing', TestParser.new(BASIC_MANIFEST)).tap { |m| m.enable }.parse }
+      let(:modules) { [puppet_module] }
       specify { puppet_module.enabled?.must_equal true }
-      specify { subject.generate_data([puppet_module])['classes'].must_equal ['testing'] }
-      specify { subject.generate_data([puppet_module])['testing::version'].must_equal '1.0' }
-      specify { subject.generate_data([puppet_module]).size.must_equal (puppet_module.params.size + 1) }
+      specify { subject.generate_data['classes'].must_equal ['testing'] }
+      specify { subject.generate_data['testing::version'].must_equal '1.0' }
+      specify { subject.generate_data.size.must_equal (puppet_module.params.size + 1) }
 
       describe 'with order' do
         let(:modules_order) { ['testing', 'example'] }
         specify do
           subject.stub(:sort_modules, Proc.new { |modules, order|
             ['testing'] if modules == ['testing'] && order == modules_order
-          }) { subject.generate_data([puppet_module])['classes'].must_equal ['testing'] }
+          }) { subject.generate_data['classes'].must_equal ['testing'] }
         end
       end
     end
