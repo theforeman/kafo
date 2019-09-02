@@ -32,7 +32,7 @@ Gem::Specification.new do |spec|
   # better logging
   spec.add_dependency 'logging', '< 3.0.0'
   # CLI interface
-  spec.add_dependency 'clamp', '>= 0.6.2'
+  spec.add_dependency 'clamp', '>= 0.6.2', '< 1.3.1'
   # interactive mode
   spec.add_dependency 'highline', '>= 1.6.21', '< 2.0'
   # ruby progress bar
