@@ -32,16 +32,13 @@ module Kafo
         ]
       end
 
-      let(:stdout) { StringIO.new }
       let(:builder) { HelpBuilders::Advanced.new(params) }
-
-      before { builder.instance_variable_set '@out', stdout }
 
       # note that these test do not preserve any order
       describe "#add_list" do
         describe "multi group output" do
           before { builder.add_list('Options', clamp_definitions) }
-          let(:output) { stdout.rewind; stdout.read }
+          let(:output) { builder.string }
           specify { output.must_include 'Options' }
           specify { output.must_include '= Generic:' }
           specify { output.must_include '--no-colors' }
@@ -61,7 +58,7 @@ module Kafo
 
         describe "single group output" do
           before { builder.add_list('Options', clamp_definitions[4..6]) }
-          let(:output) { stdout.rewind; stdout.read }
+          let(:output) { builder.string }
           specify { output.must_include 'Options' }
           specify { output.must_include '= Generic:' }
           specify { output.must_include '--no-colors' }
@@ -77,7 +74,7 @@ module Kafo
 
         describe "no group" do
           before { builder.add_list('Options', clamp_definitions[6..6]) }
-          let(:output) { stdout.rewind; stdout.read }
+          let(:output) { builder.string }
           specify { output.must_include 'Options' }
           specify { output.must_include '= Generic:' }
           specify { output.must_include '--no-colors' }

@@ -16,7 +16,8 @@ module Kafo
 
       def add_list(heading, items)
         if heading == 'Options'
-          puts "\n#{heading}:"
+          line()
+          line("#{heading}:")
 
           data = by_module(items)
           sorted_keys(data).each do |section|
