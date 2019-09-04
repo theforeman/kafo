@@ -76,6 +76,7 @@ module Kafo
           'id' => @config.scenario_id,
           'name' => @config.app[:name],
           'answer_file' => answer_file,
+          'custom' => @config.app[:facts],
         },
       }
     end
