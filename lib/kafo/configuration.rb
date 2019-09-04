@@ -4,7 +4,7 @@ require 'tmpdir'
 require 'kafo/puppet_module'
 require 'kafo/color_scheme'
 require 'kafo/data_type_parser'
-require 'kafo/puppet_configurer'
+require 'kafo/execution_environment'
 
 module Kafo
   class Configuration
@@ -148,8 +148,10 @@ module Kafo
 
     def params_default_values
       @params_default_values ||= begin
-        puppetconf = PuppetConfigurer.new('noop' => true)
-        KafoConfigure.exit_handler.register_cleanup_path puppetconf.config_path
+        execution_env = ExecutionEnvironment.new(self)
+        KafoConfigure.exit_handler.register_cleanup_path(execution_env.directory)
+
+        puppetconf = execution_env.configure_puppet('noop' => true)
 
         dump_manifest = <<EOS
           #{includes}

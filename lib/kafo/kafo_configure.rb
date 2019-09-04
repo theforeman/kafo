@@ -26,8 +26,7 @@ require 'kafo/progress_bar'
 require 'kafo/hooking'
 require 'kafo/exit_handler'
 require 'kafo/scenario_manager'
-require 'kafo/hiera_configurer'
-require 'kafo/puppet_configurer'
+require 'kafo/execution_environment'
 
 module Kafo
   class KafoConfigure < Clamp::Command
@@ -424,20 +423,17 @@ module Kafo
     def run_installation
       self.class.hooking.execute(:pre)
 
-      hiera = HieraConfigurer.new(config.app[:hiera_config], config.modules, config.app[:order])
-      hiera.write_configs
-      self.class.exit_handler.register_cleanup_path(hiera.temp_dir)
+      execution_env = ExecutionEnvironment.new(config)
+      self.class.exit_handler.register_cleanup_path(execution_env.directory)
 
-      puppetconf = PuppetConfigurer.new(
-        'color'           => false,
-        'evaltrace'       => !!@progress_bar,
-        'hiera_config'    => hiera.config_path,
-        'noop'            => !!noop?,
-        'profile'         => !!profile?,
-        'show_diff'       => true,
-        'environmentpath' => hiera.temp_dir,
+      execution_env.store_answers
+      puppetconf = execution_env.configure_puppet(
+        'color'     => false,
+        'evaltrace' => !!@progressbar,
+        'noop'      => !!noop?,
+        'profile'   => !!profile?,
+        'show_diff' => true,
       )
-      self.class.exit_handler.register_cleanup_path(puppetconf.config_path)
 
       exit_code   = 0
       exit_status = nil

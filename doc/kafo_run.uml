@@ -94,7 +94,7 @@
 
   #Greenyellow:**pre**|
 
-  :setup HieraConfigurer and save configs;
+  :setup ExecutionEnvironment and save configs;
 
   #Gold:run puppet;
   repeat
