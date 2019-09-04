@@ -68,7 +68,7 @@
   #Greenyellow:**pre_values**|
   :load values from answer file;
   :load values from previous answer file;
-  note right: if previous scenraio != current scenario
+  note right: if previous scenario != current scenario
 
   :update help with default values;
   |execute|
