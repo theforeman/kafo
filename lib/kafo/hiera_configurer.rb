@@ -37,6 +37,8 @@ module Kafo
       File.open(File.join(data_dir, HIERARCHY_FILENAME), 'w') do |f|
         f.write(format_yaml_symbols(generate_data(@modules).to_yaml))
       end
+
+      config_path
     end
 
     def generate_config(config = {})
