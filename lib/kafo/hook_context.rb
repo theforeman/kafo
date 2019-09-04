@@ -93,6 +93,20 @@ module Kafo
       self.kafo.config.set_custom(key, value)
     end
 
+    # Load a custom fact from the custom fact storage as saved by store_custom_fact
+    def get_custom_fact(key)
+      self.kafo.config.get_custom_fact(key)
+    end
+
+    # Store a any custom fact. This will show up as kafo.scenario.custom.your_fact.
+    # It is possible to use structures such as arrays and hashes besides the
+    # obvious ones such as strings, integers, booleans.
+    #
+    # These facts can also be used in Hiera hierachy definitions.
+    def store_custom_fact(key, value)
+      self.kafo.config.set_custom_fact(key, value)
+    end
+
     # Return the id of the current scenario
     def scenario_id
       self.kafo.config.scenario_id

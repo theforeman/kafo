@@ -32,6 +32,7 @@ module Kafo
             'id' => config.scenario_id,
             'name' => 'Basic',
             'answer_file' => File.join(directory, 'answers.yaml'),
+            'custom' => {},
           },
         }
         assert_equal(expected, facts)

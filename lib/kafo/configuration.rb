@@ -27,6 +27,7 @@ module Kafo
         :color_of_background  => :dark,
         :hook_dirs            => [],
         :custom               => {},
+        :facts                => {},
         :low_priority_modules => [],
         :verbose_log_level    => 'info',
         :skip_puppet_version_check => false
@@ -93,6 +94,14 @@ module Kafo
 
     def set_custom(key, value)
       custom_storage[key.to_sym] = value
+    end
+
+    def get_custom_fact(key)
+      custom_fact_storage[key.to_s]
+    end
+
+    def set_custom_fact(key, value)
+      custom_fact_storage[key.to_s] = value
     end
 
     def modules
@@ -310,6 +319,10 @@ EOS
 
     def custom_storage
       app[:custom]
+    end
+
+    def custom_fact_storage
+      app[:facts]
     end
 
     def includes
