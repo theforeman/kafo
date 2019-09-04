@@ -8,10 +8,11 @@ module Kafo
 
     attr_reader :temp_dir, :config_path, :data_dir, :logger
 
-    def initialize(user_config_path, modules, modules_order)
+    def initialize(user_config_path, modules, modules_order, parent_directory = nil)
       @user_config_path = user_config_path
       @modules = modules
       @modules_order = modules_order
+      @parent_directory = parent_directory
       @logger = KafoConfigure.logger
     end
 
@@ -87,7 +88,7 @@ module Kafo
     end
 
     def build_temp_dir
-      @temp_dir ||= Dir.mktmpdir('kafo_hiera')
+      @temp_dir ||= Dir.mktmpdir('kafo_hiera', @parent_directory)
       @config_path = File.join(temp_dir, 'hiera.conf')
       @data_dir = File.join(temp_dir, 'data')
     end
