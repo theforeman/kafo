@@ -1033,22 +1033,20 @@ The contents of this file are as per the
 [hiera.yaml docs](https://docs.puppet.com/hiera/latest/configuring.html).
 Only Hiera version 5 is supported.
 
-When running Puppet, Kafo will copy the Hiera config to a temporary location.
-Relative data directories will be changed to absolute paths. A
-`kafo_answers.yaml` file will be generated containing _all_ default and
-overriden values for parameters managed by Kafo. This may change in the future
-to allow a more complex hierarchy.
+An answers file will be generated containing _all_ default and overriden values
+for parameters managed by Kafo. During the run this is available as a
+`kafo.scenario.answer_file` fact. This may change in the future to allow a more
+complex hierarchy.
 
-The hierarchy can contain a special value with the name `Kafo Answers`. The
-exact values will be rewritten by Kafo, but it can be used to determine when
-the Kafo answers are loaded. Note the name is case sensitive. When it's
-missing, it will be added.
+The hierarchy must contain the path `%{facts.kafo.scenario.answer_file}`. This
+contains all answers in a temporary location.
 
 As an example, a hierarchy could be set up with:
 
 ```yaml
 hierarchy:
   - name: "Kafo Answers"
+    path: "%{facts.kafo.scenario.answer_file}"
   - name: "Other YAML hierarchy levels"
     paths:
       - "family/%{facts.os.family}.yaml"
@@ -1063,6 +1061,7 @@ hierarchy:
     datadir: "custom"
     path: "override.yaml"
   - name: "Kafo Answers"
+    path: "%{facts.kafo.scenario.answer_file}"
   - name: "Other YAML hierarchy levels"
     datadir: "data"
     paths:
@@ -1079,6 +1078,7 @@ scenario specific overrides for unmanaged modules.
 ```yaml
 hierarchy:
   - name: "Kafo Answers"
+    path: "%{facts.kafo.scenario.answer_file}"
   - name: "Scenario defaults"
     path: "scenario/%{facts.kafo.scenario.id}.yaml"
 ```

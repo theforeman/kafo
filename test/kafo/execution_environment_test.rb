@@ -10,14 +10,15 @@ module Kafo
 
     describe '#directory' do
       specify { assert File.directory?(execution_environment.directory) }
-      specify { refute File.exist?(File.join(execution_environment.directory, 'hiera.conf')) }
+      specify { refute File.exist?(File.join(execution_environment.directory, 'hiera.yaml')) }
     end
 
     describe '#configure_puppet' do
       let(:puppet_configurer) { execution_environment.configure_puppet }
       let(:directory) { execution_environment.directory }
       specify { assert_equal(File.join(directory, 'puppet.conf'), puppet_configurer.config_path) }
-      specify { assert_equal(File.join(directory, 'hiera.conf'), puppet_configurer['hiera_config']) }
+      specify { assert_equal(File.join(directory, 'hiera.yaml'), puppet_configurer['hiera_config']) }
+      specify { assert File.file?(puppet_configurer['hiera_config']) }
       specify { assert_equal(File.join(directory, 'environments'), puppet_configurer['environmentpath']) }
       specify { assert_equal(File.join(directory, 'facts'), puppet_configurer['factpath']) }
       specify { assert File.directory?(puppet_configurer['factpath']) }
@@ -30,6 +31,7 @@ module Kafo
           'scenario' => {
             'id' => config.scenario_id,
             'name' => 'Basic',
+            'answer_file' => File.join(directory, 'answers.yaml'),
           },
         }
         assert_equal(expected, facts)
