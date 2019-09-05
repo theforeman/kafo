@@ -19,6 +19,21 @@ module Kafo
       specify { assert_equal(File.join(directory, 'puppet.conf'), puppet_configurer.config_path) }
       specify { assert_equal(File.join(directory, 'hiera.conf'), puppet_configurer['hiera_config']) }
       specify { assert_equal(File.join(directory, 'environments'), puppet_configurer['environmentpath']) }
+      specify { assert_equal(File.join(directory, 'facts'), puppet_configurer['factpath']) }
+      specify { assert File.directory?(puppet_configurer['factpath']) }
+
+      it 'writes the correct facts' do
+        execution_environment.configure_puppet
+        facts = YAML.load_file(File.join(directory, 'facts', 'kafo.yaml'))
+        refute config.scenario_id.empty?
+        expected = {
+          'scenario' => {
+            'id' => config.scenario_id,
+            'name' => 'Basic',
+          },
+        }
+        assert_equal(expected, facts)
+      end
     end
   end
 end
