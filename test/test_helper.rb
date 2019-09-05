@@ -19,6 +19,7 @@ require 'dummy_logger'
 
 
 BASIC_CONFIGURATION = <<EOS
+:name: Basic
 :answer_file: test/fixtures/basic_answers.yaml
 :installer_dir: .
 :modules_dir: test/fixtures/modules

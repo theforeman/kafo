@@ -1004,6 +1004,21 @@ The cache will be skipped if the file modification time of the manifest is
 greater than the mtime recorded in the cache. Using `--parser-cache` will force
 the use of an outdated cache, but this should be used with caution.
 
+## Facts
+
+Kafo provides a structured fact describing the state. This fact is only present
+during the Puppet run. Currently it's the scenario id and name where the id is
+the same as passed via --scenario by the user and matches the scenario filename
+with an extension. The name is a human readable version.
+
+```yaml
+---
+kafo:
+  scenario:
+    id: foreman_proxy
+    name: Foreman Proxy
+```
+
 ## Configuring Hiera
 
 Kafo uses Hiera to include classes and pass parameters to classes using data
@@ -1057,6 +1072,16 @@ hierarchy:
 
 This would give precedence to all Kafo-managed parameter values, but for any
 others, would check for values per OS family, followed by a `common.yaml` file.
+
+The scenario id is also available as a fact which can be used to provide
+scenario specific overrides for unmanaged modules.
+
+```yaml
+hierarchy:
+  - name: "Kafo Answers"
+  - name: "Scenario defaults"
+    path: "scenario/%{facts.kafo.scenario.id}.yaml"
+```
 
 [Migration from Hiera version 3](https://puppet.com/docs/puppet/4.9/hiera_migrate_v3_yaml.html)
 is documented by Puppet.
