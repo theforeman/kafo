@@ -6,8 +6,12 @@ module Kafo
       @command = command
       @puppet_config = puppet_config
 
-      @options = options.push("--modulepath #{modules_path.join(':')}")
-      @options.push("--config=#{puppet_config.config_path}") if puppet_config
+      if puppet_config
+        puppet_config['basemodulepath'] = modules_path.join(':')
+        @options = options.push("--config=#{puppet_config.config_path}")
+      else
+        @options = options.push("--modulepath #{modules_path.join(':')}")
+      end
       @logger  = KafoConfigure.logger
       @puppet_version_check = !configuration.app[:skip_puppet_version_check]
       @suffix = nil
