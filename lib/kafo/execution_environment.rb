@@ -15,14 +15,14 @@ module Kafo
       @directory ||= begin
         directory = Dir.mktmpdir('kafo_installation')
         @logger.debug("Creating execution environment in #{directory}")
-        @hiera_config_path = File.join(directory, 'hiera.conf')
         directory
       end
     end
 
     def store_answers
-      hiera = HieraConfigurer.new(@config.app[:hiera_config], @config.modules, @config.app[:order], directory)
-      @hiera_config_path = hiera.write_configs
+      answer_data = HieraConfigurer.generate_data(@config.modules, @config.app[:order])
+      @logger.debug("Writing temporary answers to #{answer_file}")
+      File.open(answer_file, 'w') { |f| f.write(YAML.dump(answer_data)) }
     end
 
     def configure_puppet(settings = {})
@@ -31,10 +31,12 @@ module Kafo
       @logger.debug("Writing facts to #{factpath}")
       FactWriter.write_facts(facts, factpath)
 
+      hiera_config = configure_hiera
+
       settings = {
         'environmentpath' => environmentpath,
         'factpath'        => factpath,
-        'hiera_config'    => @hiera_config_path,
+        'hiera_config'    => hiera_config,
       }.merge(settings)
 
       PuppetConfigurer.new(puppet_conf, settings)
@@ -50,8 +52,22 @@ module Kafo
       File.join(directory, 'facts')
     end
 
+    def answer_file
+      File.join(directory, 'answers.yaml')
+    end
+
     def puppet_conf
       File.join(directory, 'puppet.conf')
+    end
+
+    def configure_hiera
+      if @config.app[:hiera_config]
+        File.realpath(@config.app[:hiera_config])
+      else
+        config_path = File.join(directory, 'hiera.yaml')
+        @logger.debug("Writing default hiera config to #{config_path}")
+        HieraConfigurer.write_default_config(config_path)
+      end
     end
 
     def facts
@@ -59,6 +75,7 @@ module Kafo
         'scenario' => {
           'id' => @config.scenario_id,
           'name' => @config.app[:name],
+          'answer_file' => answer_file,
         },
       }
     end
