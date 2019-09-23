@@ -160,7 +160,7 @@ module Kafo
     end
 
     def default_params_path
-      "#{dir_name}/manifests/#{get_params_name}.pp"
+      "#{dir_name}/manifests/#{class_to_name(get_params_name)}.pp"
     end
 
     def default_manifest_name
@@ -177,6 +177,10 @@ module Kafo
 
     def name_to_class_name(name)
       name.gsub('/', '::')
+    end
+
+    def class_to_name(name)
+      name.gsub('::', '/')
     end
 
   end

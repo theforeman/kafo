@@ -69,7 +69,7 @@ module Kafo
       specify { mod.params_path.must_equal 'puppet/manifests/params.pp' }
       specify { plugin1_mod.params_path.must_equal 'foreman/manifests/plugin/default_hostgroup/params.pp' }
       specify { plugin2_mod.params_path.must_equal 'custom/plugin/chef/params.pp' }
-      specify { certs_mod.params_path.must_equal 'certificates/manifests/foreman::params.pp' }
+      specify { certs_mod.params_path.must_equal 'certificates/manifests/foreman/params.pp' }
     end
 
     describe "#params_class_name" do
