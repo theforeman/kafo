@@ -29,6 +29,10 @@ BASIC_CONFIGURATION = <<EOS
 :ignore_undocumented: true
 
 :mapping:
+  :certs:
+    :dir_name: certificates
+    :manifest_name: foreman
+    :params_name: foreman::params
   :foreman::plugin::chef:
     :dir_name: custom
     :manifest_name: plugin/custom_chef

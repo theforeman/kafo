@@ -27,47 +27,56 @@ module Kafo
     let(:plugin1_mod) { PuppetModule.new 'foreman::plugin::default_hostgroup', parser }
     # BASIC_CONFIGURATION has mapping configured for this module
     let(:plugin2_mod) { PuppetModule.new 'foreman::plugin::chef', parser }
+    # BASIC_CONFIGURATION has mapping configured for this module
+    let(:certs_mod) { PuppetModule.new 'certs', parser }
 
     describe "#name" do
       specify { mod.name.must_equal 'puppet' }
       specify { plugin1_mod.name.must_equal 'foreman_plugin_default_hostgroup' }
       specify { plugin2_mod.name.must_equal 'foreman_plugin_chef' }
+      specify { certs_mod.name.must_equal 'certs' }
     end
 
     describe "#dir_name" do
       specify { mod.dir_name.must_equal 'puppet' }
       specify { plugin1_mod.dir_name.must_equal 'foreman' }
       specify { plugin2_mod.dir_name.must_equal 'custom' }
+      specify { certs_mod.dir_name.must_equal 'certificates' }
     end
 
     describe "#manifest_name" do
       specify { mod.manifest_name.must_equal 'init' }
       specify { plugin1_mod.manifest_name.must_equal 'plugin/default_hostgroup' }
       specify { plugin2_mod.manifest_name.must_equal 'plugin/custom_chef' }
+      specify { certs_mod.manifest_name.must_equal 'foreman' }
     end
 
     describe "#class_name" do
       specify { mod.class_name.must_equal 'puppet' }
       specify { plugin1_mod.class_name.must_equal 'foreman::plugin::default_hostgroup' }
       specify { plugin2_mod.class_name.must_equal 'custom::plugin::custom_chef' }
+      specify { certs_mod.class_name.must_equal 'certificates::foreman' }
     end
 
     describe "#manifest_path" do
-      specify { mod.manifest_path.must_match %r"test/fixtures/modules/puppet/manifests/init.pp$" }
-      specify { plugin1_mod.manifest_path.must_match %r"test/fixtures/modules/foreman/manifests/plugin/default_hostgroup.pp" }
-      specify { plugin2_mod.manifest_path.must_match %r"test/fixtures/modules/custom/manifests/plugin/custom_chef.pp" }
+      specify { mod.manifest_path.must_match %r"test/fixtures/modules/puppet/manifests/init\.pp$" }
+      specify { plugin1_mod.manifest_path.must_match %r"test/fixtures/modules/foreman/manifests/plugin/default_hostgroup\.pp$" }
+      specify { plugin2_mod.manifest_path.must_match %r"test/fixtures/modules/custom/manifests/plugin/custom_chef\.pp$" }
+      specify { certs_mod.manifest_path.must_match %r"test/fixtures/modules/certificates/manifests/foreman\.pp$" }
     end
 
     describe "#params_path" do
       specify { mod.params_path.must_equal 'puppet/manifests/params.pp' }
       specify { plugin1_mod.params_path.must_equal 'foreman/manifests/plugin/default_hostgroup/params.pp' }
       specify { plugin2_mod.params_path.must_equal 'custom/plugin/chef/params.pp' }
+      specify { certs_mod.params_path.must_equal 'certificates/manifests/foreman::params.pp' }
     end
 
     describe "#params_class_name" do
       specify { mod.params_class_name.must_equal 'params' }
       specify { plugin1_mod.params_class_name.must_equal 'plugin::default_hostgroup::params' }
       specify { plugin2_mod.params_class_name.must_equal 'params' }
+      specify { certs_mod.params_class_name.must_equal 'foreman::params' }
     end
 
     describe "#raw_data" do
