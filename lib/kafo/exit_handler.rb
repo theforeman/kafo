@@ -1,11 +1,10 @@
 module Kafo
   class ExitHandler
-    attr_accessor :cleanup_paths, :exit_code, :logger
+    attr_accessor :cleanup_paths, :exit_code
 
     def initialize
       @cleanup_paths = []
       @exit_code = 0
-      @logger = KafoConfigure.logger
     end
 
     def error_codes
@@ -27,8 +26,8 @@ module Kafo
     def exit(code, &block)
       @exit_code = translate_exit_code(code)
       block.call if block
-      KafoConfigure.logger.debug "Exit with status code: #{@exit_code} (signal was #{code})"
-      KafoConfigure.logger.dump_errors unless KafoConfigure.verbose
+      logger.debug "Exit with status code: #{@exit_code} (signal was #{code})"
+      logger.dump_errors unless KafoConfigure.verbose
       cleanup
       Kernel.exit(@exit_code)
     end
@@ -52,6 +51,12 @@ module Kafo
 
     def register_cleanup_path(path)
       self.cleanup_paths<< path
+    end
+
+    private
+
+    def logger
+      @logger ||= KafoConfigure.logger
     end
 
   end
