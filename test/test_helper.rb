@@ -5,6 +5,8 @@ end
 require 'minitest/autorun'
 require 'minitest/spec'
 require 'minitest/mock'
+require "minitest/reporters"
+Minitest::Reporters.use!
 
 require 'manifest_file_factory'
 require 'config_file_factory'

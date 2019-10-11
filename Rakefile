@@ -2,6 +2,12 @@ require 'rake/testtask'
 require "bundler/gem_tasks"
 load 'tasks/jenkins.rake'
 
+Rake::TestTask.new('test:ruby') do |t|
+  t.libs << 'lib' << 'test'
+  t.test_files = FileList['test/**/*_test.rb']
+  t.verbose = true
+end
+
 Rake::TestTask.new('test:unit') do |t|
   t.libs << 'lib' << 'test'
   t.test_files = FileList['test/kafo/**/*_test.rb']
@@ -27,4 +33,4 @@ end
 
 CLEAN.include 'test/tmp'
 
-task :test => ['test:unit', 'test:acceptance', 'test:puppet_modules']
+task :test => ['test:ruby', 'test:puppet_modules']
