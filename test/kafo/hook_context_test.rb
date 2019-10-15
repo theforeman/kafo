@@ -6,17 +6,18 @@ module Kafo
     let(:context) { HookContext.new(kafo) }
 
     describe "api" do
-      specify { context.respond_to?(:logger).must_equal true }
-      specify { context.respond_to?(:app_option).must_equal true }
-      specify { context.respond_to?(:app_value).must_equal true }
-      specify { context.respond_to?(:param).must_equal true }
-      specify { context.respond_to?(:add_module).must_equal true }
-      specify { context.respond_to?(:module_enabled?).must_equal true }
-      specify { context.respond_to?(:exit).must_equal true }
-      specify { context.respond_to?(:get_custom_config).must_equal true }
-      specify { context.respond_to?(:store_custom_config).must_equal true }
-      specify { context.respond_to?(:scenario_path).must_equal true }
-      specify { context.respond_to?(:scenario_data).must_equal true }
+      specify { assert context.respond_to?(:logger) }
+      specify { assert context.respond_to?(:app_option) }
+      specify { assert context.respond_to?(:app_value) }
+      specify { assert context.respond_to?(:param) }
+      specify { assert context.respond_to?(:add_module) }
+      specify { assert context.respond_to?(:module_enabled?) }
+      specify { assert context.respond_to?(:exit) }
+      specify { assert context.respond_to?(:get_custom_config) }
+      specify { assert context.respond_to?(:store_custom_config) }
+      specify { assert context.respond_to?(:scenario_id) }
+      specify { assert context.respond_to?(:scenario_path) }
+      specify { assert context.respond_to?(:scenario_data) }
     end
 
     describe "#scenario_data" do
