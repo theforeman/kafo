@@ -8,7 +8,7 @@ require 'kafo/execution_environment'
 
 module Kafo
   class Configuration
-    attr_reader :config_file, :answer_file
+    attr_reader :config_file, :answer_file, :scenario_id
 
     DEFAULT = {
         :name                 => '',
@@ -32,6 +32,10 @@ module Kafo
         :skip_puppet_version_check => false
     }
 
+    def self.get_scenario_id(filename)
+      File.basename(filename, '.yaml')
+    end
+
     def initialize(file, persist = true)
       @config_file = file
       @persist     = persist
@@ -47,6 +51,7 @@ module Kafo
       end
 
       @config_dir = File.dirname(@config_file)
+      @scenario_id = Configuration.get_scenario_id(@config_file)
     end
 
     def save_configuration(configuration)

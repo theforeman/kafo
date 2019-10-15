@@ -19,7 +19,7 @@ module Kafo
           content = YAML.load_file(scn_file)
           if content.is_a?(Hash) && content.has_key?(:answer_file) && content.fetch(:enabled, true)
             # add scenario name for legacy configs
-            content[:name] = File.basename(scn_file, '.yaml') unless content.has_key?(:name)
+            content[:name] = Configuration.get_scenario_id(scn_file) unless content.has_key?(:name)
             scns[scn_file] = content
           end
         rescue Psych::SyntaxError => e
