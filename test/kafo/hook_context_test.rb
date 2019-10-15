@@ -22,14 +22,10 @@ module Kafo
 
     describe "#scenario_data" do
       specify do
-        Tempfile.open('scenario') do |file|
-          file.write(YAML.dump({'foo' => 'bar'}))
-          file.flush
-
-          context.stub :scenario_path, file.path do
-            assert_equal context.scenario_data, {'foo' => 'bar'}
-          end
-        end
+        config = Minitest::Mock.new
+        kafo.expect :config, config
+        config.expect :app, {'foo' => 'bar'}
+        assert_equal({'foo' => 'bar'}, context.scenario_data)
       end
     end
 

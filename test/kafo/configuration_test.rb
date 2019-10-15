@@ -20,6 +20,12 @@ module Kafo
     specify { File.exist?(File.expand_path(basic_config.gem_root)) }
     specify { File.expand_path(basic_config.kafo_modules_dir).must_match %r|/modules$|}
 
+    describe '.get_scenario_id' do
+      specify { assert_equal('absolute_scenario', Configuration.get_scenario_id('/path/to/absolute_scenario.yaml')) }
+      specify { assert_equal('relative_scenario', Configuration.get_scenario_id('relative_scenario.yaml')) }
+      specify { assert_equal('with.extension', Configuration.get_scenario_id('with.extension.yaml')) }
+    end
+
     describe '#log_exists?' do
       it 'returns true if a non-empty log file exists for the configuration' do
         Dir.mktmpdir do |log_dir|

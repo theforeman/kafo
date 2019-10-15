@@ -93,14 +93,19 @@ module Kafo
       self.kafo.config.set_custom(key, value)
     end
 
+    # Return the id of the current scenario
+    def scenario_id
+      self.kafo.config.scenario_id
+    end
+
     # Return the path to the current scenario
     def scenario_path
-      self.kafo.class.scenario_manager.select_scenario
+      self.kafo.config.config_file
     end
 
     # Return the actual data in the current scenario
     def scenario_data
-      YAML.load(File.read(scenario_path))
+      self.kafo.config.app
     end
   end
 end
