@@ -79,8 +79,8 @@ All configuration related files are to be found in the config directory.
 
 You can supply custom location for your scenario configuration and answer files
 and change configuration and answer files names using options:
-```
-kafofy --help
+```console
+$ kafofy --help
 Usage: kafofy [options]
     -c, --config_dir DIR            location of the scenarios configuration directory [./config/installer-scenarios.d/]
     -s, --scenario SCENARIO          scenario file name (without extension) [default]
