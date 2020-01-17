@@ -35,9 +35,16 @@ module Kafo
     end
 
     def self.search_puppet_path(bin_name)
-      bin_path = (::ENV['PATH'].split(File::PATH_SEPARATOR) + ['/opt/puppetlabs/bin']).find do |path|
+      bin_dir = if File.exist?('/opt/theforeman/tfm/root/usr/bin')
+                  '/opt/theforeman/tfm/root/usr/bin'
+                else
+                  '/opt/puppetlabs/bin'
+                end
+
+      bin_path = (::ENV['PATH'].split(File::PATH_SEPARATOR) + [bin_dir]).find do |path|
         File.executable?(File.join(path, bin_name))
       end
+
       File.join([bin_path, bin_name].compact)
     end
 
