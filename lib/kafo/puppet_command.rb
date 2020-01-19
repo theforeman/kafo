@@ -38,7 +38,7 @@ module Kafo
       bin_path = (::ENV['PATH'].split(File::PATH_SEPARATOR) + ['/opt/puppetlabs/bin']).find do |path|
         File.executable?(File.join(path, bin_name))
       end
-      File.join([bin_path, bin_name].compact)
+      "env -i #{File.join([bin_path, bin_name].compact)}"
     end
 
     private
