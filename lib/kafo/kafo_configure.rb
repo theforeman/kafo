@@ -429,7 +429,7 @@ module Kafo
       execution_env.store_answers
       puppetconf = execution_env.configure_puppet(
         'color'     => false,
-        'evaltrace' => !!@progressbar,
+        'evaltrace' => !!@progress_bar,
         'noop'      => !!noop?,
         'profile'   => !!profile?,
         'show_diff' => true,
