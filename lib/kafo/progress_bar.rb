@@ -11,7 +11,7 @@ module Kafo
 # change more methods like #done_message or #print_error
   class ProgressBar
     MONITOR_RESOURCE = %r{\w*MONITOR_RESOURCE ([^\]]+\])}
-    EVALTRACE_START = %r{/(.+\]): Starting to evaluate the resource}
+    EVALTRACE_START = %r{/(.+\]): Starting to evaluate the resource( \((\d+) of (\d+)\))?}
     EVALTRACE_END = %r{/(.+\]): Evaluated in [\d\.]+ seconds}
     PREFETCH = %r{Prefetching .* resources for}
 
@@ -42,6 +42,19 @@ module Kafo
       end
 
       if (line_start = EVALTRACE_START.match(line))
+        if line_start[4]
+          # Puppet 6.6 introduced progress in evaltrace
+          # Puppet counts 1-based where we count 0-based here
+          new_lines = line_start[3].to_i - 1
+          new_total = line_start[4].to_i
+          if new_lines != @lines || @total != new_total
+            @lines = new_lines
+            @total = new_total
+            update_bar = true
+            force_update = true
+          end
+        end
+
         if (known_resource = find_known_resource(line_start[1]))
           line = known_resource
           update_bar = true
