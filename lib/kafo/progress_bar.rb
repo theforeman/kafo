@@ -10,9 +10,9 @@ module Kafo
 # #finite_template and #infinite_template methods. Also you may find useful to
 # change more methods like #done_message or #print_error
   class ProgressBar
-    MONITOR_RESOURCE = %r{\w*MONITOR_RESOURCE ([^\]]+\])}
-    EVALTRACE_START = %r{/(.+\]): Starting to evaluate the resource}
-    EVALTRACE_END = %r{/(.+\]): Evaluated in [\d\.]+ seconds}
+    MONITOR_RESOURCE = %r{\w*MONITOR_RESOURCE (?<resource>[^\]]+\])}
+    EVALTRACE_START = %r{/(?<resource>.+\]): Starting to evaluate the resource( \((?<count>\d+) of (?<total>\d+)\))?}
+    EVALTRACE_END = %r{/(?<resource>.+\]): Evaluated in [\d\.]+ seconds}
     PREFETCH = %r{Prefetching .* resources for}
 
     def initialize
@@ -37,12 +37,25 @@ module Kafo
       force_update = false
 
       if (line_monitor = MONITOR_RESOURCE.match(line))
-        @resources << line_monitor[1]
+        @resources << line_monitor[:resource]
         @total = (@total == :unknown ? 1 : @total + 1)
       end
 
       if (line_start = EVALTRACE_START.match(line))
-        if (known_resource = find_known_resource(line_start[1]))
+        if line_start[:total]
+          # Puppet 6.6 introduced progress in evaltrace
+          # Puppet counts 1-based where we count 0-based here
+          new_lines = line_start[:count].to_i - 1
+          new_total = line_start[:total].to_i
+          if new_lines != @lines || @total != new_total
+            @lines = new_lines
+            @total = new_total
+            update_bar = true
+            force_update = true
+          end
+        end
+
+        if (known_resource = find_resource(line_start[:resource]))
           line = known_resource
           update_bar = true
           force_update = true
@@ -50,7 +63,7 @@ module Kafo
       end
 
       if (line_end = EVALTRACE_END.match(line)) && @total != :unknown && @lines < @total
-        if (known_resource = find_known_resource(line_end[1]))
+        if (known_resource = find_resource(line_end[:resource]))
           @resources.delete(known_resource)  # ensure it's only counted once
           @lines += 1
         end
@@ -102,14 +115,9 @@ module Kafo
       'Installing...'
     end
 
-    def find_known_resource(resource)
-      loop do
-        return resource if @resources.include?(resource)
-        # continue to remove prefixes from /Stage[main]/Example/File[/etc/foo] until a resource name is found
-        break unless resource.include?('/')
-        resource = resource.sub %r{.*?/}, ''
-      end
-      nil
+    def find_resource(resource)
+      found = resource.match(%r{Stage.*\/(?<resource>.*\[.*\])$})
+      found.nil? ? nil : found[:resource]
     end
 
   end
