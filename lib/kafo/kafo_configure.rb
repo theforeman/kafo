@@ -446,7 +446,7 @@ module Kafo
       begin
         command = PuppetCommand.new('include kafo_configure', options, puppetconf).command
         log_parser = PuppetLogParser.new
-        PTY.spawn(command) do |stdin, stdout, pid|
+        PTY.spawn(*PuppetCommand.format_command(command)) do |stdin, stdout, pid|
           begin
             stdin.each do |line|
               line = normalize_encoding(line)
