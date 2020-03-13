@@ -176,12 +176,16 @@ module Kafo
 EOS
 
         @logger.info 'Loading default values from puppet modules...'
-        command = PuppetCommand.new(dump_manifest, [], puppetconf, self).append('2>&1').command
-        result = `#{command}`
-        @logger.debug result
-        unless $?.exitstatus == 0
+        command = PuppetCommand.new(dump_manifest, [], puppetconf, self).command
+        stdout, stderr, status = Open3.capture3(*PuppetCommand.format_command(command))
+
+        @logger.debug stdout
+        @logger.debug stderr
+
+        unless status.success?
           log = app[:log_dir] + '/' + app[:log_name]
-          if (version_mismatch = /kafo_configure::puppet_version_failure: (.+?\))/.match(result))
+
+          if (version_mismatch = /kafo_configure::puppet_version_failure: (.+?\))/.match(stderr))
             puts version_mismatch[1]
             puts "Cannot continue due to incompatible version of Puppet. Use --skip-puppet-version-check to disable this check."
             @logger.error version_mismatch[1]
@@ -190,14 +194,15 @@ EOS
           else
             puts "Could not get default values, check log file at #{log} for more information"
             @logger.error command
-            @logger.error result
+            @logger.error stderr
             @logger.error 'Could not get default values, cannot continue'
             KafoConfigure.exit(:defaults_error)
           end
         end
+
         @logger.info "... finished"
 
-        load_yaml_from_output(result.split($/))
+        load_yaml_from_output(stdout.split($/))
       end
     end
 

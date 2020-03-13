@@ -1,8 +1,11 @@
 require 'test_helper'
 require 'fileutils'
 
-TMPDIR = File.expand_path('../../tmp', __FILE__)
+tmp = File.expand_path('../../tmp', __FILE__)
+Dir.mkdir(tmp) unless File.exist?(tmp)
+TMPDIR = Dir.mktmpdir('kafo', tmp)
 INSTALLER_HOME = File.join(TMPDIR, 'installer')
+KAFO_CONFIG_DIR = File.join(INSTALLER_HOME, 'config', 'installer-scenarios.d')
 KAFO_CONFIG = File.join(INSTALLER_HOME, 'config', 'installer-scenarios.d', 'default.yaml')
 KAFO_ANSWERS = File.join(INSTALLER_HOME, 'config', 'installer-scenarios.d', 'default-answers.yaml')
 TEST_MODULE_PATH = File.join(INSTALLER_HOME, 'modules', 'testing')
@@ -10,7 +13,7 @@ MANIFEST_PATH = File.join(TEST_MODULE_PATH, 'manifests')
 
 def run_command(command, opts = {})
   opts = {:be => true, :capture => true, :dir => INSTALLER_HOME}.merge(opts)
-  command = "bundle exec #{command}" if opts[:be]
+  command = "BUNDLE_GEMFILE=#{TMPDIR}/Gemfile bundle exec #{command}" if opts[:be]
 
   ret = Dir.chdir(opts[:dir]) do
           if opts[:capture]
@@ -21,6 +24,7 @@ def run_command(command, opts = {})
             Bundler.with_clean_env { system(command) }
           end
         end
+
   [$?, *ret]
 end
 
@@ -32,7 +36,7 @@ def generate_gemfile
       kafo_gemfile = File.read(File.expand_path('../../../Gemfile', __FILE__))
       gemfile.write kafo_gemfile.sub(/^gemspec$/, "gem 'kafo', :path => '#{Dir.pwd}'")
     end
-    run_command 'bundle install', :dir => TMPDIR, :be => false
+    run_command 'bundle install --path bundle', :dir => TMPDIR, :be => false
   end
 end
 
@@ -43,7 +47,7 @@ def generate_installer
   generate_gemfile
   FileUtils.cp Dir["#{TMPDIR}/Gemfile*"], INSTALLER_HOME
 
-  run_command 'kafofy'
+  run_command "kafofy -c #{KAFO_CONFIG_DIR}", :dir => TMPDIR
   config = YAML.load_file(KAFO_CONFIG)
   config[:log_dir] = INSTALLER_HOME
   File.open(KAFO_CONFIG, 'w') { |f| f.write(config.to_yaml) }

@@ -1,3 +1,5 @@
+require 'open3'
+
 module Kafo
   class BaseContext
     def facts
@@ -24,12 +26,18 @@ module Kafo
 
     def self.facts
       @facts ||= begin
-        symbolize(JSON.load(`#{facter_path} --json`) || {})
+        result = run_command("#{facter_path} --json")
+        symbolize(JSON.load(result) || {})
       end
     end
 
     def self.facter_path
       @facter_path ||= PuppetCommand.search_puppet_path('facter')
+    end
+
+    def self.run_command(command)
+      stdout, _stderr, _status = Open3.capture3(*PuppetCommand.format_command(command))
+      stdout
     end
   end
 end

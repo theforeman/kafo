@@ -3,8 +3,13 @@ require 'acceptance/test_helper'
 module Kafo
   describe 'kafo-export-params' do
     describe '--help' do
+      before do
+        generate_installer
+        add_manifest
+      end
+
       it 'outputs usage' do
-        code, out, _ = run_command('bin/kafo-export-params --help', :dir => Dir.pwd)
+        code, out, _ = run_command('kafo-export-params --help')
         _(code).must_equal 0
         _(out).must_include 'Usage:'
         _(out).must_include 'kafo-export-params [OPTIONS]'
@@ -12,10 +17,12 @@ module Kafo
     end
 
     describe 'md format' do
-      it 'outputs markdown' do
+      before do
         generate_installer
         add_manifest
+      end
 
+      it 'outputs markdown' do
         code, out, _ = run_command "kafo-export-params -f md -c #{KAFO_CONFIG}"
         _(code).must_equal 0
         _(out).must_match(/\| Parameter name\s*\| Description\s*\|/)

@@ -251,7 +251,8 @@ module Kafo
         old_config.stub(:modules, [fake_module('mod', [p_old_bar])]) do
           new_config.stub(:modules, [fake_module('mod', [p_bar])]) do
             manager.print_scenario_diff(old_config, new_config)
-            must_be_on_stdout(output, "No values will be updated from previous scenario\n")
+            must_be_on_stdout(output, "No values will be updated from")
+            must_be_on_stdout(output, "previous scenario\n")
           end
         end
       end
@@ -269,7 +270,8 @@ module Kafo
         old_config.stub(:modules, []) do
           new_config.stub(:modules, []) do
             manager.print_scenario_diff(old_config, new_config)
-            must_be_on_stdout(output, "No values from previous installation will be lost\n")
+            must_be_on_stdout(output, "No values from previous installation")
+            must_be_on_stdout(output, "will be lost\n")
           end
         end
       end

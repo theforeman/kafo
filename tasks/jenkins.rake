@@ -1,5 +1,5 @@
 namespace :jenkins do
-  task :unit => ['jenkins:setup', 'rake:test']
+  task :unit => ['jenkins:setup', 'test:unit', 'test:puppet_modules', 'test:acceptance']
 
   task :setup do
     ENV['MINITEST_REPORTER'] ||= 'JUnitReporter'

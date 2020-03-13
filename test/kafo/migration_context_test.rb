@@ -18,18 +18,18 @@ module Kafo
     end
 
     describe '.facts' do
-      specify { MigrationContext.stub(:`, {'foo' => 'bar'}.to_json) { _(MigrationContext.facts).must_equal(:foo => 'bar') } }
+      specify { MigrationContext.stub(:run_command, {'foo' => 'bar'}.to_json) { _(MigrationContext.facts).must_equal(:foo => 'bar') } }
 
       specify do
         PuppetCommand.stub(:search_puppet_path, Proc.new { |bin| '/opt/puppetlabs/bin/facter' if bin == 'facter' }) do
-          MigrationContext.stub(:`, Proc.new { |cmd| {'puppet' => 'labs'}.to_json if cmd == '/opt/puppetlabs/bin/facter --json' }) do
+          MigrationContext.stub(:run_command, Proc.new { |cmd| {'puppet' => 'labs'}.to_json if cmd == '/opt/puppetlabs/bin/facter --json' }) do
             _(MigrationContext.facts).must_equal(:puppet => 'labs')
           end
         end
       end
 
       specify do
-        MigrationContext.stub(:`, {'foo' => 'bar', 'first' => {'second' => ['value']}}.to_json) do
+        MigrationContext.stub(:run_command, {'foo' => 'bar', 'first' => {'second' => ['value']}}.to_json) do
           _(MigrationContext.facts).must_equal(:foo => 'bar', :first => {:second => ['value']})
         end
       end

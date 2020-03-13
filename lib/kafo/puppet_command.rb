@@ -35,10 +35,30 @@ module Kafo
     end
 
     def self.search_puppet_path(bin_name)
+      # Find the location of the puppet executable and use that to
+      # determine the path of all executables
       bin_path = (::ENV['PATH'].split(File::PATH_SEPARATOR) + ['/opt/puppetlabs/bin']).find do |path|
-        File.executable?(File.join(path, bin_name))
+        File.executable?(File.join(path, 'puppet')) && File.executable?(File.join(path, bin_name))
       end
       File.join([bin_path, bin_name].compact)
+    end
+
+    def self.format_command(command)
+      if search_puppet_path('puppet').start_with?('/opt/puppetlabs')
+        [clean_env_vars, command, :unsetenv_others => true]
+      else
+        [::ENV, command, :unsetenv_others => false]
+      end
+    end
+
+    def self.clean_env_vars
+      # Cleaning ENV vars and keeping required vars only because,
+      # When using SCL it adds GEM_HOME and GEM_PATH ENV vars.
+      whitelisted_vars = %w[HOME USER LANG]
+
+      cleaned_env = ::ENV.select { |var| whitelisted_vars.include?(var) || var.start_with?('LC_') }
+      cleaned_env['PATH'] = '/sbin:/bin:/usr/sbin:/usr/bin:/opt/puppetlabs/bin'
+      cleaned_env
     end
 
     private
