@@ -36,8 +36,8 @@ module Kafo
         it "must configure correct width and preserve height" do
           HighLine::SystemExtensions.stub :terminal_size, [40, 10] do
             wizard.send :setup_terminal
-            $terminal.wrap_at.must_equal 40
-            $terminal.page_at.must_equal 10
+            _($terminal.wrap_at).must_equal 40
+            _($terminal.page_at).must_equal 10
           end
         end
       end
@@ -46,8 +46,8 @@ module Kafo
         it "must configure max width to 80 and preserve height" do
           HighLine::SystemExtensions.stub :terminal_size, [100, 50] do
             wizard.send :setup_terminal
-            $terminal.wrap_at.must_equal 80
-            $terminal.page_at.must_equal 50
+            _($terminal.wrap_at).must_equal 80
+            _($terminal.page_at).must_equal 50
           end
         end
       end
@@ -146,7 +146,7 @@ module Kafo
         describe "turn module off" do
           before do
             puppet_module.enable
-            puppet_module.enabled?.must_equal true
+            _(puppet_module.enabled?).must_equal true
             input.puts "1" # "Enable/disable module"
             input.puts "n" # disable module
             input.puts "2" # "Back to main menu"
@@ -155,14 +155,14 @@ module Kafo
 
           it "changes module flag" do
             must_not_raise_eof(input, output) { wizard.send(:configure_module, puppet_module) }
-            puppet_module.enabled?.must_equal false
+            _(puppet_module.enabled?).must_equal false
           end
         end
 
         describe "turn module on" do
           before do
             puppet_module.disable
-            puppet_module.enabled?.must_equal false
+            _(puppet_module.enabled?).must_equal false
             input.puts "1" # Enable/disable module
             input.puts "y" # enable module
             input.puts "10" # "Back to main menu"
@@ -171,7 +171,7 @@ module Kafo
 
           it "changes module flag" do
             must_not_raise_eof(input, output) { wizard.send(:configure_module, puppet_module) }
-            puppet_module.enabled?.must_equal true
+            _(puppet_module.enabled?).must_equal true
           end
         end
 
@@ -236,7 +236,7 @@ module Kafo
 
             it "should change value" do
               wizard.send :configure, single
-              single.value.must_equal('changed')
+              _(single.value).must_equal('changed')
             end
 
             after do
@@ -255,7 +255,7 @@ module Kafo
               single.stub :valid?, Proc.new { single.value == '2.0' } do
                 wizard.send :configure, single
                 must_be_on_stdout(output, 'Invalid value')
-                single.value.must_equal('2.0')
+                _(single.value).must_equal('2.0')
               end
             end
           end
@@ -268,7 +268,7 @@ module Kafo
 
             it "leaves original value untouched" do
               wizard.send :configure, single
-              single.value.must_equal('1.0')
+              _(single.value).must_equal('1.0')
             end
           end
         end
@@ -286,7 +286,7 @@ module Kafo
 
             it "sets all three values" do
               wizard.send :configure, array
-              array.value.must_equal ['one', 'two', 'three']
+              _(array.value).must_equal ['one', 'two', 'three']
             end
           end
         end
@@ -362,8 +362,8 @@ module Kafo
 
         it "should reset value" do
           wizard.send :reset, param
-          param.value.must_equal('1.0')
-          param.value_set.must_equal(false)
+          _(param.value).must_equal('1.0')
+          _(param.value_set).must_equal(false)
         end
       end
     end

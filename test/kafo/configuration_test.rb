@@ -15,10 +15,10 @@ module Kafo
     let(:p_old_bar) { fake_param('bar', 10) }
     let(:p_old_baz) { fake_param('baz', 100) }
 
-    specify { basic_config.root_dir.must_equal current_dir }
-    specify { basic_config.check_dirs.must_equal [File.join(current_dir, 'checks')] }
+    specify { _(basic_config.root_dir).must_equal current_dir }
+    specify { _(basic_config.check_dirs).must_equal [File.join(current_dir, 'checks')] }
     specify { File.exist?(File.expand_path(basic_config.gem_root)) }
-    specify { File.expand_path(basic_config.kafo_modules_dir).must_match %r|/modules$|}
+    specify { _(File.expand_path(basic_config.kafo_modules_dir)).must_match %r|/modules$|}
 
     describe '.get_scenario_id' do
       specify { assert_equal('absolute_scenario', Configuration.get_scenario_id('/path/to/absolute_scenario.yaml')) }
@@ -67,7 +67,7 @@ module Kafo
       it 'lists all the params that changed value' do
         basic_config.stub(:modules, [fake_module('mod', [p_foo, p_bar, p_baz])]) do
           old_config.stub(:modules, [fake_module('mod', [p_old_foo, p_old_bar, p_old_baz])]) do
-            basic_config.params_changed(old_config).must_equal([p_foo])
+            _(basic_config.params_changed(old_config)).must_equal([p_foo])
           end
         end
       end
@@ -78,7 +78,7 @@ module Kafo
         basic_config.stub(:modules, [fake_module('mod', [p_foo, p_bar])]) do
           basic_config.stub(:module_enabled?, true) do
             old_config.stub(:modules, [fake_module('mod', [p_old_foo, p_old_baz])]) do
-              basic_config.params_missing(old_config).must_equal([p_old_baz])
+              _(basic_config.params_missing(old_config)).must_equal([p_old_baz])
             end
           end
         end
@@ -90,9 +90,9 @@ module Kafo
         basic_config.stub(:modules, [fake_module('mod', [p_foo, p_bar])]) do
           old_config.stub(:modules, [fake_module('mod', [p_old_foo, p_old_bar, p_old_baz])]) do
             basic_config.preset_defaults_from_other_config(old_config)
-            basic_config.param('mod', 'foo').value.must_equal 2
-            basic_config.param('mod', 'bar').value.must_equal 10
-            basic_config.param('mod', 'baz').must_be_nil
+            _(basic_config.param('mod', 'foo').value).must_equal 2
+            _(basic_config.param('mod', 'bar').value).must_equal 10
+            _(basic_config.param('mod', 'baz')).must_be_nil
           end
         end
       end
@@ -109,18 +109,18 @@ module Kafo
 
       it 'migrates values from other configuration' do
         basic_config.migrate_configuration(old_config)
-        keys.each { |key| basic_config.app[key].must_equal 'old value' }
-        basic_config.app[:description].wont_equal 'old value'
+        keys.each { |key| _(basic_config.app[key]).must_equal 'old value' }
+        _(basic_config.app[:description]).wont_equal 'old value'
       end
 
       it 'migrates values from other configuration except those marked to skip' do
         basic_config.migrate_configuration(old_config, :skip => [:log_name])
-        basic_config.app[:log_name].wont_equal 'old value'
+        _(basic_config.app[:log_name]).wont_equal 'old value'
       end
 
       it 'migrates values from other configuration plus those marked to add' do
         basic_config.migrate_configuration(old_config, :with => [:description])
-        basic_config.app[:description].must_equal 'old value'
+        _(basic_config.app[:description]).must_equal 'old value'
       end
     end
 
@@ -138,32 +138,32 @@ module Kafo
       it "runs the migrations" do
         basic_config.stub(:migrations_dir, @tmp_dir) do
           basic_config.run_migrations
-          basic_config.app[:description].must_equal 'Migrated'
-          basic_config.app[:custom].must_equal({ :test => '01'})
+          _(basic_config.app[:description]).must_equal 'Migrated'
+          _(basic_config.app[:custom]).must_equal({ :test => '01'})
         end
       end
 
       it "wont run the applied migrations twice" do
         basic_config.stub(:migrations_dir, @tmp_dir) do
           basic_config.run_migrations
-          YAML.load_file(File.join(@tmp_dir, '.applied')).must_equal ["01.rb", "02.rb"]
+          _(YAML.load_file(File.join(@tmp_dir, '.applied'))).must_equal ["01.rb", "02.rb"]
 
           basic_config.app[:description] = "New desc"
           basic_config.run_migrations
-          basic_config.app[:description].must_equal "New desc"
+          _(basic_config.app[:description]).must_equal "New desc"
         end
       end
     end
 
     describe '#migrations_dir' do
-      specify { basic_config.migrations_dir.must_match(%r{/tmp/testing_config.*\.migrations$}) }
+      specify { _(basic_config.migrations_dir).must_match(%r{/tmp/testing_config.*\.migrations$}) }
     end
 
     describe '#module' do
       it 'finds module by name' do
         basic_config.stub(:modules, [PuppetModule.new('a', nil), PuppetModule.new('b', nil)]) do
-          basic_config.module('b').must_be_kind_of PuppetModule
-          basic_config.module('c').must_be_nil
+          _(basic_config.module('b')).must_be_kind_of PuppetModule
+          _(basic_config.module('c')).must_be_nil
         end
       end
     end
@@ -173,15 +173,15 @@ module Kafo
 
       it 'finds parameter by name' do
         basic_config.stub(:module, fake_module('mod', [param])) do
-          basic_config.param('mod', 'test').must_equal param
-          basic_config.param('mod', 'unknown').must_be_nil
-          basic_config.param('unknown', 'unknown').must_be_nil
+          _(basic_config.param('mod', 'test')).must_equal param
+          _(basic_config.param('mod', 'unknown')).must_be_nil
+          _(basic_config.param('unknown', 'unknown')).must_be_nil
         end
       end
 
       it 'returns nil for unknown module' do
         basic_config.stub(:module, nil) do
-          basic_config.param('unknown', 'unknown').must_be_nil
+          _(basic_config.param('unknown', 'unknown')).must_be_nil
         end
       end
     end
@@ -191,7 +191,7 @@ module Kafo
         mod = MiniTest::Mock.new
         mod.expect(:parse, mod)
         PuppetModule.stub(:new, mod) do
-          basic_config.modules.must_equal [mod]
+          _(basic_config.modules).must_equal [mod]
         end
       end
 
@@ -205,7 +205,7 @@ module Kafo
               mod.expect(:parse, mod)
               PuppetModule.stub(:new, mod) do
                 basic_config.modules
-                DataType.types.must_include 'Test'
+                _(DataType.types).must_include 'Test'
                 basic_config.modules  # must not register twice
               end
             end

@@ -18,11 +18,11 @@ module Kafo
         before { color_scheme.setup }
         specify { assert HighLine.use_color? }
         let(:highline_color_scheme) { HighLine.color_scheme }
-        specify { highline_color_scheme.keys.must_include 'good' }
-        specify { highline_color_scheme.keys.must_include 'bad' }
-        specify { highline_color_scheme.keys.must_include 'info' }
-        specify { highline_color_scheme['info'].list.must_equal [:bold, :cyan] }
-        specify { highline_color_scheme['horizontal_line'].list.must_equal [:bold, :white] }
+        specify { _(highline_color_scheme.keys).must_include 'good' }
+        specify { _(highline_color_scheme.keys).must_include 'bad' }
+        specify { _(highline_color_scheme.keys).must_include 'info' }
+        specify { _(highline_color_scheme['info'].list).must_equal [:bold, :cyan] }
+        specify { _(highline_color_scheme['horizontal_line'].list).must_equal [:bold, :white] }
       end
 
       describe "with bright background colors" do
@@ -30,11 +30,11 @@ module Kafo
         before { color_scheme.setup }
         specify { assert HighLine.use_color? }
         let(:highline_color_scheme) { HighLine.color_scheme }
-        specify { highline_color_scheme.keys.must_include 'good' }
-        specify { highline_color_scheme.keys.must_include 'bad' }
-        specify { highline_color_scheme.keys.must_include 'info' }
-        specify { highline_color_scheme['info'].list.must_equal [:blue] }
-        specify { highline_color_scheme['horizontal_line'].list.must_equal [:black] }
+        specify { _(highline_color_scheme.keys).must_include 'good' }
+        specify { _(highline_color_scheme.keys).must_include 'bad' }
+        specify { _(highline_color_scheme.keys).must_include 'info' }
+        specify { _(highline_color_scheme['info'].list).must_equal [:blue] }
+        specify { _(highline_color_scheme['horizontal_line'].list).must_equal [:black] }
       end
     end
   end

@@ -47,31 +47,31 @@ module Kafo
       describe "#add_list" do
         before { builder.add_list('Options', clamp_definitions) }
         let(:output) { stdout.rewind; stdout.read }
-        specify { output.must_include 'Options' }
-        specify { output.must_include '= Generic:' }
-        specify { output.must_include '--no-colors' }
-        specify { output.must_include 'app wide argument, not a parameter' }
-        specify { output.must_include '= Module puppet:' }
-        specify { output.must_include '--puppet-version' }
-        specify { output.must_include 'version parameter' }
-        specify { output.wont_include '--reset-puppet-version' }
-        specify { output.wont_include 'reset puppet-version' }
-        specify { output.wont_include '--puppet-server' }
-        specify { output.wont_include 'enable puppetmaster server' }
-        specify { output.wont_include '--reset-puppet-server' }
-        specify { output.wont_include 'reset puppet-server' }
-        specify { output.wont_include '--puppet-port' }
-        specify { output.wont_include 'puppetmaster port' }
-        specify { output.wont_include '--reset-puppet-port' }
-        specify { output.wont_include 'reset puppet-port' }
-        specify { output.wont_include 'Basic' }
-        specify { output.wont_include 'Advanced' }
-        specify { output.must_match(/Generic.*Module apache.*Module puppet/m) }
+        specify { _(output).must_include 'Options' }
+        specify { _(output).must_include '= Generic:' }
+        specify { _(output).must_include '--no-colors' }
+        specify { _(output).must_include 'app wide argument, not a parameter' }
+        specify { _(output).must_include '= Module puppet:' }
+        specify { _(output).must_include '--puppet-version' }
+        specify { _(output).must_include 'version parameter' }
+        specify { _(output).wont_include '--reset-puppet-version' }
+        specify { _(output).wont_include 'reset puppet-version' }
+        specify { _(output).wont_include '--puppet-server' }
+        specify { _(output).wont_include 'enable puppetmaster server' }
+        specify { _(output).wont_include '--reset-puppet-server' }
+        specify { _(output).wont_include 'reset puppet-server' }
+        specify { _(output).wont_include '--puppet-port' }
+        specify { _(output).wont_include 'puppetmaster port' }
+        specify { _(output).wont_include '--reset-puppet-port' }
+        specify { _(output).wont_include 'reset puppet-port' }
+        specify { _(output).wont_include 'Basic' }
+        specify { _(output).wont_include 'Advanced' }
+        specify { _(output).must_match(/Generic.*Module apache.*Module puppet/m) }
       end
 
       describe "#string" do
-        specify { builder.string.must_include 'Only commonly used options have been displayed' }
-        specify { builder.string.must_include 'Use --full-help to view the complete list.' }
+        specify { _(builder.string).must_include 'Only commonly used options have been displayed' }
+        specify { _(builder.string).must_include 'Use --full-help to view the complete list.' }
       end
     end
   end

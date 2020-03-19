@@ -8,11 +8,11 @@ module Kafo
     let(:manager_with_file) { ScenarioManager.new('/path/to/scenarios.d/foreman.yaml') }
 
     describe "#config_dir" do
-      specify { manager.config_dir.must_equal '/path/to/scenarios.d' }
+      specify { _(manager.config_dir).must_equal '/path/to/scenarios.d' }
 
       it "supports old configuration" do
         File.stub(:file?, true) do
-          manager_with_file.config_dir.must_equal '/path/to/scenarios.d'
+          _(manager_with_file.config_dir).must_equal '/path/to/scenarios.d'
         end
       end
     end
@@ -29,13 +29,13 @@ module Kafo
         after { FileUtils.remove_entry_secure tmpdir }
 
         it "determines path to last scenario" do
-          ScenarioManager.new(tmpdir).previous_scenario.must_equal scenario_path
+          _(ScenarioManager.new(tmpdir).previous_scenario).must_equal scenario_path
         end
       end
     end
 
     describe "#last_scenario_link" do
-      specify { manager.last_scenario_link.must_equal '/path/to/scenarios.d/last_scenario.yaml' }
+      specify { _(manager.last_scenario_link).must_equal '/path/to/scenarios.d/last_scenario.yaml' }
     end
 
     describe "#link_last_scenario" do
@@ -54,8 +54,8 @@ module Kafo
         let(:last_target) { 'foreman1.yaml' }
         specify do
           manager.stub(:last_scenario_link, last_path) { manager.link_last_scenario(scenario2_path) }
-          File.readlink(last_path).must_equal 'foreman2.yaml'
-          File.exist?(last_path).must_equal true
+          _(File.readlink(last_path)).must_equal 'foreman2.yaml'
+          _(File.exist?(last_path)).must_equal true
         end
       end
 
@@ -63,8 +63,8 @@ module Kafo
         let(:last_target) { 'unknown.yaml' }
         specify do
           manager.stub(:last_scenario_link, last_path) { manager.link_last_scenario(scenario1_path) }
-          File.readlink(last_path).must_equal 'foreman1.yaml'
-          File.exist?(last_path).must_equal true
+          _(File.readlink(last_path)).must_equal 'foreman1.yaml'
+          _(File.exist?(last_path)).must_equal true
         end
       end
     end
@@ -72,17 +72,17 @@ module Kafo
     describe "#scenario_changed?" do
       it "detects changed scenario" do
         manager.stub(:previous_scenario, '/path/to/scenarios.d/last.yaml') do
-          manager.scenario_changed?('/path/to/scenarios.d/foreman.yaml').must_equal true
+          _(manager.scenario_changed?('/path/to/scenarios.d/foreman.yaml')).must_equal true
         end
       end
 
       it "detects unchanged scenario" do
         manager.stub(:previous_scenario, '/path/to/scenarios.d/foreman.yaml') do
-          manager.scenario_changed?('/path/to/scenarios.d/foreman.yaml').must_equal false
+          _(manager.scenario_changed?('/path/to/scenarios.d/foreman.yaml')).must_equal false
         end
       end
 
-      specify { manager.scenario_changed?('/path/to/scenarios.d/foreman.yaml').must_equal false }
+      specify { _(manager.scenario_changed?('/path/to/scenarios.d/foreman.yaml')).must_equal false }
 
       describe "with symlink" do
         let(:tmpdir) { Dir.mktmpdir }
@@ -96,7 +96,7 @@ module Kafo
 
         it "detects unchanged scenario" do
           manager.stub(:previous_scenario, scenario_path) do
-            manager.scenario_changed?(File.join(tmpdir, 'linked_foreman.yaml')).must_equal false
+            _(manager.scenario_changed?(File.join(tmpdir, 'linked_foreman.yaml'))).must_equal false
           end
         end
       end
@@ -112,21 +112,21 @@ module Kafo
 
       it 'collects valid scenarios' do
         scn = { :name => 'First', :description => 'First scenario', :answer_file => ''}
-        create_and_load_scenarios(scn.to_yaml).keys.count.must_equal 1
+        _(create_and_load_scenarios(scn.to_yaml).keys.count).must_equal 1
       end
 
       it 'skips scenarios without answer file' do
         yaml_file = { :this_is => 'Not a scenario' }
-        create_and_load_scenarios(yaml_file.to_yaml).keys.must_be_empty
+        _(create_and_load_scenarios(yaml_file.to_yaml).keys).must_be_empty
       end
 
       it 'skips disabled scenarios' do
         scn = { :name => 'Second', :description => 'Second scenario', :answer_file => '', :enabled => false }
-        create_and_load_scenarios(scn.to_yaml).keys.must_be_empty
+        _(create_and_load_scenarios(scn.to_yaml).keys).must_be_empty
       end
 
       it 'skips non-yaml files' do
-        create_and_load_scenarios('some text file', 'text.txt').keys.must_be_empty
+        _(create_and_load_scenarios('some text file', 'text.txt').keys).must_be_empty
       end
     end
 
@@ -204,7 +204,7 @@ module Kafo
         end
         log_device.rewind
         errors = log_device.error.read
-        errors.must_match(/You are trying to replace existing installation with different scenario. This may lead to unpredictable states. Use --force to override. You can use --compare-scenarios to see the differences/)
+        _(errors).must_match(/You are trying to replace existing installation with different scenario. This may lead to unpredictable states. Use --force to override. You can use --compare-scenarios to see the differences/)
       end
 
       it 'passes when forced (--force)' do
