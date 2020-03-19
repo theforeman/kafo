@@ -16,11 +16,11 @@ module Kafo
 
       it 'executes all the migrations' do
         dummy_logger.rewind
-        dummy_logger.error.read.must_match(/.*s1.*s2.*/m)
+        _(dummy_logger.error.read).must_match(/.*s1.*s2.*/m)
       end
 
       it 'knows the applied migrations' do
-        migrations.applied.must_equal ['no1', 'no2']
+        _(migrations.applied).must_equal ['no1', 'no2']
       end
     end
   end

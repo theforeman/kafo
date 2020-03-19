@@ -14,19 +14,19 @@ module Kafo
 
       it 'checks config' do
         KafoConfigure.config.app[:colors] = true
-        KafoConfigure.use_colors?.must_equal true
+        _(KafoConfigure.use_colors?).must_equal true
       end
 
       it 'checks --colors in ARGV when no config' do
         ARGV << '--colors'
         KafoConfigure.config = nil
-        KafoConfigure.use_colors?.must_equal true
+        _(KafoConfigure.use_colors?).must_equal true
       end
 
       it 'checks --no-colors in ARGV when no config' do
         ARGV << '--no-colors'
         KafoConfigure.config = nil
-        KafoConfigure.use_colors?.must_equal false
+        _(KafoConfigure.use_colors?).must_equal false
       end
     end
   end

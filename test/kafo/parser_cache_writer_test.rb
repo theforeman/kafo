@@ -7,8 +7,8 @@ module Kafo
     subject { ParserCacheWriter }
 
     describe ".write" do
-      specify { subject.write([])[:version].must_equal 1 }
-      specify { subject.write([])[:files].must_equal({}) }
+      specify { _(subject.write([])[:version]).must_equal 1 }
+      specify { _(subject.write([])[:files]).must_equal({}) }
 
       describe "with a module" do
         let(:manifest) { Tempfile.new("#{subject}_manifest") }
@@ -21,12 +21,12 @@ module Kafo
         end
         let(:output) { subject.write([mod]) }
 
-        specify { output[:files].keys.must_equal ['module'] }
-        specify { output[:files]['module'].keys.each { |k| k.must_be_kind_of(Symbol) } }
-        specify { output[:files]['module'].keys.map(&:to_s).sort.must_equal ['data', 'mtime'] }
-        specify { output[:files]['module'][:mtime].must_equal File.mtime(manifest.path).to_i }
-        specify { output[:files]['module'][:data].has_key?(:parameters).must_equal true }
-        specify { output[:files]['module'][:data][:parameters].must_equal([]) }
+        specify { _(output[:files].keys).must_equal ['module'] }
+        specify { output[:files]['module'].keys.each { |k| _(k).must_be_kind_of(Symbol) } }
+        specify { _(output[:files]['module'].keys.map(&:to_s).sort).must_equal ['data', 'mtime'] }
+        specify { _(output[:files]['module'][:mtime]).must_equal File.mtime(manifest.path).to_i }
+        specify { _(output[:files]['module'][:data].has_key?(:parameters)).must_equal true }
+        specify { _(output[:files]['module'][:data][:parameters]).must_equal([]) }
       end
     end
   end

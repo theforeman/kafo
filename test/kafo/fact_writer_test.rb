@@ -11,14 +11,14 @@ module Kafo
       before { subject.write_facts(facts, directory) }
       after { FileUtils.rm_f(directory) }
 
-      specify { File.exist?(File.join(directory, 'kafo.yaml')).must_equal(true) }
-      specify { File.read(File.join(directory, 'kafo.yaml')).must_equal("--- {}\n") }
-      specify { File.exist?(File.join(directory, 'kafo.rb')).must_equal(true) }
-      specify { File.read(File.join(directory, 'kafo.rb')).must_include('Facter.add(:kafo)') }
+      specify { _(File.exist?(File.join(directory, 'kafo.yaml'))).must_equal(true) }
+      specify { _(File.read(File.join(directory, 'kafo.yaml'))).must_equal("--- {}\n") }
+      specify { _(File.exist?(File.join(directory, 'kafo.rb'))).must_equal(true) }
+      specify { _(File.read(File.join(directory, 'kafo.rb'))).must_include('Facter.add(:kafo)') }
     end
 
     describe '#wrapper' do
-      specify { subject.wrapper.must_equal("      require 'yaml'\n      Facter.add(:kafo) { setcode { YAML.load_file(File.join(__dir__, 'kafo.yaml')) } }\n") }
+      specify { _(subject.wrapper).must_equal("      require 'yaml'\n      Facter.add(:kafo) { setcode { YAML.load_file(File.join(__dir__, 'kafo.yaml')) } }\n") }
     end
   end
 end

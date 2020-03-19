@@ -9,10 +9,10 @@ module Kafo
       before { hooking.register_pre(:no1) { 'got executed' } }
 
       let(:pre_hooks) { hooking.hooks[:pre] }
-      specify { pre_hooks.keys.must_include(:no1) }
+      specify { _(pre_hooks.keys).must_include(:no1) }
 
       let(:pre_hook_no1) { pre_hooks[:no1] }
-      specify { pre_hook_no1.call.must_equal 'got executed' }
+      specify { _(pre_hook_no1.call).must_equal 'got executed' }
     end
 
     describe "#execute" do
@@ -28,16 +28,16 @@ module Kafo
       # it runs in HookContext context so it has access to logger
       describe "#execute(:pre)" do
         before { hooking.execute(:pre); dummy_logger.rewind }
-        specify { dummy_logger.error.read.must_include 's2' }
-        specify { dummy_logger.error.read.must_include 's1' }
-        specify { dummy_logger.error.read.must_include 'r1' }
-        specify { dummy_logger.error.read.must_include 'r2' }
-        specify { dummy_logger.error.read.must_match(/.*s1.*s2.*r1.*r2.*/m) }
+        specify { _(dummy_logger.error.read).must_include 's2' }
+        specify { _(dummy_logger.error.read).must_include 's1' }
+        specify { _(dummy_logger.error.read).must_include 'r1' }
+        specify { _(dummy_logger.error.read).must_include 'r2' }
+        specify { _(dummy_logger.error.read).must_match(/.*s1.*s2.*r1.*r2.*/m) }
       end
 
       describe "#execute(:post)" do
         before { hooking.execute(:post); dummy_logger.rewind }
-        specify { dummy_logger.error.read.must_be_empty }
+        specify { _(dummy_logger.error.read).must_be_empty }
       end
     end
   end

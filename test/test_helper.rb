@@ -168,7 +168,7 @@ def must_exit_with_code(code, &block)
   begin
     block.call
   rescue SystemExit => e
-    e.status.must_equal(code)
+    _(e.status).must_equal(code)
   rescue EOFError => e
     assert false, "input does not make process to exit normally (#{e.message})"
   end
@@ -188,7 +188,7 @@ def must_be_on_stdout(output, *args)
   output.rewind
   stdout = output.read
   args.each do |inclusion|
-    stdout.must_include inclusion
+    _(stdout).must_include inclusion
   end
 end
 
@@ -196,7 +196,7 @@ def wont_be_on_stdout(output, *args)
   output.rewind
   stdout = output.read
   args.each do |inclusion|
-    stdout.wont_include inclusion
+    _(stdout).wont_include inclusion
   end
 end
 

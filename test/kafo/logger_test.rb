@@ -18,12 +18,12 @@ module Kafo
         end
 
         it "logs messages after loggers were set" do
-          log_device.info.read.chomp.must_equal 'three'
+          _(log_device.info.read.chomp).must_equal 'three'
         end
 
         it "logs messages even before setup" do
-          log_device.debug.read.chomp.must_equal 'one'
-          log_device.error.read.chomp.must_equal 'two'
+          _(log_device.debug.read.chomp).must_equal 'one'
+          _(log_device.error.read.chomp).must_equal 'two'
         end
       end
 
@@ -41,21 +41,21 @@ module Kafo
 
         it "logs error twice" do
           errors = log_device.error.read.tr("\n", '')
-          errors.must_match(/.*error.*error.*/)
+          _(errors).must_match(/.*error.*error.*/)
 
           fatals = log_device.fatal.read.tr("\n", '')
-          fatals.must_match(/.*fatal.*fatal.*/)
+          _(fatals).must_match(/.*fatal.*fatal.*/)
         end
 
         it "logs normal messages just once" do
           debug = log_device.debug.read
-          debug.wont_match(/.*debug.*debug.*/)
+          _(debug).wont_match(/.*debug.*debug.*/)
 
           info = log_device.info.read
-          info.wont_match(/.*info.*info.*/)
+          _(info).wont_match(/.*info.*info.*/)
 
           warn = log_device.warn.read
-          warn.wont_match(/.*warn.*warn.*/)
+          _(warn).wont_match(/.*warn.*warn.*/)
         end
       end
     end
