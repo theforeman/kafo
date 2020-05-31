@@ -34,7 +34,7 @@ module Kafo
     describe "#setup_termial" do
       describe "small terminal" do
         it "must configure correct width and preserve height" do
-          HighLine::SystemExtensions.stub :terminal_size, [40, 10] do
+          HighLine::Terminal.stub :terminal_size, [40, 10] do
             wizard.send :setup_terminal
             _($terminal.wrap_at).must_equal 40
             _($terminal.page_at).must_equal 10
@@ -44,7 +44,7 @@ module Kafo
 
       describe "big terminal" do
         it "must configure max width to 80 and preserve height" do
-          HighLine::SystemExtensions.stub :terminal_size, [100, 50] do
+          HighLine::Terminal.stub :terminal_size, [100, 50] do
             wizard.send :setup_terminal
             _($terminal.wrap_at).must_equal 80
             _($terminal.page_at).must_equal 50

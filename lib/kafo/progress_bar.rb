@@ -20,7 +20,7 @@ module Kafo
       @all_lines                                = 0
       @total                                    = :unknown
       @resources                                = Set.new
-      @term_width                               = HighLine::SystemExtensions.terminal_size[0] || 0
+      @term_width                               = HighLine::Terminal.terminal_size[0] || 0
       @bar                                      = PowerBar.new
       @bar.settings.tty.infinite.template.main  = infinite_template
       @bar.settings.tty.finite.template.main    = finite_template

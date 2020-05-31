@@ -180,7 +180,7 @@ END
 
     def setup_terminal
       $terminal         = HighLine.new
-      data              = HighLine::SystemExtensions.terminal_size
+      data              = HighLine::Terminal.terminal_size
       $terminal.wrap_at = data.first > 80 ? 80 : data.first if data.first
       $terminal.page_at = data.last if data.last
     end
