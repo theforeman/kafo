@@ -189,7 +189,12 @@ module Kafo
         @progress_bar = config.app[:colors] ? ProgressBars::Colored.new : ProgressBars::BlackWhite.new
       end
 
-      unless skip_checks_i_know_better?
+      if skip_checks_i_know_better?
+        STDERR.puts '--skip-checks-i-know-better is deprecated and will be removed. Please use --disable-system-checks'
+        logger.warn '--skip-checks-i-know-better is deprecated and will be removed. Please use --disable-system-checks'
+      end
+
+      unless disable_system_checks? || skip_checks_i_know_better?
         unless SystemChecker.check
           puts "Your system does not meet configuration criteria"
           self.class.exit(:invalid_system)

@@ -975,7 +975,7 @@ exit $?
 ```
 
 If you want to ignore results of the check scripts, you can use the builtin
-parameter `--skip-checks-i-know-better` (or `-s`). This will completely
+parameter `--disable-system-checks` (or `-s`). This will completely
 disable running all system check scripts. Note that this option is
 not persisted between runs.
 
