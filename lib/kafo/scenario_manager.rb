@@ -78,12 +78,19 @@ module Kafo
 
     def scenario_from_args(arg_name='--scenario|-S')
       # try scenario provided in the args via -S or --scenario
-      parsed = ARGV.join(" ").match(/(#{arg_name})(\s+|[=]?)(\S+)/)
-      if parsed
-        scenario_file = File.join(config_dir, "#{parsed[3]}.yaml")
-        return scenario_file if File.exist?(scenario_file)
-        fail_now("Scenario (#{scenario_file}) was not found, can not continue", :unset_scenario)
+      ARGV.each_with_index do |arg, index|
+        parsed = arg.match(/^(#{arg_name})($|=(?<scenario>\S+))/)
+        if parsed
+          scenario = parsed[:scenario] || ARGV[index + 1]
+          next unless scenario
+
+          scenario_file = File.join(config_dir, "#{scenario}.yaml")
+          return scenario_file if File.exist?(scenario_file)
+          fail_now("Scenario (#{scenario_file}) was not found, can not continue", :unset_scenario)
+        end
       end
+
+      nil
     end
 
     def select_scenario
