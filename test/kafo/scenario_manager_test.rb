@@ -182,6 +182,48 @@ module Kafo
       end
     end
 
+    describe '#scenario_from_args' do
+      before do
+        @old_argv = ::ARGV.dup
+        ::ARGV.clear
+        ::ARGV.concat(args)
+      end
+      after do
+        ::ARGV.clear
+        ::ARGV.concat(@old_argv)
+      end
+
+      describe 'with -S inside a word' do
+        let(:args) { ['--server-ca', 'A-ST.pem'] }
+
+        it 'ignores -S inside words' do
+          manager.stub(:fail_now, Proc.new { |message, _| raise message }) do
+            assert_nil manager.scenario_from_args
+          end
+        end
+      end
+
+      [
+        ['-S', 'myscenario'],
+        ['-S=myscenario'],
+        ['--scenario', 'myscenario'],
+        ['--scenario=myscenario'],
+      ].each do |argsx|
+        describe "with #{argsx.inspect}" do
+          let(:args) { argsx }
+
+          it 'finds myscenario' do
+            manager.stub(:fail_now, Proc.new { |message, _| raise message }) do
+              filename = File.join(manager.config_dir, 'myscenario.yaml')
+              File.stub(:exist?, true, filename) do
+                assert_equal filename, manager.scenario_from_args
+              end
+            end
+          end
+        end
+      end
+    end
+
     describe '#confirm_scenario_change' do
       let(:basic_config_file) { ConfigFileFactory.build('basic', BASIC_CONFIGURATION).path }
       let(:new_config) { Kafo::Configuration.new(basic_config_file, false) }
