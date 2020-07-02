@@ -8,6 +8,7 @@ module Kafo
     describe "api" do
       specify { assert context.respond_to?(:logger) }
       specify { assert context.respond_to?(:app_option) }
+      specify { assert context.respond_to?(:app_option?) }
       specify { assert context.respond_to?(:app_value) }
       specify { assert context.respond_to?(:param) }
       specify { assert context.respond_to?(:add_module) }
@@ -41,6 +42,23 @@ module Kafo
         mod.expect :enabled?, true
         kafo.expect :module, mod, ['known_module']
         assert_equal context.module_enabled?('known_module'), true
+      end
+    end
+
+    describe "#app_option?" do
+      let(:app) { {:known_option => 'option_arg'} }
+      let(:config) { Minitest::Mock.new }
+
+      specify do
+        kafo.expect :config, config
+        config.expect :app, app
+        assert_equal true, context.app_option?('known_option')
+      end
+
+      specify do
+        kafo.expect :config, config
+        config.expect :app, app
+        assert_equal false, context.app_option?('unknown_option')
       end
     end
   end

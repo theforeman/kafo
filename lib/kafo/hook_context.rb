@@ -22,12 +22,18 @@ module Kafo
     end
 
     # if you want to add new app_option be sure to do as soon as possible (usually boot hook)
-    # otherwise it may be to late (e.g. when displaying help)
+    # otherwise it may be too late (e.g. when displaying help)
     # examples:
     #   app_option '--log-level', 'LEVEL', 'Log level for log file output', :default => config.app[:log_level]:
     #   app_option ['-n', '--noop'], :flag, 'Run puppet in noop mode?', :default => false
     def app_option(*args)
       self.kafo.class.app_option(*args)
+    end
+
+    # Returns whether the given app option exists. This is useful when there's a conditional option that is
+    # determined during boot; this helper can be used in later hooks to determine whether the option exists.
+    def app_option?(option)
+      self.kafo.config.app.key?(option.to_sym)
     end
 
     # examples:
