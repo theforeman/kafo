@@ -38,8 +38,11 @@ module Kafo
       # Find the location of the puppet executable and use that to
       # determine the path of all executables
       bin_path = (::ENV['PATH'].split(File::PATH_SEPARATOR) + ['/opt/puppetlabs/bin']).find do |path|
-        File.executable?(File.join(path, 'puppet')) && File.executable?(File.join(path, bin_name))
+        File.executable?(File.join(path, 'puppet')) &&
+        !File.symlink?(File.join(path, 'puppet')) &&
+        File.executable?(File.join(path, bin_name))
       end
+
       File.join([bin_path, bin_name].compact)
     end
 
