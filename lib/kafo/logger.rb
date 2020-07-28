@@ -20,7 +20,7 @@ module Kafo
       end
     end
 
-    PATTERN = "[%5l %d %c] %m\n"
+    PATTERN = "[%5l %d] %m\n"
     Logging.color_scheme('bright',
                          :levels => {
                              :info  => :green,

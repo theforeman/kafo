@@ -11,10 +11,10 @@ module Kafo
       specify { _(subject.parse('Warning: foo')).must_equal [:warn, ' foo'] }
       specify { _(subject.parse('Notice: foo')).must_equal [:warn, ' foo'] }
       specify { _(subject.parse('Debug: foo')).must_equal [:debug, ' foo'] }
-      specify { _(subject.parse('unknown foo')).must_equal [:info, 'unknown foo'] }
+      specify { _(subject.parse('unknown foo')).must_equal [nil, ''] }
       specify do
         _(subject.parse('Debug: foo')).must_equal [:debug, ' foo']
-        _(subject.parse('bar')).must_equal [:debug, 'bar']
+        _(subject.parse('bar')).must_equal [nil, '']
       end
     end
   end

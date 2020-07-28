@@ -450,7 +450,8 @@ module Kafo
           begin
             stdin.each do |line|
               line = normalize_encoding(line)
-              progress_log(*log_parser.parse(line))
+              method, message = log_parser.parse(line)
+              progress_log(method, message)
               @progress_bar.update(line) if @progress_bar
             end
           rescue Errno::EIO # we reach end of input
@@ -475,6 +476,7 @@ module Kafo
     end
 
     def progress_log(method, message)
+      return if message.empty?
       @progress_bar.print_error(message + "\n") if method == :error && @progress_bar
       logger.send(method, message)
     end

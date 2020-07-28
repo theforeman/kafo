@@ -1,9 +1,5 @@
 module Kafo
   class PuppetLogParser
-    def initialize
-      @last_level = nil
-    end
-
     def parse(line)
       method, message = case
                           when line =~ /^Error:(.*)/i || line =~ /^Err:(.*)/i
@@ -14,11 +10,9 @@ module Kafo
                             [:info, $1]
                           when line =~ /^Debug:(.*)/i
                             [:debug, $1]
-                          else
-                            [@last_level.nil? ? :info : @last_level, line]
                         end
 
-      @last_level = method
+      message = '' if message.nil?
       return [method, message.chomp]
     end
   end
