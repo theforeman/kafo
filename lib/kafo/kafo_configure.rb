@@ -440,7 +440,6 @@ module Kafo
       options     = [
           '--verbose',
           '--debug',
-          '--trace',
           '--detailed-exitcodes',
       ]
       begin
