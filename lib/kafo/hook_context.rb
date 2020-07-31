@@ -71,6 +71,14 @@ module Kafo
       !mod.nil? && mod.enabled?
     end
 
+    # Check if a module is present in the current configuration.
+    # examples:
+    #   module_present?('example')
+    def module_present?(module_name)
+      mod = self.kafo.module(module_name)
+      !mod.nil?
+    end
+
     # You can trigger installer exit by this method. You must specify exit code as a first
     # argument. You can also specify a symbol alias which is built-in (see exit_handler.rb
     # for more details).
