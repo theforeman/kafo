@@ -13,6 +13,7 @@ module Kafo
       specify { assert context.respond_to?(:param) }
       specify { assert context.respond_to?(:add_module) }
       specify { assert context.respond_to?(:module_enabled?) }
+      specify { assert context.respond_to?(:module_present?) }
       specify { assert context.respond_to?(:exit) }
       specify { assert context.respond_to?(:get_custom_config) }
       specify { assert context.respond_to?(:store_custom_config) }
@@ -42,6 +43,29 @@ module Kafo
         mod.expect :enabled?, true
         kafo.expect :module, mod, ['known_module']
         assert_equal context.module_enabled?('known_module'), true
+      end
+    end
+
+    describe "#module_present?" do
+      specify do
+        kafo.expect :module, nil, ['unknown_module']
+        assert_equal context.module_present?('unknown_module'), false
+      end
+
+      specify do
+        mod = Minitest::Mock.new
+        mod.expect :nil?, false
+        mod.expect :enabled?, true
+        kafo.expect :module, mod, ['enabled_module']
+        assert_equal context.module_present?('enabled_module'), true
+      end
+
+      specify do
+        mod = Minitest::Mock.new
+        mod.expect :nil?, false
+        mod.expect :enabled?, false
+        kafo.expect :module, mod, ['disabled_module']
+        assert_equal context.module_present?('disabled_module'), true
       end
     end
 
