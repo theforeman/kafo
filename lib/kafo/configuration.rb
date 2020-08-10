@@ -104,6 +104,10 @@ module Kafo
       custom_fact_storage[key.to_s] = value
     end
 
+    def has_custom_fact?(key)
+      custom_fact_storage.key?(key.to_s)
+    end
+
     def modules
       @modules ||= begin
         register_data_types

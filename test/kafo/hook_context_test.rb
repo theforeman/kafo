@@ -17,6 +17,7 @@ module Kafo
       specify { assert context.respond_to?(:exit) }
       specify { assert context.respond_to?(:get_custom_config) }
       specify { assert context.respond_to?(:store_custom_config) }
+      specify { assert context.respond_to?(:has_custom_fact?) }
       specify { assert context.respond_to?(:scenario_id) }
       specify { assert context.respond_to?(:scenario_path) }
       specify { assert context.respond_to?(:scenario_data) }
@@ -83,6 +84,40 @@ module Kafo
         kafo.expect :config, config
         config.expect :app, app
         assert_equal false, context.app_option?('unknown_option')
+      end
+    end
+
+    describe "#has_custom_fact? with fact value present" do
+      let(:config) { Minitest::Mock.new }
+      let(:custom_fact_storage) { { 'my_custom_fact' => 'my_custom_fact_value' } }
+
+      specify do
+        kafo.expect :config, config
+        config.expect :has_custom_fact?, true, ['my_custom_fact']
+        assert_equal true, context.has_custom_fact?('my_custom_fact')
+      end
+
+      specify do
+        kafo.expect :config, config
+        config.expect :has_custom_fact?, false, ['not_my_custom_fact']
+        assert_equal false, context.has_custom_fact?('not_my_custom_fact')
+      end
+    end
+
+    describe "#has_custom_fact? with fact value nil" do
+      let(:config) { Minitest::Mock.new }
+      let(:custom_fact_storage) { { 'my_custom_fact' => nil } }
+
+      specify do
+        kafo.expect :config, config
+        config.expect :has_custom_fact?, true, ['my_custom_fact']
+        assert_equal true, context.has_custom_fact?('my_custom_fact')
+      end
+
+      specify do
+        kafo.expect :config, config
+        config.expect :has_custom_fact?, false, ['not_my_custom_fact']
+        assert_equal false, context.has_custom_fact?('not_my_custom_fact')
       end
     end
   end
