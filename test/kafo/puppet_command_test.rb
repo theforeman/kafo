@@ -67,25 +67,11 @@ module Kafo
         end
       end
 
-      describe "with 'puppet' in PATH as symlink" do
-        specify do
-          ::ENV.stub(:[], '/usr/bin:/usr/local/bin') do
-            File.stub(:executable?, Proc.new { |path| path == '/opt/puppetlabs/bin/puppet' }) do
-              File.stub(:symlink?, Proc.new { |path| ['/usr/bin/puppet', '/usr/local/bin/puppet'].include?(path) }) do
-                _(pc).must_equal '/opt/puppetlabs/bin/puppet'
-              end
-            end
-          end
-        end
-      end
-
       describe "with AIO 'puppet' only" do
         specify do
           ::ENV.stub(:[], '/usr/bin:/usr/local/bin') do
             File.stub(:executable?, Proc.new { |path| path == '/opt/puppetlabs/bin/puppet' }) do
-              File.stub(:symlink?, false) do
-                _(pc).must_equal '/opt/puppetlabs/bin/puppet'
-              end
+              _(pc).must_equal '/opt/puppetlabs/bin/puppet'
             end
           end
         end
