@@ -20,7 +20,7 @@ module Kafo
       end
     end
 
-    PATTERN = "[%5l %d %c] %m\n"
+    PATTERN = "[%5l %d %-2X{stage}] %m\n"
     Logging.color_scheme('bright',
                          :levels => {
                              :info  => :green,
@@ -105,7 +105,8 @@ module Kafo
 
     def self.dump_buffer(buffer)
       buffer.each do |log|
-        self.loggers.each { |logger| logger.send log[0], *([log[1]].flatten(1)), &log[2] }
+        ::Logging.mdc.update(log[2])
+        self.loggers.each { |logger| logger.send log[0], *([log[1]].flatten(1)), &log[3] }
       end
       buffer.clear
     end
@@ -116,9 +117,14 @@ module Kafo
 
     def log(name, *args, &block)
       if self.class.buffering?
-        self.class.to_buffer(self.class.buffer, name, args, &block)
+        self.class.to_buffer(self.class.buffer, name, args, ::Logging.mdc.context, &block)
       else
-        self.class.dump_buffer(self.class.buffer) if self.class.dump_needed?
+        if self.class.dump_needed?
+          mdc_context = ::Logging.mdc.context
+          self.class.dump_buffer(self.class.buffer)
+          ::Logging.mdc.update(mdc_context)
+        end
+
         self.class.loggers.each { |logger| logger.send name, *args, &block }
       end
     end
@@ -131,7 +137,7 @@ module Kafo
 
     %w(fatal error).each do |name|
       define_method(name) do |*args, &block|
-        self.class.to_buffer(self.class.error_buffer, name, *args, &block)
+        self.class.to_buffer(self.class.error_buffer, name, *args, ::Logging.mdc.context, &block)
         self.log(name, *args, &block)
       end
     end

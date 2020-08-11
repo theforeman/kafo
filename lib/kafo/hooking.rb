@@ -45,6 +45,7 @@ module Kafo
     end
 
     def execute(group)
+      ::Logging.mdc['stage'] = group
       logger.info "Executing hooks in group #{group}"
       self.hooks[group].keys.sort_by(&:to_s).each do |name|
         hook = self.hooks[group][name]
@@ -52,6 +53,7 @@ module Kafo
         logger.debug "Hook #{name} returned #{result.inspect}"
       end
       logger.info "All hooks in group #{group} finished"
+      ::Logging.mdc.delete('stage')
     end
 
     def register_pre_migrations(name, &block)

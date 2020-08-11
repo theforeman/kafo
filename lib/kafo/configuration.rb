@@ -179,6 +179,7 @@ module Kafo
           }
 EOS
 
+        ::Logging.mdc['stage'] = 'defaults'
         @logger.info 'Loading default values from puppet modules...'
         command = PuppetCommand.new(dump_manifest, [], puppetconf, self).command
         stdout, stderr, status = Open3.capture3(*PuppetCommand.format_command(command))
@@ -205,6 +206,7 @@ EOS
         end
 
         @logger.info "... finished"
+        ::Logging.mdc.delete('stage')
 
         load_yaml_from_output(stdout.split($/))
       end

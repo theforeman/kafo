@@ -92,8 +92,8 @@ module Kafo
       # so we limit parsing only to app config options (because of --help and later defined params)
       parse clamp_app_arguments
       parse_app_arguments # set values from ARGS to config.app
-      Logger.setup
       self.class.set_color_scheme
+      Logger.setup
 
       self.class.hooking.execute(:init)
       set_parameters # here the params gets parsed and we need app config populated
@@ -114,9 +114,11 @@ module Kafo
 
     def run(*args)
       started_at = Time.now
+      ::Logging.mdc['stage'] = 'args'
       logger.info("Running installer with args #{args.inspect}")
       super
     ensure
+      ::Logging.mdc['stage'] = 'complete'
       logger.info("Installer finished in #{Time.now - started_at} seconds")
     end
 
@@ -410,6 +412,7 @@ module Kafo
     end
 
     def validate_all(logging = true)
+      ::Logging.mdc['stage'] = 'validation'
       logger.info 'Running validation checks'
       results = enabled_params.map do |param|
         result = param.valid?
@@ -445,6 +448,7 @@ module Kafo
       begin
         command = PuppetCommand.new('include kafo_configure', options, puppetconf).command
         log_parser = PuppetLogParser.new
+        ::Logging.mdc['stage'] = 'configure'
         PTY.spawn(*PuppetCommand.format_command(command)) do |stdin, stdout, pid|
           begin
             stdin.each do |line|
