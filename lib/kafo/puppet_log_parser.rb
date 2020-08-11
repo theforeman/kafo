@@ -2,9 +2,16 @@ module Kafo
   class PuppetLogParser
     def initialize
       @last_level = nil
+      @loading_facts_line = false
     end
 
     def parse(line)
+      if line =~ /^Info: Loading facts/i
+        return [nil, nil] if @loading_facts_line
+
+        @loading_facts_line = true
+      end
+
       method, message = case
                           when line =~ /^Error:(.*)/i || line =~ /^Err:(.*)/i
                             [:error, $1]

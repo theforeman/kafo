@@ -474,6 +474,7 @@ module Kafo
     end
 
     def progress_log(method, message)
+      return if method.nil? || message.nil?
       @progress_bar.print_error(message + "\n") if method == :error && @progress_bar
       logger.send(method, message)
     end
