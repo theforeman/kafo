@@ -19,7 +19,7 @@ module Kafo
                         end
 
       @last_level = method
-      return [method, message.chomp]
+      return [method, message.chomp.strip]
     end
   end
 end
