@@ -18,6 +18,8 @@ module Kafo
                             [@last_level.nil? ? :info : @last_level, line]
                         end
 
+      message = message.gsub('/Stage[main]', '')
+
       @last_level = method
       return [method, message.chomp.strip]
     end
