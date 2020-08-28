@@ -3,7 +3,6 @@ require 'test_helper'
 module Kafo
   describe Hooking do
     let(:hooking) { Hooking.new }
-    let(:dummy_logger) { DummyLogger.new }
 
     describe "#register_pre" do
       before { hooking.register_pre(:no1) { 'got executed' } }
@@ -17,27 +16,34 @@ module Kafo
 
     describe "#execute" do
       before do
-        KafoConfigure.logger = dummy_logger
-        hooking.kafo = OpenStruct.new(:logger => dummy_logger)
-        hooking.register_pre(:no1) { logger.error 's1' }
-        hooking.register_pre('str1') { logger.error 'r1' }
-        hooking.register_pre(:no2) { logger.error 's2' }
-        hooking.register_pre('str2') { logger.error 'r2' }
+        hooking.register_pre(:no1) { puts 's1' }
+        hooking.register_pre('str1') { puts 'r1' }
+        hooking.register_pre(:no2) { puts 's2' }
+        hooking.register_pre('str2') { puts 'r2' }
       end
 
-      # it runs in HookContext context so it has access to logger
       describe "#execute(:pre)" do
-        before { hooking.execute(:pre); dummy_logger.rewind }
-        specify { _(dummy_logger.error.read).must_include 's2' }
-        specify { _(dummy_logger.error.read).must_include 's1' }
-        specify { _(dummy_logger.error.read).must_include 'r1' }
-        specify { _(dummy_logger.error.read).must_include 'r2' }
-        specify { _(dummy_logger.error.read).must_match(/.*s1.*s2.*r1.*r2.*/m) }
+        before do
+          @out, @err = capture_io do
+            hooking.execute(:pre)
+          end
+        end
+
+        specify { _(@out).must_include 's2' }
+        specify { _(@out).must_include 's1' }
+        specify { _(@out).must_include 'r1' }
+        specify { _(@out).must_include 'r2' }
+        specify { _(@out).must_match(/.*s1.*s2.*r1.*r2.*/m) }
       end
 
       describe "#execute(:post)" do
-        before { hooking.execute(:post); dummy_logger.rewind }
-        specify { _(dummy_logger.error.read).must_be_empty }
+        before do
+          @out, @err = capture_io do
+            hooking.execute(:post)
+          end
+        end
+
+        specify { _(@out).must_be_empty }
       end
     end
   end

@@ -7,6 +7,7 @@ module Kafo
     attr_reader :config_dir, :last_scenario_link, :previous_scenario
 
     def initialize(config, last_scenario_link_name='last_scenario.yaml')
+      @logger = Logger.new('scenario_manager')
       @config_dir = File.file?(config) ? File.dirname(config) : config
       @last_scenario_link = File.join(config_dir, last_scenario_link_name)
       @previous_scenario = File.exist?(last_scenario_link) ? Pathname.new(last_scenario_link).realpath.to_s : nil
@@ -123,7 +124,7 @@ module Kafo
           dump_log_and_exit(0)
         else
           confirm_scenario_change(scenario)
-          KafoConfigure.logger.info "Scenario #{scenario} was selected"
+          @logger.info "Scenario #{scenario} was selected"
         end
       end
     end
@@ -166,7 +167,7 @@ module Kafo
       elsif !ARGV.include?('--force') && !KafoConfigure.in_help_mode?
         message = "You are trying to replace existing installation with different scenario. This may lead to unpredictable states. " +
         "Use --force to override. You can use --compare-scenarios to see the differences"
-        KafoConfigure.logger.error(message)
+        @logger.error(message)
         dump_log_and_exit(:scenario_error)
       end
       true
@@ -225,19 +226,17 @@ module Kafo
 
     def fail_now(message, exit_code)
       $stderr.puts "ERROR: #{message}"
-      KafoConfigure.logger.error message
+      @logger.error message
       KafoConfigure.exit(exit_code)
     end
 
     def dump_log_and_exit(code)
       if Logging.buffering? && Logging.buffer.any?
-        Logging.setup_verbose
-        KafoConfigure.verbose = true
         if !KafoConfigure.config.nil?
-          Logging.setup
-          KafoConfigure.logger.info("Log was be written to #{KafoConfigure.config.log_file}")
+          Logging.setup(verbose: true)
+          @logger.info("Log was be written to #{KafoConfigure.config.log_file}")
         end
-        KafoConfigure.logger.info('Logs flushed')
+        @logger.info('Logs flushed')
       end
       KafoConfigure.exit(code)
     end

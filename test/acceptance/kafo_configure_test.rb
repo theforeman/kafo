@@ -97,7 +97,10 @@ module Kafo
 
     describe 'with parser cache' do
       before do
-        File.open(KAFO_CONFIG, 'a') { |f| f.puts ":parser_cache_path: #{INSTALLER_HOME}/parser_cache.json" }
+        File.open(KAFO_CONFIG, 'a') do |f|
+          f.puts ":parser_cache_path: #{INSTALLER_HOME}/parser_cache.json"
+        end
+
         code, _, err = run_command("kafo-export-params -f parsercache -c #{KAFO_CONFIG} -o #{INSTALLER_HOME}/parser_cache.json")
         _(code).must_equal 0, err
       end
