@@ -239,14 +239,15 @@ module Kafo
       end
 
       it 'prints error and exits when not forced' do
-        log_device = DummyLogger.new
-        Logging.loggers = [log_device]
         must_exit_with_code(Kafo::ExitHandler.new.error_codes[:scenario_error]) do
-          capture_subprocess_io { manager.confirm_scenario_change(new_config) }
+          manager.confirm_scenario_change(new_config)
         end
-        log_device.rewind
-        errors = log_device.error.read
-        _(errors).must_match(/You are trying to replace existing installation with different scenario. This may lead to unpredictable states. Use --force to override. You can use --compare-scenarios to see the differences/)
+
+        KafoConfigure.stub :exit, 0 do
+          out, err = capture_subprocess_io { manager.confirm_scenario_change(new_config) }
+
+        _(out).must_match(/You are trying to replace existing installation with different scenario. This may lead to unpredictable states. Use --force to override. You can use --compare-scenarios to see the differences/)
+        end
       end
 
       it 'passes when forced (--force)' do

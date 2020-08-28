@@ -3,14 +3,15 @@ require 'kafo/base_context'
 
 module Kafo
   class HookContext < BaseContext
-    attr_reader :kafo
+    attr_reader :kafo, :logger
 
-    def self.execute(kafo, &hook)
-      new(kafo).instance_eval(&hook)
+    def self.execute(kafo, logger, &hook)
+      new(kafo, logger).instance_eval(&hook)
     end
 
-    def initialize(kafo)
+    def initialize(kafo, logger)
       @kafo = kafo
+      @logger = logger
     end
 
     # some of hooks won't print any message because logger is not yet configured
@@ -18,7 +19,7 @@ module Kafo
     # examples:
     #   logger.warn "this combindation of parameters is untested"
     def logger
-      self.kafo.logger
+      @logger
     end
 
     # if you want to add new app_option be sure to do as soon as possible (usually boot hook)

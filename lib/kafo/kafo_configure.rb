@@ -66,8 +66,8 @@ module Kafo
       request_config_reload if applied_total > 0
 
       if ARGV.include?('--migrations-only')
-        self.class.verbose = (ARGV.include?('--verbose') || ARGV.include?('-v'))
-        Logging.setup
+        verbose = (ARGV.include?('--verbose') || ARGV.include?('-v'))
+        Logging.setup(verbose: verbose)
         self.class.logger.info('Log buffers flushed')
         self.class.exit(0)
       end
@@ -93,7 +93,7 @@ module Kafo
       # so we limit parsing only to app config options (because of --help and later defined params)
       parse clamp_app_arguments
       parse_app_arguments # set values from ARGS to config.app
-      Logging.setup
+      Logging.setup(verbose: config.app[:verbose])
       self.class.set_color_scheme
 
       self.class.hooking.execute(:init)
@@ -124,10 +124,8 @@ module Kafo
     def execute
       parse_cli_arguments
 
-      if (self.class.verbose = !!verbose?)
-        Logging.setup_verbose
-      else
-        @progress_bar = self.class.config.app[:colors] ? ProgressBars::Colored.new : ProgressBars::BlackWhite.new
+      if !config.app[:verbose]
+        @progress_bar = config.app[:colors] ? ProgressBars::Colored.new : ProgressBars::BlackWhite.new
       end
 
       unless skip_checks_i_know_better?
@@ -415,7 +413,7 @@ module Kafo
       results = enabled_params.map do |param|
         result = param.valid?
         errors = param.validation_errors.join(', ')
-        progress_log(:error, "Parameter #{with_prefix(param)} invalid: #{errors}") if logging && !result
+        progress_log(:error, "Parameter #{with_prefix(param)} invalid: #{errors}", logger) if logging && !result
         result
       end
       results.all?
@@ -446,11 +444,14 @@ module Kafo
       begin
         command = PuppetCommand.new('include kafo_configure', options, puppetconf).command
         log_parser = PuppetLogParser.new
+        logger = Logger.new('configure')
+
         PTY.spawn(*PuppetCommand.format_command(command)) do |stdin, stdout, pid|
           begin
             stdin.each do |line|
               line = normalize_encoding(line)
-              progress_log(*log_parser.parse(line))
+              method, message = log_parser.parse(line)
+              progress_log(method, message, logger)
               @progress_bar.update(line) if @progress_bar
             end
           rescue Errno::EIO # we reach end of input
@@ -467,14 +468,16 @@ module Kafo
       rescue PTY::ChildExited => e # could be raised by Process.wait on older ruby or by PTY.check
         exit_code = e.status.exitstatus
       end
+
       @progress_bar.close if @progress_bar
       logger.info "Puppet has finished, bye!"
+
       self.class.exit(exit_code) do
         self.class.hooking.execute(:post)
       end
     end
 
-    def progress_log(method, message)
+    def progress_log(method, message, logger)
       @progress_bar.print_error(message + "\n") if method == :error && @progress_bar
       logger.send(method, message)
     end

@@ -27,7 +27,6 @@ module Kafo
       @exit_code = translate_exit_code(code)
       block.call if block
       logger.debug "Exit with status code: #{@exit_code} (signal was #{code})"
-      logger.dump_errors unless KafoConfigure.verbose
       cleanup
       Kernel.exit(@exit_code)
     end

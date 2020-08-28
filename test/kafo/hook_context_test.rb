@@ -3,7 +3,8 @@ require 'test_helper'
 module Kafo
   describe HookContext do
     let(:kafo) { Minitest::Mock.new }
-    let(:context) { HookContext.new(kafo) }
+    let(:logger) { Minitest::Mock.new }
+    let(:context) { HookContext.new(kafo, logger) }
 
     describe "api" do
       specify { assert context.respond_to?(:logger) }

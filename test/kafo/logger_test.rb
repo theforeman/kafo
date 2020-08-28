@@ -2,62 +2,43 @@ require 'test_helper'
 
 module Kafo
   describe Logger do
-    let(:logger) { Kafo::Logger.new }
-    let(:log_device) { DummyLogger.new }
 
-    [true, false].each do |verbose_mode|
-      before { KafoConfigure.verbose = verbose_mode }
+    it "uses root logger if no name is supplied" do
+      _(Logger.new.logger.name).must_equal 'root'
+    end
 
-      describe "buffering with verbose #{verbose_mode}" do
-        before do
-          logger.debug "one"
-          logger.error "two"
-          Logging.loggers = [log_device]
-          logger.info "three"
-          log_device.rewind
-        end
+    it "creates a logger from the name supplied" do
+      _(Logger.new('test').logger.name).must_equal 'test'
+    end
 
-        it "logs messages after loggers were set" do
-          _(log_device.info.read.chomp).must_equal 'three'
-        end
-
-        it "logs messages even before setup" do
-          _(log_device.debug.read.chomp).must_equal 'one'
-          _(log_device.error.read.chomp).must_equal 'two'
-        end
+    describe "buffering with verbose mode" do
+      before do
+        ::Logging.logger.root.appenders = []
+        @logger = Logger.new
+        @logger.debug "one"
+        @logger.error "two"
+        @logger.info "three"
       end
 
-      describe "error buffering with verbose #{verbose_mode}" do
-        before do
-          Logging.loggers = [log_device]
-          logger.debug 'debug'
-          logger.info 'info'
-          logger.warn 'warn'
-          logger.error 'error'
-          logger.fatal 'fatal'
-          Logging.dump_errors
-          log_device.rewind
-        end
-
-        it "logs error twice" do
-          errors = log_device.error.read.tr("\n", '')
-          _(errors).must_match(/.*error.*error.*/)
-
-          fatals = log_device.fatal.read.tr("\n", '')
-          _(fatals).must_match(/.*fatal.*fatal.*/)
-        end
-
-        it "logs normal messages just once" do
-          debug = log_device.debug.read
-          _(debug).wont_match(/.*debug.*debug.*/)
-
-          info = log_device.info.read
-          _(info).wont_match(/.*info.*info.*/)
-
-          warn = log_device.warn.read
-          _(warn).wont_match(/.*warn.*warn.*/)
-        end
+      it "add log messages to buffer" do
+        _(Logging.buffer.length).must_equal 3
       end
     end
+
+    describe "dumps buffer with verbose mode" do
+      before do
+        @logger = Logger.new
+        @logger.debug "one"
+        @logger.error "two"
+        @logger.info "three"
+        Logging.setup_verbose
+        @logger.debug 'four'
+      end
+
+      it "dumps the buffer after verbose is set" do
+        _(Logging.buffer.length).must_equal 0
+      end
+    end
+
   end
 end
