@@ -230,11 +230,11 @@ module Kafo
     end
 
     def dump_log_and_exit(code)
-      if Logger.buffering? && Logger.buffer.any?
-        Logger.setup_verbose
+      if Logging.buffering? && Logging.buffer.any?
+        Logging.setup_verbose
         KafoConfigure.verbose = true
         if !KafoConfigure.config.nil?
-          Logger.setup
+          Logging.setup
           KafoConfigure.logger.info("Log was be written to #{KafoConfigure.config.log_file}")
         end
         KafoConfigure.logger.info('Logs flushed')

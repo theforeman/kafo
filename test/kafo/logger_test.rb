@@ -12,7 +12,7 @@ module Kafo
         before do
           logger.debug "one"
           logger.error "two"
-          Logger.loggers = [log_device]
+          Logging.loggers = [log_device]
           logger.info "three"
           log_device.rewind
         end
@@ -29,13 +29,13 @@ module Kafo
 
       describe "error buffering with verbose #{verbose_mode}" do
         before do
-          Logger.loggers = [log_device]
+          Logging.loggers = [log_device]
           logger.debug 'debug'
           logger.info 'info'
           logger.warn 'warn'
           logger.error 'error'
           logger.fatal 'fatal'
-          Logger.dump_errors
+          Logging.dump_errors
           log_device.rewind
         end
 

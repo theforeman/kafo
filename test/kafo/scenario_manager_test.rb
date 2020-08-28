@@ -240,7 +240,7 @@ module Kafo
 
       it 'prints error and exits when not forced' do
         log_device = DummyLogger.new
-        Logger.loggers = [log_device]
+        Logging.loggers = [log_device]
         must_exit_with_code(Kafo::ExitHandler.new.error_codes[:scenario_error]) do
           capture_subprocess_io { manager.confirm_scenario_change(new_config) }
         end
