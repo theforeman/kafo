@@ -27,6 +27,7 @@ require 'kafo/hooking'
 require 'kafo/exit_handler'
 require 'kafo/scenario_manager'
 require 'kafo/execution_environment'
+require 'kafo/logging'
 
 module Kafo
   class KafoConfigure < Clamp::Command
@@ -66,7 +67,7 @@ module Kafo
 
       if ARGV.include?('--migrations-only')
         self.class.verbose = (ARGV.include?('--verbose') || ARGV.include?('-v'))
-        Logger.setup
+        Logging.setup
         self.class.logger.info('Log buffers flushed')
         self.class.exit(0)
       end
@@ -92,7 +93,7 @@ module Kafo
       # so we limit parsing only to app config options (because of --help and later defined params)
       parse clamp_app_arguments
       parse_app_arguments # set values from ARGS to config.app
-      Logger.setup
+      Logging.setup
       self.class.set_color_scheme
 
       self.class.hooking.execute(:init)
@@ -124,7 +125,7 @@ module Kafo
       parse_cli_arguments
 
       if (self.class.verbose = !!verbose?)
-        Logger.setup_verbose
+        Logging.setup_verbose
       else
         @progress_bar = self.class.config.app[:colors] ? ProgressBars::Colored.new : ProgressBars::BlackWhite.new
       end

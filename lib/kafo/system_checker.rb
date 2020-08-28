@@ -15,7 +15,7 @@ module Kafo
     end
 
     def logger
-      Logging::logger['checks']
+      ::Logging::logger['checks']
     end
 
     def check
