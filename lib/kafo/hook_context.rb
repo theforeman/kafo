@@ -33,14 +33,16 @@ module Kafo
     # Returns whether the given app option exists. This is useful when there's a conditional option that is
     # determined during boot; this helper can be used in later hooks to determine whether the option exists.
     def app_option?(option)
-      self.kafo.config.app.key?(option.to_sym)
+      raise "Invalid input: #{option} : app_option?() expects Symbol argument" unless option.is_a?(Symbol)
+      self.kafo.config.app.key?(option)
     end
 
     # examples:
     #   app_value(:log_level)
     # note the dash to underscore convention
     def app_value(option)
-      self.kafo.config.app[option.to_sym]
+      raise "Invalid input: #{option} : app_value() expects Symbol argument" unless option.is_a?(Symbol)
+      self.kafo.config.app[option]
     end
 
     # examples:
