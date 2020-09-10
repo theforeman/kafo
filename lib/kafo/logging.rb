@@ -6,30 +6,13 @@ require 'logging'
 module Kafo
   class Logging
 
-    PATTERN = "[%5l %d %c] %m\n"
-    ::Logging.color_scheme(
-      'bright',
-      :levels => {
-        :info  => :green,
-        :warn  => :yellow,
-        :error => :red,
-        :fatal => [:white, :on_red]
-      },
-      :date   => :blue,
-      :logger => :cyan,
-      :line   => :yellow,
-      :file   => :yellow,
-      :method => :yellow
-    )
-    COLOR_LAYOUT = ::Logging::Layouts::Pattern.new(:pattern => PATTERN, :color_scheme => 'bright')
-    NOCOLOR_LAYOUT = ::Logging::Layouts::Pattern.new(:pattern => PATTERN, :color_scheme => nil)
-
     class << self
       def root_logger
         @root_logger ||= ::Logging.logger.root
       end
 
       def setup(verbose: false)
+        set_color_scheme
         level = KafoConfigure.config.app[:log_level]
 
         setup_file_logging(
@@ -55,7 +38,7 @@ module Kafo
             'configure',
             :level => log_level,
             :filename => filename,
-            :layout => NOCOLOR_LAYOUT,
+            :layout => layout(false),
             :truncate => true
           )
 
@@ -69,8 +52,33 @@ module Kafo
         end
       end
 
+      def set_color_scheme
+        ::Logging.color_scheme(
+          'bright',
+          :levels => {
+            :info  => :green,
+            :warn  => :yellow,
+            :error => :red,
+            :fatal => [:white, :on_red]
+          },
+          :date   => :blue,
+          :logger => :cyan,
+          :line   => :yellow,
+          :file   => :yellow,
+          :method => :yellow
+        )
+      end
+
+      def layout(color = false)
+        ::Logging::Layouts::Pattern.new(
+          :pattern => "%d [%-5l] [%c] %m\n",
+          :color_scheme => color ? 'bright' : nil,
+          :date_pattern => '%Y-%m-%d %H:%M:%S'
+        )
+      end
+
       def color_layout
-        KafoConfigure.use_colors? ? COLOR_LAYOUT : NOCOLOR_LAYOUT
+        layout(KafoConfigure.use_colors?)
       end
 
       def add_logger(name)
