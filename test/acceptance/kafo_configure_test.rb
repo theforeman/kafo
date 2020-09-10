@@ -83,7 +83,7 @@ module Kafo
         it 'must apply but not persist value' do
           File.open("#{INSTALLER_HOME}/testing", 'w') { |f| f.write('3.0') }
 
-          code, out, err = run_command '../bin/kafo-configure -n -v --testing-version 2.0'
+          code, out, err = run_command '../bin/kafo-configure -n -v -l debug --testing-version 2.0'
           _(code).must_equal 0, err
           _(out).must_match %r{#{Regexp.escape(INSTALLER_HOME)}/testing.*content}
           _(File.read("#{INSTALLER_HOME}/testing")).must_equal '3.0'

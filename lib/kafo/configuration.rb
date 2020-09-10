@@ -17,7 +17,7 @@ module Kafo
         :log_dir              => '/var/log/kafo',
         :store_dir            => '',
         :log_name             => 'configuration.log',
-        :log_level            => 'info',
+        :log_level            => 'notice',
         :no_prefix            => false,
         :mapping              => {},
         :answer_file          => './config/answers.yaml',
@@ -29,7 +29,7 @@ module Kafo
         :custom               => {},
         :facts                => {},
         :low_priority_modules => [],
-        :verbose_log_level    => 'info',
+        :verbose_log_level    => 'notice',
         :skip_puppet_version_check => false
     }
 
@@ -179,7 +179,7 @@ module Kafo
           }
 EOS
 
-        @logger.info 'Loading default values from puppet modules...'
+        @logger.notice 'Loading default values from puppet modules...'
         command = PuppetCommand.new(dump_manifest, [], puppetconf, self).command
         stdout, stderr, status = Open3.capture3(*PuppetCommand.format_command(command))
 
@@ -204,7 +204,7 @@ EOS
           end
         end
 
-        @logger.info "... finished"
+        @logger.notice "... finished"
 
         load_yaml_from_output(stdout.split($/))
       end
@@ -309,7 +309,7 @@ EOS
         save_configuration(app)
         store(answers)
         migrations.store_applied
-        @logger.info("#{migrations.migrations.count} migration/s were applied. Updated configuration was saved.")
+        @logger.notice("#{migrations.migrations.count} migration/s were applied. Updated configuration was saved.")
       end
       migrations.migrations.count
     end
