@@ -18,6 +18,10 @@ module Kafo
                             [@last_level.nil? ? :info : @last_level, line]
                         end
 
+      if message.include?('Loading facts') && method != :error
+        method = :debug
+      end
+
       @last_level = method
       return [method, message.chomp.strip]
     end
