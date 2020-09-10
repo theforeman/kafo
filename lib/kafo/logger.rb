@@ -20,7 +20,7 @@ module Kafo
       end
     end
 
-    %w(warn info debug fatal error).each do |level|
+    Logging::LOG_LEVELS.each do |level|
       define_method(level) do |*args, &block|
         log(level, *args, &block)
       end

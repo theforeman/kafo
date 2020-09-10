@@ -31,7 +31,7 @@ module Kafo
     end
 
     def list_available_scenarios
-      say ::HighLine.color("Available scenarios", :info)
+      say ::HighLine.color("Available scenarios", :notice)
       available_scenarios.each do |config_file, content|
         scenario = File.basename(config_file, '.yaml')
         use = (File.expand_path(config_file) == @previous_scenario ? 'INSTALLED' : "use: --scenario #{scenario}")
@@ -111,7 +111,7 @@ module Kafo
     end
 
     def show_scenario_diff(prev_scenario, new_scenario)
-      say ::HighLine.color("Scenarios are being compared, that may take a while...", :info)
+      say ::HighLine.color("Scenarios are being compared, that may take a while...", :notice)
       prev_conf = load_and_setup_configuration(prev_scenario)
       new_conf = load_and_setup_configuration(new_scenario)
       print_scenario_diff(prev_conf, new_conf)
@@ -124,7 +124,7 @@ module Kafo
           dump_log_and_exit(0)
         else
           confirm_scenario_change(scenario)
-          @logger.info "Scenario #{scenario} was selected"
+          @logger.notice "Scenario #{scenario} was selected"
         end
       end
     end
@@ -234,9 +234,9 @@ module Kafo
       if Logging.buffering? && Logging.buffer.any?
         if !KafoConfigure.config.nil?
           Logging.setup(verbose: true)
-          @logger.info("Log was be written to #{KafoConfigure.config.log_file}")
+          @logger.notice("Log was be written to #{KafoConfigure.config.log_file}")
         end
-        @logger.info('Logs flushed')
+        @logger.notice('Logs flushed')
       end
       KafoConfigure.exit(code)
     end
