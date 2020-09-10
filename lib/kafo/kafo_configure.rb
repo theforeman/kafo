@@ -68,7 +68,7 @@ module Kafo
       if ARGV.include?('--migrations-only')
         verbose = (ARGV.include?('--verbose') || ARGV.include?('-v'))
         Logging.setup(verbose: verbose)
-        self.class.logger.info('Log buffers flushed')
+        self.class.logger.notice('Log buffers flushed')
         self.class.exit(0)
       end
 
@@ -81,7 +81,7 @@ module Kafo
           prev_config.run_migrations
           self.class.config.migrate_configuration(prev_config, :skip => [:log_name])
           setup_config(self.class.config_file)
-          self.class.logger.info("Due to scenario change the configuration (#{self.class.config_file}) was updated with #{scenario_manager.previous_scenario} and reloaded.")
+          self.class.logger.notice("Due to scenario change the configuration (#{self.class.config_file}) was updated with #{scenario_manager.previous_scenario} and reloaded.")
         end
       end
 
@@ -115,7 +115,7 @@ module Kafo
 
     def run(*args)
       started_at = Time.now
-      logger.info("Running installer with args #{args.inspect}")
+      logger.debug("Running installer with args #{args.inspect}")
       super
     ensure
       logger.debug("Installer finished in #{Time.now - started_at} seconds")
@@ -262,7 +262,7 @@ module Kafo
         scenario_manager = setup_scenario_manager
         self.class.scenario_manager = scenario_manager
         setup_config(self.class.config_file)
-        self.class.logger.info('Installer configuration was reloaded')
+        self.class.logger.notice('Installer configuration was reloaded')
         @config_reload_requested = false
       end
     end
@@ -309,7 +309,7 @@ module Kafo
       self.class.app_option ['--skip-puppet-version-check'], :flag, 'Skip check for compatible Puppet versions', :default => false
       self.class.app_option ['-v', '--verbose'], :flag, 'Display log on STDOUT instead of progressbar'
       self.class.app_option ['-l', '--verbose-log-level'], 'LEVEL', 'Log level for verbose mode output',
-                            :default => 'info'
+                            :default => 'notice'
       self.class.app_option ['-S', '--scenario'], 'SCENARIO', 'Use installation scenario'
       self.class.app_option ['--disable-scenario'], 'SCENARIO', 'Disable installation scenario'
       self.class.app_option ['--enable-scenario'], 'SCENARIO', 'Enable installation scenario'
@@ -409,7 +409,7 @@ module Kafo
     end
 
     def validate_all(logging = true)
-      logger.info 'Running validation checks'
+      logger.notice 'Running validation checks'
       results = enabled_params.map do |param|
         result = param.valid?
         errors = param.validation_errors.join(', ')
@@ -470,7 +470,7 @@ module Kafo
       end
 
       @progress_bar.close if @progress_bar
-      logger.info "Puppet has finished, bye!"
+      logger.notice "Puppet has finished, bye!"
 
       self.class.exit(exit_code) do
         self.class.hooking.execute(:post)

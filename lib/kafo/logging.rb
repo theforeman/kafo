@@ -6,6 +6,12 @@ require 'logging'
 module Kafo
   class Logging
 
+    LOG_LEVELS = [:debug, :info, :notice, :warn, :error, :fatal]
+
+    if ::Logging::LEVELS.keys.map(&:to_symbol) != LOG_LEVELS
+      ::Logging.init(:debug, :info, :notice, :warn, :error, :fatal)
+    end
+
     class << self
       def root_logger
         @root_logger ||= ::Logging.logger.root
@@ -13,6 +19,7 @@ module Kafo
 
       def setup(verbose: false)
         set_color_scheme
+
         level = KafoConfigure.config.app[:log_level]
 
         setup_file_logging(
@@ -56,7 +63,8 @@ module Kafo
         ::Logging.color_scheme(
           'bright',
           :levels => {
-            :info  => :green,
+            :info => :cyan,
+            :notice => :green,
             :warn  => :yellow,
             :error => :red,
             :fatal => [:white, :on_red]
@@ -71,7 +79,7 @@ module Kafo
 
       def layout(color: false)
         ::Logging::Layouts::Pattern.new(
-          pattern: "%d [%-5l] [%c] %m\n",
+          pattern: "%d [%-6l] [%c] %m\n",
           color_scheme: color ? 'bright' : nil,
           date_pattern: '%Y-%m-%d %H:%M:%S'
         )
@@ -81,7 +89,7 @@ module Kafo
         ::Logging.logger[name]
       end
 
-      def setup_verbose(level: :info)
+      def setup_verbose(level: :notice)
         root_logger.add_appenders(
           ::Logging.appenders.stdout(
             'verbose',
