@@ -36,10 +36,10 @@ module Kafo
         begin
           root_logger.appenders = ::Logging.appenders.rolling_file(
             'configure',
-            :level => log_level,
-            :filename => filename,
-            :layout => layout(false),
-            :truncate => true
+            level: log_level,
+            filename: filename,
+            layout: layout(color: false),
+            truncate: true
           )
 
           FileUtils.chown(
@@ -69,16 +69,12 @@ module Kafo
         )
       end
 
-      def layout(color = false)
+      def layout(color: false)
         ::Logging::Layouts::Pattern.new(
-          :pattern => "%d [%-5l] [%c] %m\n",
-          :color_scheme => color ? 'bright' : nil,
-          :date_pattern => '%Y-%m-%d %H:%M:%S'
+          pattern: "%d [%-5l] [%c] %m\n",
+          color_scheme: color ? 'bright' : nil,
+          date_pattern: '%Y-%m-%d %H:%M:%S'
         )
-      end
-
-      def color_layout
-        layout(KafoConfigure.use_colors?)
       end
 
       def add_logger(name)
@@ -86,8 +82,13 @@ module Kafo
       end
 
       def setup_verbose(level: :info)
-        stdout = ::Logging.appenders.stdout('verbose', :layout => color_layout, :level => level)
-        root_logger.add_appenders(stdout)
+        root_logger.add_appenders(
+          ::Logging.appenders.stdout(
+            'verbose',
+            layout: layout(color: KafoConfigure.use_colors?),
+            level: level
+          )
+        )
       end
 
       def buffer
