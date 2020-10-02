@@ -33,7 +33,7 @@ module Kafo
       end
 
       let(:stdout) { StringIO.new }
-      let(:builder) { HelpBuilders::Advanced.new(params) }
+      let(:builder) { HelpBuilders::Advanced.new(params, {}) }
 
       before { builder.instance_variable_set '@out', stdout }
 

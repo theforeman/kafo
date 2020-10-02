@@ -187,14 +187,18 @@ module Kafo
     def self.help(*args)
       kafo          = args.pop
       builder_class = kafo.full_help? ? HelpBuilders::Advanced : HelpBuilders::Basic
-      args.push builder_class.new(kafo.params)
+      args.push builder_class.new(kafo.params, app_options: self.app_options, advanced: kafo.full_help?)
       super(*args)
     end
 
-    def self.app_option(*args, &block)
-      self.app_options ||= []
-      self.app_options.push self.option(*args, &block)
-      self.app_options.last
+    def self.app_option(switches, type, description, options ={}, &block)
+      self.app_options ||= {}
+
+      option = self.option(switches, type, description, options, &block)
+      advanced = options.dig(:advanced)
+
+      self.app_options[option.attribute_name] = {:option => option, :advanced => advanced}
+      self.app_options[option.attribute_name][:option]
     end
 
     def params
@@ -346,8 +350,8 @@ module Kafo
     # so we accept either allowed args or those that does not start with '-' and are right after
     # accepted argument
     def clamp_app_arguments
-      @allowed_clamp_app_arguments = self.class.app_options.map do |option|
-        option.switches.map { |s| is_yes_no_flag?(s) ? build_yes_no_variants(s) : s }
+      @allowed_clamp_app_arguments = self.class.app_options.map do |name, app_option|
+        app_option[:option].switches.map { |s| is_yes_no_flag?(s) ? build_yes_no_variants(s) : s }
       end
       @allowed_clamp_app_arguments.flatten!
 
@@ -372,9 +376,9 @@ module Kafo
     end
 
     def parse_app_arguments
-      self.class.app_options.each do |option|
-        name                    = option.attribute_name
-        value                   = send(option.flag? ? "#{name}?" : name)
+      self.class.app_options.each do |name, app_option|
+        option = app_option[:option]
+        value = send(option.flag? ? "#{name}?" : name)
         config.app[name.to_sym] = value.nil? ? option.default_value : value
       end
     end

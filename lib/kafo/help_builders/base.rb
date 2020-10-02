@@ -4,14 +4,17 @@ module Kafo
   module HelpBuilders
     DEFAULT_GROUP_NAME   = 'Basic'
     DEFAULT_MODULE_NAME  = 'Generic'
+    ADVANCED_MODULE_NAME = 'Advanced'
     IGNORE_IN_GROUP_NAME = /\s*parameters:?/
 
     class Base < Clamp::Help::Builder
       include StringHelper
 
-      def initialize(params)
+      def initialize(params, app_options: {}, advanced: false)
         super()
         @params = params
+        @app_options = app_options
+        @advanced = advanced
       end
 
       def add_list(heading, items)
@@ -23,6 +26,8 @@ module Kafo
           sorted_keys(data).each do |section|
             if section == 'Generic'
               add_list(header(1, section), data[section])
+            elsif section == 'Advanced'
+              add_list(header(1, section), data[section]) if @advanced
             else
               add_module(section, data[section])
             end
@@ -50,7 +55,7 @@ module Kafo
       end
 
       def module_header(name)
-        "\n" + header(1, 'Module ' + name)
+        header(1, 'Module ' + name)
       end
 
       def level(n)
@@ -73,7 +78,17 @@ module Kafo
       def by_module(help_items)
         data = Hash.new { |h, k| h[k] = [] }
         params_mapping(help_items).each do |item, param|
-          data[param.nil? ? DEFAULT_MODULE_NAME : param.module_name].push item
+          target = if param.nil?
+                     if @app_options.dig(item.attribute_name, :advanced)
+                       ADVANCED_MODULE_NAME
+                     else
+                       DEFAULT_MODULE_NAME
+                     end
+                   else
+                     param.module_name
+                   end
+
+          data[target].push(item)
         end
         data
       end
