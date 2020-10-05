@@ -15,6 +15,7 @@ module Kafo
       end
 
       def add_list(heading, items)
+        return if items.empty?
         if heading == 'Options'
           puts "\n#{heading}:"
 
