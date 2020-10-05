@@ -21,6 +21,10 @@ module Kafo
               p.doc    = "apache port"
               p.groups = []
             end,
+            Param.new(OpenStruct.new(:name => 'redis'), 'port', 'Integer').tap do |p|
+              p.doc    = "redis port"
+              p.groups = ["Advanced parameters:"]
+            end,
         ]
       end
 
@@ -67,6 +71,7 @@ module Kafo
         specify { _(output).wont_include 'Basic' }
         specify { _(output).wont_include 'Advanced' }
         specify { _(output).must_match(/Generic.*Module apache.*Module puppet/m) }
+        specify { _(output).wont_include '= Module redis:' }
       end
 
       describe "#string" do
