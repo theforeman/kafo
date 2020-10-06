@@ -310,12 +310,16 @@ module Kafo
       self.class.app_option ['-v', '--verbose'], :flag, 'Display log on STDOUT instead of progressbar'
       self.class.app_option ['-l', '--verbose-log-level'], 'LEVEL', 'Log level for verbose mode output',
                             :default => 'info'
+
       self.class.app_option ['-S', '--scenario'], 'SCENARIO', 'Use installation scenario'
-      self.class.app_option ['--disable-scenario'], 'SCENARIO', 'Disable installation scenario'
-      self.class.app_option ['--enable-scenario'], 'SCENARIO', 'Enable installation scenario'
       self.class.app_option ['--list-scenarios'], :flag, 'List available installation scenarios'
-      self.class.app_option ['--force'], :flag, 'Force change of installation scenario'
-      self.class.app_option ['--compare-scenarios'], :flag, 'Show changes between last used scenario and the scenario specified with -S or --scenario argument'
+      if scenario_manager.multiple_scenarios_available?
+        self.class.app_option ['--disable-scenario'], 'SCENARIO', 'Disable installation scenario'
+        self.class.app_option ['--enable-scenario'], 'SCENARIO', 'Enable installation scenario'
+        self.class.app_option ['--force'], :flag, 'Force change of installation scenario'
+        self.class.app_option ['--compare-scenarios'], :flag, 'Show changes between last used scenario and the scenario specified with -S or --scenario argument'
+      end
+
       self.class.app_option ['--migrations-only'], :flag, 'Apply migrations to a selected scenario and exit'
       self.class.app_option ['--[no-]parser-cache'], :flag, 'Force use or bypass of Puppet module parser cache'
     end
