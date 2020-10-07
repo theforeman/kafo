@@ -118,7 +118,7 @@ module Kafo
       logger.info("Running installer with args #{args.inspect}")
       super
     ensure
-      logger.info("Installer finished in #{Time.now - started_at} seconds")
+      logger.debug("Installer finished in #{Time.now - started_at} seconds")
     end
 
     def execute
