@@ -42,6 +42,13 @@ module Kafo
       PuppetConfigurer.new(puppet_conf, settings)
     end
 
+    def build_command(code, options: [], settings: {}, use_answers: false)
+      store_answers if use_answers
+      puppetconf = configure_puppet(settings)
+      command = Kafo::PuppetCommand.new(code, options, puppetconf, @config).command
+      Kafo::PuppetCommand.format_command(command)
+    end
+
     private
 
     def environmentpath
