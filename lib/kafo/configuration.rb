@@ -169,8 +169,6 @@ module Kafo
         execution_env = ExecutionEnvironment.new(self)
         KafoConfigure.exit_handler.register_cleanup_path(execution_env.directory)
 
-        puppetconf = execution_env.configure_puppet('noop' => true)
-
         dump_manifest = <<EOS
           #{includes}
           class { '::kafo_configure::dump_values':
@@ -180,8 +178,8 @@ module Kafo
 EOS
 
         @logger.info 'Loading default values from puppet modules...'
-        command = PuppetCommand.new(dump_manifest, [], puppetconf, self).command
-        stdout, stderr, status = Open3.capture3(*PuppetCommand.format_command(command))
+        command = execution_env.build_command(dump_manifest, settings: {'noop' => true})
+        stdout, stderr, status = Open3.capture3(*command)
 
         @logger.debug stdout
         @logger.debug stderr

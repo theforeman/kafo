@@ -425,14 +425,14 @@ module Kafo
       execution_env = ExecutionEnvironment.new(config)
       self.class.exit_handler.register_cleanup_path(execution_env.directory)
 
-      execution_env.store_answers
-      puppetconf = execution_env.configure_puppet(
+      code = 'include kafo_configure'
+      settings = {
         'color'     => false,
         'evaltrace' => !!@progress_bar,
         'noop'      => !!noop?,
         'profile'   => !!profile?,
         'show_diff' => true,
-      )
+      }
 
       exit_code   = 0
       exit_status = nil
@@ -442,11 +442,11 @@ module Kafo
           '--detailed-exitcodes',
       ]
       begin
-        command = PuppetCommand.new('include kafo_configure', options, puppetconf).command
+        command = execution_env.build_command(code, options: options, settings: settings, use_answers: true)
         log_parser = PuppetLogParser.new
         logger = Logger.new('configure')
 
-        PTY.spawn(*PuppetCommand.format_command(command)) do |stdin, stdout, pid|
+        PTY.spawn(*command) do |stdin, stdout, pid|
           begin
             stdin.each do |line|
               line = normalize_encoding(line)
