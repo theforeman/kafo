@@ -1,3 +1,4 @@
+require 'fileutils'
 require 'kafo/data_type'
 require 'kafo/base_context'
 
@@ -133,6 +134,14 @@ module Kafo
     # Return the actual data in the current scenario
     def scenario_data
       self.kafo.config.app
+    end
+
+    # Yield a Puppet execution environment that's isolated from the system
+    def puppet_execution_environment
+      execution_env = Kafo::ExecutionEnvironment.new(self.kafo.config)
+      yield execution_env
+    ensure
+      FileUtils.rm_rf(execution_env.directory)
     end
   end
 end

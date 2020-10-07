@@ -121,5 +121,50 @@ module Kafo
         assert_equal false, context.has_custom_fact?('not_my_custom_fact')
       end
     end
+
+    describe '#puppet_execution_environment' do
+      let(:config) { Minitest::Mock.new }
+      let(:code) {  }
+
+      before do
+        kafo.expect :config, config
+      end
+
+      specify 'creates directory' do
+        context.puppet_execution_environment do |env|
+          assert File.directory?(env.directory)
+        end
+      end
+
+      specify 'deletes directory' do
+        directory = context.puppet_execution_environment do |env|
+          env.directory
+        end
+
+        refute File.directory?(directory)
+      end
+
+      specify 'builds command' do
+        def config.app
+          {}
+        end
+        def config.module_dirs
+          ['./modules']
+        end
+        def config.kafo_modules_dir
+          ['./kafo_modules']
+        end
+        config.expect :scenario_id, 'foobar'
+        config.expect :config_file, 'foobar.yaml'
+
+        context.puppet_execution_environment do |env|
+          result = env.build_command("notice { 'Hello' }")
+          assert_kind_of(Array, result)
+          # TODO: result[0] can either be a Hash or ::ENV which is an Object
+          assert_match(%{notice { 'Hello' }}, result[1])
+          assert_equal({unsetenv_others: false}, result[2])
+        end
+      end
+    end
   end
 end
