@@ -43,6 +43,10 @@ module Kafo
       KafoConfigure.exit(0)
     end
 
+    def multiple_scenarios_available?
+      available_scenarios.length > 1
+    end
+
     def scenario_selection_wizard
       wizard = KafoWizards.wizard(:cli, 'Select installation scenario',
         :description => "Please select one of the pre-set installation scenarios. You can customize your setup later during the installation.")
