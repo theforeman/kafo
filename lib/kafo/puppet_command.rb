@@ -73,7 +73,7 @@ module Kafo
     end
 
     def add_progress
-      %{$kafo_add_progress=#{!KafoConfigure.verbose}}
+      %{$kafo_add_progress=#{KafoConfigure.progress_bar}}
     end
 
     def generate_version_checks

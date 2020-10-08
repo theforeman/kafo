@@ -45,9 +45,9 @@ module Kafo
       end
 
       it 'must fail if validations fail' do
-        code, _, err = run_command '../bin/kafo-configure --testing-pool-size=fail'
+        code, stdout, err = run_command '../bin/kafo-configure --testing-pool-size=fail'
         _(code.exitstatus).must_equal 21, err
-        _(err).must_include 'Parameter testing-pool-size invalid: "fail" is not a valid integer'
+        _(stdout).must_include 'Parameter testing-pool-size invalid: "fail" is not a valid integer'
         _(File.exist?("#{INSTALLER_HOME}/testing")).must_equal false
       end
 
@@ -83,7 +83,7 @@ module Kafo
         it 'must apply but not persist value' do
           File.open("#{INSTALLER_HOME}/testing", 'w') { |f| f.write('3.0') }
 
-          code, out, err = run_command '../bin/kafo-configure -n -v -l debug --testing-version 2.0'
+          code, out, err = run_command '../bin/kafo-configure -n -l debug --testing-version 2.0'
           _(code).must_equal 0, err
           _(out).must_match %r{#{Regexp.escape(INSTALLER_HOME)}/testing.*content}
           _(File.read("#{INSTALLER_HOME}/testing")).must_equal '3.0'
@@ -106,21 +106,21 @@ module Kafo
       end
 
       it 'must use cache' do
-        code, out, err = run_command '../bin/kafo-configure -v -l debug'
+        code, out, err = run_command '../bin/kafo-configure -l debug'
         _(code).must_equal 0, err
         _(out).must_include "Using #{INSTALLER_HOME}/parser_cache.json cache with parsed modules"
       end
 
       it 'with --parser-cache forces use of cache' do
         FileUtils.touch(File.join(MANIFEST_PATH, 'init.pp'), :mtime => Time.now + 3600)
-        code, out, err = run_command '../bin/kafo-configure -v -l debug --parser-cache'
+        code, out, err = run_command '../bin/kafo-configure -l debug --parser-cache'
         _(code).must_equal 0, err
         _(out).must_include "Parser cache for #{MANIFEST_PATH}/init.pp is outdated, forced to use it anyway"
       end
 
       it 'with --no-parser-cache skips cache' do
         FileUtils.touch(File.join(MANIFEST_PATH, 'init.pp'), :mtime => Time.now + 3600)
-        code, out, err = run_command '../bin/kafo-configure -v -l debug --no-parser-cache'
+        code, out, err = run_command '../bin/kafo-configure -l debug --no-parser-cache'
         _(code).must_equal 0, err
         _(out).must_include "Skipping parser cache for #{MANIFEST_PATH}/init.pp, forced off"
       end

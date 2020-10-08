@@ -35,7 +35,7 @@ module Kafo
 
     class << self
       attr_accessor :config, :root_dir, :config_file, :gem_root,
-                    :module_dirs, :kafo_modules_dir, :verbose, :app_options, :logger,
+                    :module_dirs, :kafo_modules_dir, :progress_bar, :app_options, :logger,
                     :check_dirs, :exit_handler, :scenario_manager, :store
       attr_writer :hooking
 
@@ -48,7 +48,7 @@ module Kafo
       self.class.preset_color_scheme
       self.class.logger           = Logger.new
       self.class.exit_handler     = ExitHandler.new
-      @progress_bar               = nil
+      @kafo_progress_bar               = nil
       @config_reload_requested    = false
 
       scenario_manager = setup_scenario_manager
@@ -66,8 +66,8 @@ module Kafo
       request_config_reload if applied_total > 0
 
       if ARGV.include?('--migrations-only')
-        verbose = (ARGV.include?('--verbose') || ARGV.include?('-v'))
-        Logging.setup(verbose: verbose)
+        progress_bar = ARGV.include?('--progress-bar')
+        Logging.setup(verbose: !progress_bar)
         self.class.logger.notice('Log buffers flushed')
         self.class.exit(0)
       end
@@ -93,7 +93,7 @@ module Kafo
       # so we limit parsing only to app config options (because of --help and later defined params)
       parse clamp_app_arguments
       parse_app_arguments # set values from ARGS to config.app
-      Logging.setup(verbose: config.app[:verbose])
+      Logging.setup(verbose: !config.app[:progress_bar])
       self.class.set_color_scheme
 
       self.class.hooking.execute(:init)
@@ -113,6 +113,10 @@ module Kafo
       self.class.logger
     end
 
+    def self.progress_bar
+      self.config.app[:progress_bar]
+    end
+
     def run(*args)
       started_at = Time.now
       logger.debug("Running installer with args #{args.inspect}")
@@ -124,8 +128,8 @@ module Kafo
     def execute
       parse_cli_arguments
 
-      if !config.app[:verbose]
-        @progress_bar = config.app[:colors] ? ProgressBars::Colored.new : ProgressBars::BlackWhite.new
+      if config.app[:progress_bar]
+        @kafo_progress_bar = config.app[:colors] ? ProgressBars::Colored.new : ProgressBars::BlackWhite.new
       end
 
       unless skip_checks_i_know_better?
@@ -307,8 +311,8 @@ module Kafo
                             :default => false
       self.class.app_option ['-s', '--skip-checks-i-know-better'], :flag, 'Skip all system checks', :default => false
       self.class.app_option ['--skip-puppet-version-check'], :flag, 'Skip check for compatible Puppet versions', :default => false
-      self.class.app_option ['-v', '--verbose'], :flag, 'Display log on STDOUT instead of progressbar'
-      self.class.app_option ['-l', '--verbose-log-level'], 'LEVEL', 'Log level for verbose mode output',
+      self.class.app_option ['--progress-bar'], :flag, 'Display a progress bar for output', :default => false
+      self.class.app_option ['-l', '--verbose-log-level'], 'LEVEL', 'Log level for output',
                             :default => 'notice'
       self.class.app_option ['-S', '--scenario'], 'SCENARIO', 'Use installation scenario'
       self.class.app_option ['--disable-scenario'], 'SCENARIO', 'Disable installation scenario'
@@ -428,7 +432,7 @@ module Kafo
       execution_env.store_answers
       puppetconf = execution_env.configure_puppet(
         'color'     => false,
-        'evaltrace' => !!@progress_bar,
+        'evaltrace' => !!@kafo_progress_bar,
         'noop'      => !!noop?,
         'profile'   => !!profile?,
         'show_diff' => true,
@@ -452,7 +456,7 @@ module Kafo
               line = normalize_encoding(line)
               method, message = log_parser.parse(line)
               progress_log(method, message, logger)
-              @progress_bar.update(line) if @progress_bar
+              @kafo_progress_bar.update(line) if @kafo_progress_bar
             end
           rescue Errno::EIO # we reach end of input
             exit_status = PTY.check(pid, true) if PTY.respond_to?(:check) # ruby >= 1.9.2
@@ -469,7 +473,7 @@ module Kafo
         exit_code = e.status.exitstatus
       end
 
-      @progress_bar.close if @progress_bar
+      @kafo_progress_bar.close if @kafo_progress_bar
       logger.notice "Puppet has finished, bye!"
 
       self.class.exit(exit_code) do
@@ -478,7 +482,7 @@ module Kafo
     end
 
     def progress_log(method, message, logger)
-      @progress_bar.print_error(message + "\n") if method == :error && @progress_bar
+      @kafo_progress_bar.print_error(message + "\n") if method == :error && @kafo_progress_bar
       logger.send(method, message)
     end
 
