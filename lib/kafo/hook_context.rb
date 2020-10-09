@@ -134,5 +134,10 @@ module Kafo
     def scenario_data
       self.kafo.config.app
     end
+
+    # Return the current exit code
+    def exit_code
+      self.kafo.exit_code
+    end
   end
 end

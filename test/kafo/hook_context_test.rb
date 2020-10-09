@@ -22,6 +22,7 @@ module Kafo
       specify { assert context.respond_to?(:scenario_id) }
       specify { assert context.respond_to?(:scenario_path) }
       specify { assert context.respond_to?(:scenario_data) }
+      specify { assert context.respond_to?(:exit_code) }
     end
 
     describe "#scenario_data" do
@@ -119,6 +120,15 @@ module Kafo
         kafo.expect :config, config
         config.expect :has_custom_fact?, false, ['not_my_custom_fact']
         assert_equal false, context.has_custom_fact?('not_my_custom_fact')
+      end
+    end
+
+    describe "#exit_code " do
+      let(:config) { Minitest::Mock.new }
+
+      specify do
+        kafo.expect :exit_code, 0
+        assert_equal 0, context.exit_code
       end
     end
   end
