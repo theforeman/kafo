@@ -736,6 +736,7 @@ We currently support the following hooks.
 * pre_commit - after validations or interactive wizard have completed, all parameter values are set but not yet stored in the answer file
 * pre  - just before puppet is executed to converge system, after parameter values are stored in the answer file
 * post  - just after puppet is executed to converge system
+* pre_exit - happens during exit handling, before exit is completed
 
 For better understanding when the hooks are executed see the [diagram](doc/kafo_run.png).
 
