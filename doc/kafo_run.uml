@@ -105,5 +105,7 @@
 
   #Greenyellow:**post**|
 
+  #Greenyellow:**pre_exit**|
+
   stop
 @enduml

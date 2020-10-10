@@ -10,7 +10,8 @@ module Kafo
     # * pre_commit - after validations or interactive wizard have completed, all parameter values are set but not yet stored in the answer file
     # * pre - just before puppet is executed to converge system
     # * post - just after puppet is executed to converge system
-    TYPES = [:pre_migrations, :boot, :init, :pre, :post, :pre_values, :pre_validations, :pre_commit]
+    # * pre_exit - happens during exit handling, before exit is completed
+    TYPES = [:pre_migrations, :boot, :init, :pre_values, :pre_validations, :pre_commit, :pre, :post, :pre_exit]
 
     attr_accessor :hooks, :kafo
 
@@ -44,15 +45,15 @@ module Kafo
       @loaded
     end
 
-    def execute(group)
+    def execute(group, log_stage: true)
       logger = Logger.new(group)
-      logger.notice "Executing hooks in group #{group}"
+      logger.notice "Executing hooks in group #{group}" if log_stage
       self.hooks[group].keys.sort_by(&:to_s).each do |name|
         hook = self.hooks[group][name]
         result = HookContext.execute(self.kafo, logger, &hook)
         logger.debug "Hook #{name} returned #{result.inspect}"
       end
-      logger.notice "All hooks in group #{group} finished"
+      logger.notice "All hooks in group #{group} finished" if log_stage
       @group = nil
     end
 
@@ -86,6 +87,10 @@ module Kafo
 
     def register_post(name, &block)
       register(:post, name, &block)
+    end
+
+    def register_pre_exit(name, &block)
+      register(:pre_exit, name, &block)
     end
 
     private

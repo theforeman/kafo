@@ -504,9 +504,8 @@ module Kafo
       @progress_bar.close if @progress_bar
       logger.notice "Puppet has finished, bye!"
 
-      self.class.exit(exit_code) do
-        self.class.hooking.execute(:post)
-      end
+      self.class.hooking.execute(:post)
+      self.class.exit(exit_code)
     end
 
     def progress_log(method, message, logger)

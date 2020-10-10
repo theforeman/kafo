@@ -26,6 +26,7 @@ module Kafo
     def exit(code, &block)
       @exit_code = translate_exit_code(code)
       block.call if block
+      KafoConfigure.hooking.execute(:pre_exit, log_stage: false)
       logger.debug "Exit with status code: #{@exit_code} (signal was #{code})"
       cleanup
       Kernel.exit(@exit_code)
