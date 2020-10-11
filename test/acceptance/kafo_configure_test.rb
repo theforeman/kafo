@@ -332,5 +332,13 @@ module Kafo
         _(stdout).must_include "Runs before exit code hook in post\n2"
       end
     end
+
+    describe 'multi-stage hooks' do
+      it 'should execute multi-stage hooks' do
+        code, stdout, err = run_command '../bin/kafo-configure --print-hello-kafo'
+
+        _(stdout).must_include "Hello Kafo\nGoodbye"
+      end
+    end
   end
 end

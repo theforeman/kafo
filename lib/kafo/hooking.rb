@@ -1,4 +1,5 @@
 require 'kafo/hook_context'
+require 'kafo/multi_stage_hook'
 
 module Kafo
   class Hooking
@@ -36,6 +37,14 @@ module Kafo
             register(hook_type, file, &hook_block)
           end
         end
+
+        # Multi stage hooks are special
+        Dir.glob(File.join(base_dir, 'multi', '*.rb')).sort.each do |file|
+          logger.debug "Loading multi stage hook #{file}"
+          hook = File.read(file)
+          MultiStageHook.new(file, self, TYPES).instance_eval(hook, file, 1)
+        end
+
         @loaded = true
       end
       self
