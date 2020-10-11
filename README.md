@@ -816,6 +816,32 @@ if app_value(:reset_foreman_db) && !app_value(:noop)
 end
 ```
 
+Hooks can additionally be defined by combining all related stages into a single file
+known as a Multi-stage hook. Multi-stage hooks live in a special directory inside
+the hooks directory: ```$installer_dir/hooks/multi```. Taking the previous example:
+
+```ruby
+# hooks/multi/10-reset_option_feature.rb
+boot do
+  app_option '--reset-foreman-db', :flag, 'Drop foreman database first? You will lose all data!', :default => false
+end
+
+pre do
+  if app_value(:reset_foreman_db) && !app_value(:noop)
+    `which foreman-rake > /dev/null 2>&1`
+    if $?.success?
+      logger.info 'Dropping database!'
+      output = `foreman-rake db:drop 2>&1`
+      logger.debug output.to_s
+      unless $?.success?
+        logger.warn "Unable to drop DB, ignoring since it's not fatal, output was: '#{output}''"
+      end
+    else
+      logger.warn 'Foreman not installed yet, can not drop database!'
+    end
+  end
+end
+```
 
 If you want to add more directories to be search you can use the "hook_dirs" option
 in the installer configuration file.
