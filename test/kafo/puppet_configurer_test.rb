@@ -1,6 +1,5 @@
 require 'test_helper'
 require 'tempfile'
-require 'kafo/hiera_configurer'
 
 module Kafo
   describe PuppetConfigurer do

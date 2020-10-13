@@ -744,7 +744,7 @@ foreman-installer. We could add the following lines to the generated
 installer script.
 
 ```ruby
-require 'kafo/hooking'
+require 'kafo'
 
 # first hook that creates new app option --reset-foreman-db
 KafoConfigure.hooking.register_boot(:add_reset_option) do

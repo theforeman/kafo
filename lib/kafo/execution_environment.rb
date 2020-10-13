@@ -1,9 +1,5 @@
 require 'tmpdir'
 
-require 'kafo/fact_writer'
-require 'kafo/hiera_configurer'
-require 'kafo/puppet_configurer'
-
 module Kafo
   class ExecutionEnvironment
     def initialize(config, logger = KafoConfigure.logger)
@@ -17,6 +13,18 @@ module Kafo
         @logger.debug("Creating execution environment in #{directory}")
         directory
       end
+    end
+
+    def reportdir
+      @reportdir ||= begin
+        path = File.join(directory, 'reports')
+        File.mkdir(path)
+        path
+      end
+    end
+
+    def reports
+      Dir.entries(reportdir).sort_by { |path| File.mtime(path) }
     end
 
     def store_answers
@@ -37,6 +45,8 @@ module Kafo
         'environmentpath' => environmentpath,
         'factpath'        => factpath,
         'hiera_config'    => hiera_config,
+        'reports'         => 'store',
+        'reportdir'       => reportdir,
       }.merge(settings)
 
       PuppetConfigurer.new(puppet_conf, settings)

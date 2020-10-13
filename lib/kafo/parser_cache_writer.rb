@@ -1,5 +1,3 @@
-require 'kafo/version'
-
 module Kafo
   class ParserCacheWriter
     def self.write(modules)

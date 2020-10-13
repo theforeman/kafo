@@ -1,7 +1,4 @@
 # encoding: UTF-8
-require 'kafo/param'
-require 'kafo/param_builder'
-require 'kafo/parser_cache_reader'
 require 'kafo_parsers/parsers'
 
 module Kafo

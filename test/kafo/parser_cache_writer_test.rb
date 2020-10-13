@@ -1,5 +1,4 @@
 require 'test_helper'
-require 'kafo/parser_cache_writer'
 require 'tempfile'
 
 module Kafo

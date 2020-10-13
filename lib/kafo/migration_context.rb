@@ -1,5 +1,3 @@
-require 'kafo/base_context'
-
 module Kafo
   class MigrationContext < BaseContext
 

@@ -1,5 +1,4 @@
 require 'yaml'
-require 'kafo/migration_context'
 
 module Kafo
   class Migrations

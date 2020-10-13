@@ -1,5 +1,3 @@
-require 'kafo/version'
-
 module Kafo
   class ParserCacheReader
     attr_accessor :force

@@ -1,5 +1,3 @@
-require 'kafo_parsers/parsers'
-
 class TestParser
   attr_reader :manifest_file
 

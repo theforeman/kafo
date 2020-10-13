@@ -1,10 +1,6 @@
 # encoding: UTF-8
 require 'yaml'
 require 'tmpdir'
-require 'kafo/puppet_module'
-require 'kafo/color_scheme'
-require 'kafo/data_type_parser'
-require 'kafo/execution_environment'
 
 module Kafo
   class Configuration

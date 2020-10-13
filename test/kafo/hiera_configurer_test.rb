@@ -1,5 +1,4 @@
 require 'test_helper'
-require 'kafo/hiera_configurer'
 
 module Kafo
   describe HieraConfigurer do

@@ -1,5 +1,4 @@
 # encoding: UTF-8
-require 'kafo/param_group'
 
 module Kafo
   class ParamBuilder
