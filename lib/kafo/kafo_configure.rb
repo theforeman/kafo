@@ -22,6 +22,7 @@ require 'kafo/wizard'
 require 'kafo/system_checker'
 require 'kafo/puppet_command'
 require 'kafo/puppet_log_parser'
+require 'kafo/puppet_report'
 require 'kafo/progress_bar'
 require 'kafo/hooking'
 require 'kafo/exit_handler'
@@ -472,7 +473,13 @@ module Kafo
       @progress_bar.close if @progress_bar
       logger.info "Puppet has finished, bye!"
 
+      last_report = execution_env.reports.last
+      if last_report
+        report = PuppetReport.load_report_file(report)
+      end
+
       self.class.exit(exit_code) do
+        # TODO: make report available in the post context
         self.class.hooking.execute(:post)
       end
     end
