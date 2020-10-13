@@ -8,4 +8,7 @@ module Kafo
 
   class ParserError < StandardError
   end
+
+  class PuppetReportError < StandardError
+  end
 end

@@ -20,8 +20,10 @@ require 'kafo/string_helper'
 require 'kafo/help_builder'
 require 'kafo/wizard'
 require 'kafo/system_checker'
+require 'kafo/failed_puppet_resource'
 require 'kafo/puppet_command'
 require 'kafo/puppet_log_parser'
+require 'kafo/puppet_report'
 require 'kafo/progress_bar'
 require 'kafo/hooking'
 require 'kafo/exit_handler'
@@ -39,7 +41,8 @@ module Kafo
 
       attr_accessor :config, :root_dir, :config_file, :gem_root,
                     :module_dirs, :kafo_modules_dir, :verbose, :logger,
-                    :check_dirs, :exit_handler, :scenario_manager, :store
+                    :check_dirs, :exit_handler, :scenario_manager, :store,
+                    :puppet_report
       attr_writer :hooking
 
       def hooking
@@ -221,6 +224,10 @@ module Kafo
 
     def exit_code
       self.class.exit_code
+    end
+
+    def puppet_report
+      self.class.puppet_report
     end
 
     def help
@@ -541,6 +548,12 @@ module Kafo
 
       @progress_bar.close if @progress_bar
       logger.notice "System configuration has finished."
+
+      if (last_report = execution_env.reports.last)
+        # For debugging: you can easily copy the last report to fixtures
+        # FileUtils.cp(last_report, File.join(__dir__, '..', '..', 'test', 'fixtures', 'reports', File.basename(last_report)))
+        self.class.puppet_report = PuppetReport.load_report_file(last_report)
+      end
 
       self.class.hooking.execute(:post)
       self.class.exit(exit_code)

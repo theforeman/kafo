@@ -341,5 +341,36 @@ module Kafo
         _(stdout).must_include "Hello Kafo\nGoodbye"
       end
     end
+
+    describe 'puppet_report hook context' do
+      it 'has a Puppet report format' do
+        _code, stdout, _stderr = run_command '../bin/kafo-configure'
+
+        assert_match(/Puppet report format: \d+$/, stdout)
+      end
+    end
+
+    describe 'with failure module' do
+      before { add_manifest('failure') }
+
+      it 'triggers a failure' do
+        process, stdout, stderr = run_command('../bin/kafo-configure --testing-fail exec')
+
+        expected_stdout = <<~EXPECTED
+        Puppet Exec resource 'failing-command' failed. Logs:
+        require to File[#{TMPDIR}/failing-command]
+        Starting to evaluate the resource (12 of 21)
+        Executing '#{TMPDIR}/failing-command'
+        This is stdout
+        This is stderr
+        change from 'notrun' to ['0'] failed: '#{TMPDIR}/failing-command' returned 100 instead of one of [0]
+        Evaluated in 0.01 seconds
+        EXPECTED
+
+        assert_includes(stderr, "failed: '#{TMPDIR}/failing-command' returned 100")
+        assert_includes(stdout, expected_stdout)
+        assert_equal(6, process.exitstatus)
+      end
+    end
   end
 end

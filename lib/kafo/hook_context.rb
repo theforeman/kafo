@@ -196,5 +196,13 @@ module Kafo
     def exit_code
       self.kafo.exit_code
     end
+
+    # Return the Puppet report, if any.
+    # Only available after Puppet actual ran.
+    #
+    # @return [Optional[Kafo::PuppetReport]]
+    def puppet_report
+      self.kafo.puppet_report
+    end
   end
 end

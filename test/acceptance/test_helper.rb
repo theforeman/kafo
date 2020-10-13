@@ -13,15 +13,22 @@ MANIFEST_PATH = File.join(TEST_MODULE_PATH, 'manifests')
 
 def run_command(command, opts = {})
   opts = {:be => true, :capture => true, :dir => INSTALLER_HOME}.merge(opts)
-  command = "BUNDLE_GEMFILE=#{TMPDIR}/Gemfile bundle exec #{command}" if opts[:be]
+  env = {
+    'FACTER_kafo_test_tmpdir' => TMPDIR,
+  }
+
+  if opts[:be]
+    env['BUNDLE_GEMFILE'] = File.join(TMPDIR, 'Gemfile')
+    command = "bundle exec #{command}" if opts[:be]
+  end
 
   ret = Dir.chdir(opts[:dir]) do
           if opts[:capture]
             capture_subprocess_io do
-              Bundler.with_clean_env { system(command) }
+              Bundler.with_clean_env { system(env, command) }
             end
           else
-            Bundler.with_clean_env { system(command) }
+            Bundler.with_clean_env { system(env, command) }
           end
         end
 
