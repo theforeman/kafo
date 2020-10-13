@@ -1,6 +1,5 @@
 # encoding: UTF-8
 
-require 'pty'
 require 'clamp'
 
 module Kafo
@@ -420,6 +419,7 @@ module Kafo
         log_parser = PuppetLogParser.new
         logger = Logger.new('configure')
 
+        require 'pty'
         PTY.spawn(*PuppetCommand.format_command(command)) do |stdin, stdout, pid|
           begin
             stdin.each do |line|
