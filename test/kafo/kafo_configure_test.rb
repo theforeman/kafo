@@ -29,5 +29,23 @@ module Kafo
         _(KafoConfigure.use_colors?).must_equal false
       end
     end
+
+    describe '#puppet_report' do
+
+      before { KafoConfigure.puppet_report = report }
+      after { KafoConfigure.puppet_report = nil }
+
+      describe 'without a report' do
+        let(:report) { nil }
+
+        specify { assert_nil KafoConfigure.puppet_report }
+      end
+
+      describe 'with a report' do
+        let(:report) { PuppetReport.new({ 'report_format' => 11 }) }
+
+        specify { assert_equal(report, KafoConfigure.puppet_report) }
+      end
+    end
   end
 end

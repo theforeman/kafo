@@ -19,6 +19,15 @@ module Kafo
       end
     end
 
+    def reportdir
+      @reportdir ||= File.join(directory, 'reports')
+    end
+
+    def reports
+      # Reports are stored in $reportdir/$certname/$report
+      Dir.glob(File.join(reportdir, '*', '*.*')).sort_by { |path| File.mtime(path) }
+    end
+
     def store_answers
       answer_data = HieraConfigurer.generate_data(@config.modules, @config.app[:order])
       @logger.debug("Writing temporary answers to #{answer_file}")
@@ -37,6 +46,8 @@ module Kafo
         'environmentpath' => environmentpath,
         'factpath'        => factpath,
         'hiera_config'    => hiera_config,
+        'reports'         => 'store',
+        'reportdir'       => reportdir,
       }.merge(settings)
 
       PuppetConfigurer.new(puppet_conf, settings)

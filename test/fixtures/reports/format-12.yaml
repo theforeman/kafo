@@ -1,0 +1,928 @@
+--- !ruby/object:Puppet::Transaction::Report
+host: host.example.com
+time: '2023-07-14T17:13:14.637795329+02:00'
+configuration_version: 1689347594
+transaction_uuid: 7c3b3c86-027a-4b11-a8e0-b00e0f8a04e1
+report_format: 12
+puppet_version: 7.25.0
+status: failed
+transaction_completed: true
+noop: false
+noop_pending: false
+environment: production
+logs:
+- level: info
+  message: Using environment 'production'
+  source: Puppet
+  tags:
+  - info
+  time: '2023-07-14T17:13:14.640119105+02:00'
+  file:
+  line:
+- level: debug
+  message: Loaded state in 0.00 seconds
+  source: Puppet
+  tags:
+  - debug
+  time: '2023-07-14T17:13:14.642222274+02:00'
+  file:
+  line:
+- level: info
+  message: Applying configuration version '1689347594'
+  source: Puppet
+  tags:
+  - info
+  time: '2023-07-14T17:13:14.642350097+02:00'
+  file:
+  line:
+- level: debug
+  message: require to File[/tmp/failing-command]
+  source: "/Stage[main]/Testing/Exec[failing-command]/require"
+  tags:
+  - debug
+  - exec
+  - failing-command
+  - class
+  - testing
+  - kafo_configure
+  - require
+  time: '2023-07-14T17:13:14.642571447+02:00'
+  file: "/home/user/dev/kafo/test/tmp/kafo20230714-122517-3y4ba5/installer/modules/testing/manifests/init.pp"
+  line: 25
+- level: info
+  message: Starting to evaluate the resource (1 of 21)
+  source: Stage[main]
+  tags:
+  - info
+  - stage
+  time: '2023-07-14T17:13:14.644844832+02:00'
+  file:
+  line:
+- level: info
+  message: Evaluated in 0.00 seconds
+  source: Stage[main]
+  tags:
+  - info
+  - stage
+  time: '2023-07-14T17:13:14.645173197+02:00'
+  file:
+  line:
+- level: info
+  message: Starting to evaluate the resource (2 of 21)
+  source: Class[Settings]
+  tags:
+  - info
+  - class
+  - settings
+  time: '2023-07-14T17:13:14.645277006+02:00'
+  file:
+  line:
+- level: info
+  message: Evaluated in 0.00 seconds
+  source: Class[Settings]
+  tags:
+  - info
+  - class
+  - settings
+  time: '2023-07-14T17:13:14.645443478+02:00'
+  file:
+  line:
+- level: info
+  message: Starting to evaluate the resource (3 of 21)
+  source: Class[Settings]
+  tags:
+  - info
+  - class
+  - settings
+  time: '2023-07-14T17:13:14.645550131+02:00'
+  file:
+  line:
+- level: info
+  message: Evaluated in 0.00 seconds
+  source: Class[Settings]
+  tags:
+  - info
+  - class
+  - settings
+  time: '2023-07-14T17:13:14.645768180+02:00'
+  file:
+  line:
+- level: info
+  message: Starting to evaluate the resource (4 of 21)
+  source: Class[Main]
+  tags:
+  - info
+  - class
+  time: '2023-07-14T17:13:14.645861061+02:00'
+  file:
+  line:
+- level: info
+  message: Evaluated in 0.00 seconds
+  source: Class[Main]
+  tags:
+  - info
+  - class
+  time: '2023-07-14T17:13:14.646079157+02:00'
+  file:
+  line:
+- level: info
+  message: Starting to evaluate the resource (5 of 21)
+  source: Kafo_configure::Puppet_version_semver[theforeman-kafo_configure]
+  tags:
+  - info
+  - kafo_configure::puppet_version_semver
+  - kafo_configure
+  - puppet_version_semver
+  - theforeman-kafo_configure
+  - class
+  time: '2023-07-14T17:13:14.646176971+02:00'
+  file:
+  line:
+- level: info
+  message: Evaluated in 0.00 seconds
+  source: Kafo_configure::Puppet_version_semver[theforeman-kafo_configure]
+  tags:
+  - info
+  - kafo_configure::puppet_version_semver
+  - kafo_configure
+  - puppet_version_semver
+  - theforeman-kafo_configure
+  - class
+  time: '2023-07-14T17:13:14.646389436+02:00'
+  file:
+  line:
+- level: info
+  message: Starting to evaluate the resource (6 of 21)
+  source: Kafo_configure::Puppet_version_semver[theforeman-kafo_configure]
+  tags:
+  - info
+  - kafo_configure::puppet_version_semver
+  - kafo_configure
+  - puppet_version_semver
+  - theforeman-kafo_configure
+  - class
+  time: '2023-07-14T17:13:14.646463480+02:00'
+  file:
+  line:
+- level: info
+  message: Evaluated in 0.00 seconds
+  source: Kafo_configure::Puppet_version_semver[theforeman-kafo_configure]
+  tags:
+  - info
+  - kafo_configure::puppet_version_semver
+  - kafo_configure
+  - puppet_version_semver
+  - theforeman-kafo_configure
+  - class
+  time: '2023-07-14T17:13:14.646912773+02:00'
+  file:
+  line:
+- level: info
+  message: Starting to evaluate the resource (7 of 21)
+  source: Class[Main]
+  tags:
+  - info
+  - class
+  time: '2023-07-14T17:13:14.647104624+02:00'
+  file:
+  line:
+- level: info
+  message: Evaluated in 0.00 seconds
+  source: Class[Main]
+  tags:
+  - info
+  - class
+  time: '2023-07-14T17:13:14.647298288+02:00'
+  file:
+  line:
+- level: info
+  message: Starting to evaluate the resource (8 of 21)
+  source: Class[Kafo_configure]
+  tags:
+  - info
+  - class
+  - kafo_configure
+  time: '2023-07-14T17:13:14.647382673+02:00'
+  file:
+  line:
+- level: info
+  message: Evaluated in 0.00 seconds
+  source: Class[Kafo_configure]
+  tags:
+  - info
+  - class
+  - kafo_configure
+  time: '2023-07-14T17:13:14.647608962+02:00'
+  file:
+  line:
+- level: info
+  message: Starting to evaluate the resource (9 of 21)
+  source: Class[Kafo_configure]
+  tags:
+  - info
+  - class
+  - kafo_configure
+  time: '2023-07-14T17:13:14.647707751+02:00'
+  file:
+  line:
+- level: info
+  message: Evaluated in 0.00 seconds
+  source: Class[Kafo_configure]
+  tags:
+  - info
+  - class
+  - kafo_configure
+  time: '2023-07-14T17:13:14.647894449+02:00'
+  file:
+  line:
+- level: info
+  message: Starting to evaluate the resource (10 of 21)
+  source: Class[Testing]
+  tags:
+  - info
+  - class
+  - testing
+  - kafo_configure
+  time: '2023-07-14T17:13:14.647976593+02:00'
+  file:
+  line:
+- level: info
+  message: Evaluated in 0.00 seconds
+  source: Class[Testing]
+  tags:
+  - info
+  - class
+  - testing
+  - kafo_configure
+  time: '2023-07-14T17:13:14.648102566+02:00'
+  file:
+  line:
+- level: info
+  message: Starting to evaluate the resource (11 of 21)
+  source: "/Stage[main]/Testing/File[/tmp/failing-command]"
+  tags:
+  - info
+  - file
+  - class
+  - testing
+  - kafo_configure
+  time: '2023-07-14T17:13:14.648202100+02:00'
+  file: "/home/user/dev/kafo/test/tmp/kafo20230714-122517-3y4ba5/installer/modules/testing/manifests/init.pp"
+  line: 12
+- level: info
+  message: Evaluated in 0.00 seconds
+  source: "/Stage[main]/Testing/File[/tmp/failing-command]"
+  tags:
+  - info
+  - file
+  - class
+  - testing
+  - kafo_configure
+  time: '2023-07-14T17:13:14.648627985+02:00'
+  file: "/home/user/dev/kafo/test/tmp/kafo20230714-122517-3y4ba5/installer/modules/testing/manifests/init.pp"
+  line: 12
+- level: info
+  message: Starting to evaluate the resource (12 of 21)
+  source: "/Stage[main]/Testing/Exec[failing-command]"
+  tags:
+  - info
+  - exec
+  - failing-command
+  - class
+  - testing
+  - kafo_configure
+  time: '2023-07-14T17:13:14.648719654+02:00'
+  file: "/home/user/dev/kafo/test/tmp/kafo20230714-122517-3y4ba5/installer/modules/testing/manifests/init.pp"
+  line: 25
+- level: debug
+  message: Executing '/tmp/failing-command'
+  source: Exec[failing-command](provider=posix)
+  tags:
+  - debug
+  time: '2023-07-14T17:13:14.649032741+02:00'
+  file:
+  line:
+- level: debug
+  message: 'Executing with uid=user: ''/tmp/failing-command'''
+  source: Puppet
+  tags:
+  - debug
+  time: '2023-07-14T17:13:14.649133409+02:00'
+  file:
+  line:
+- level: notice
+  message: This is stdout
+  source: "/Stage[main]/Testing/Exec[failing-command]/returns"
+  tags:
+  - notice
+  - exec
+  - failing-command
+  - class
+  - testing
+  - kafo_configure
+  - returns
+  time: '2023-07-14T17:13:14.654889443+02:00'
+  file: "/home/user/dev/kafo/test/tmp/kafo20230714-122517-3y4ba5/installer/modules/testing/manifests/init.pp"
+  line: 25
+- level: notice
+  message: This is stderr
+  source: "/Stage[main]/Testing/Exec[failing-command]/returns"
+  tags:
+  - notice
+  - exec
+  - failing-command
+  - class
+  - testing
+  - kafo_configure
+  - returns
+  time: '2023-07-14T17:13:14.655051479+02:00'
+  file: "/home/user/dev/kafo/test/tmp/kafo20230714-122517-3y4ba5/installer/modules/testing/manifests/init.pp"
+  line: 25
+- level: err
+  message: "'/tmp/failing-command' returned 100 instead of one of [0]"
+  source: Puppet
+  tags:
+  - err
+  time: '2023-07-14T17:13:14.655267111+02:00'
+  file:
+  line:
+- level: err
+  message: 'change from ''notrun'' to [''0''] failed: ''/tmp/failing-command'' returned
+    100 instead of one of [0]'
+  source: "/Stage[main]/Testing/Exec[failing-command]/returns"
+  tags:
+  - err
+  - exec
+  - failing-command
+  - class
+  - testing
+  - kafo_configure
+  time: '2023-07-14T17:13:14.656662511+02:00'
+  file: "/home/user/dev/kafo/test/tmp/kafo20230714-122517-3y4ba5/installer/modules/testing/manifests/init.pp"
+  line: 25
+- level: info
+  message: Evaluated in 0.01 seconds
+  source: "/Stage[main]/Testing/Exec[failing-command]"
+  tags:
+  - info
+  - exec
+  - failing-command
+  - class
+  - testing
+  - kafo_configure
+  time: '2023-07-14T17:13:14.656789174+02:00'
+  file: "/home/user/dev/kafo/test/tmp/kafo20230714-122517-3y4ba5/installer/modules/testing/manifests/init.pp"
+  line: 25
+- level: info
+  message: Starting to evaluate the resource (13 of 21)
+  source: Class[Testing]
+  tags:
+  - info
+  - class
+  - testing
+  - kafo_configure
+  time: '2023-07-14T17:13:14.656906048+02:00'
+  file:
+  line:
+- level: debug
+  message: Resource is being skipped, unscheduling all events
+  source: Class[Testing]
+  tags:
+  - debug
+  - class
+  - testing
+  - kafo_configure
+  time: '2023-07-14T17:13:14.657058124+02:00'
+  file:
+  line:
+- level: info
+  message: Evaluated in 0.00 seconds
+  source: Class[Testing]
+  tags:
+  - info
+  - class
+  - testing
+  - kafo_configure
+  time: '2023-07-14T17:13:14.657131242+02:00'
+  file:
+  line:
+- level: info
+  message: Starting to evaluate the resource (14 of 21)
+  source: Stage[main]
+  tags:
+  - info
+  - stage
+  time: '2023-07-14T17:13:14.657195514+02:00'
+  file:
+  line:
+- level: debug
+  message: Resource is being skipped, unscheduling all events
+  source: Stage[main]
+  tags:
+  - debug
+  - stage
+  time: '2023-07-14T17:13:14.657293525+02:00'
+  file:
+  line:
+- level: info
+  message: Evaluated in 0.00 seconds
+  source: Stage[main]
+  tags:
+  - info
+  - stage
+  time: '2023-07-14T17:13:14.657330523+02:00'
+  file:
+  line:
+- level: info
+  message: Starting to evaluate the resource (15 of 21)
+  source: "/Schedule[puppet]"
+  tags:
+  - info
+  - schedule
+  - puppet
+  time: '2023-07-14T17:13:14.657415989+02:00'
+  file:
+  line:
+- level: info
+  message: Evaluated in 0.00 seconds
+  source: "/Schedule[puppet]"
+  tags:
+  - info
+  - schedule
+  - puppet
+  time: '2023-07-14T17:13:14.657651632+02:00'
+  file:
+  line:
+- level: info
+  message: Starting to evaluate the resource (16 of 21)
+  source: "/Schedule[hourly]"
+  tags:
+  - info
+  - schedule
+  - hourly
+  time: '2023-07-14T17:13:14.657716546+02:00'
+  file:
+  line:
+- level: info
+  message: Evaluated in 0.00 seconds
+  source: "/Schedule[hourly]"
+  tags:
+  - info
+  - schedule
+  - hourly
+  time: '2023-07-14T17:13:14.657842509+02:00'
+  file:
+  line:
+- level: info
+  message: Starting to evaluate the resource (17 of 21)
+  source: "/Schedule[daily]"
+  tags:
+  - info
+  - schedule
+  - daily
+  time: '2023-07-14T17:13:14.657896110+02:00'
+  file:
+  line:
+- level: info
+  message: Evaluated in 0.00 seconds
+  source: "/Schedule[daily]"
+  tags:
+  - info
+  - schedule
+  - daily
+  time: '2023-07-14T17:13:14.658045063+02:00'
+  file:
+  line:
+- level: info
+  message: Starting to evaluate the resource (18 of 21)
+  source: "/Schedule[weekly]"
+  tags:
+  - info
+  - schedule
+  - weekly
+  time: '2023-07-14T17:13:14.658107649+02:00'
+  file:
+  line:
+- level: info
+  message: Evaluated in 0.00 seconds
+  source: "/Schedule[weekly]"
+  tags:
+  - info
+  - schedule
+  - weekly
+  time: '2023-07-14T17:13:14.658240022+02:00'
+  file:
+  line:
+- level: info
+  message: Starting to evaluate the resource (19 of 21)
+  source: "/Schedule[monthly]"
+  tags:
+  - info
+  - schedule
+  - monthly
+  time: '2023-07-14T17:13:14.658304951+02:00'
+  file:
+  line:
+- level: info
+  message: Evaluated in 0.00 seconds
+  source: "/Schedule[monthly]"
+  tags:
+  - info
+  - schedule
+  - monthly
+  time: '2023-07-14T17:13:14.658433222+02:00'
+  file:
+  line:
+- level: info
+  message: Starting to evaluate the resource (20 of 21)
+  source: "/Schedule[never]"
+  tags:
+  - info
+  - schedule
+  - never
+  time: '2023-07-14T17:13:14.658493013+02:00'
+  file:
+  line:
+- level: info
+  message: Evaluated in 0.00 seconds
+  source: "/Schedule[never]"
+  tags:
+  - info
+  - schedule
+  - never
+  time: '2023-07-14T17:13:14.658623032+02:00'
+  file:
+  line:
+- level: info
+  message: Starting to evaluate the resource (21 of 21)
+  source: "/Filebucket[puppet]"
+  tags:
+  - info
+  - filebucket
+  - puppet
+  time: '2023-07-14T17:13:14.658685988+02:00'
+  file:
+  line:
+- level: info
+  message: Evaluated in 0.00 seconds
+  source: "/Filebucket[puppet]"
+  tags:
+  - info
+  - filebucket
+  - puppet
+  time: '2023-07-14T17:13:14.658837091+02:00'
+  file:
+  line:
+- level: debug
+  message: Finishing transaction 15560
+  source: Puppet
+  tags:
+  - debug
+  time: '2023-07-14T17:13:14.659604289+02:00'
+  file:
+  line:
+- level: debug
+  message: Storing state
+  source: Puppet
+  tags:
+  - debug
+  time: '2023-07-14T17:13:14.659661501+02:00'
+  file:
+  line:
+- level: debug
+  message: Pruned old state cache entries in 0.00 seconds
+  source: Puppet
+  tags:
+  - debug
+  time: '2023-07-14T17:13:14.659797901+02:00'
+  file:
+  line:
+- level: debug
+  message: Stored state in 0.00 seconds
+  source: Puppet
+  tags:
+  - debug
+  time: '2023-07-14T17:13:14.664638968+02:00'
+  file:
+  line:
+- level: notice
+  message: Applied catalog in 0.02 seconds
+  source: Puppet
+  tags:
+  - notice
+  time: '2023-07-14T17:13:14.664714504+02:00'
+  file:
+  line:
+metrics:
+  resources:
+    name: resources
+    label: Resources
+    values:
+    - - total
+      - Total
+      - 9
+    - - skipped
+      - Skipped
+      - 0
+    - - failed
+      - Failed
+      - 1
+    - - failed_to_restart
+      - Failed to restart
+      - 0
+    - - restarted
+      - Restarted
+      - 0
+    - - changed
+      - Changed
+      - 0
+    - - out_of_sync
+      - Out of sync
+      - 1
+    - - scheduled
+      - Scheduled
+      - 0
+    - - corrective_change
+      - Corrective change
+      - 0
+  time:
+    name: time
+    label: Time
+    values:
+    - - file
+      - File
+      - 0.000242663
+    - - exec
+      - Exec
+      - 0.007901807
+    - - schedule
+      - Schedule
+      - 0.000309401
+    - - filebucket
+      - Filebucket
+      - 4.7988e-05
+    - - config_retrieval
+      - Config retrieval
+      - 0.294095017
+    - - transaction_evaluation
+      - Transaction evaluation
+      - 0.017340879996481817
+    - - catalog_application
+      - Catalog application
+      - 0.02446214499650523
+    - - total
+      - Total
+      - 0.027021393
+  changes:
+    name: changes
+    label: Changes
+    values:
+    - - total
+      - Total
+      - 0
+  events:
+    name: events
+    label: Events
+    values:
+    - - total
+      - Total
+      - 1
+    - - failure
+      - Failure
+      - 1
+    - - success
+      - Success
+      - 0
+resource_statuses:
+  File[/tmp/failing-command]:
+    title: "/tmp/failing-command"
+    file: "/home/user/dev/kafo/test/tmp/kafo20230714-122517-3y4ba5/installer/modules/testing/manifests/init.pp"
+    line: 12
+    resource: File[/tmp/failing-command]
+    resource_type: File
+    provider_used: posix
+    containment_path:
+    - Stage[main]
+    - Testing
+    - File[/tmp/failing-command]
+    evaluation_time: 0.000242663
+    tags:
+    - file
+    - class
+    - testing
+    - kafo_configure
+    time: '2023-07-14T17:13:14.648354673+02:00'
+    failed: false
+    failed_to_restart: false
+    changed: false
+    out_of_sync: false
+    skipped: false
+    change_count: 0
+    out_of_sync_count: 0
+    events: []
+    corrective_change: false
+  Exec[failing-command]:
+    title: failing-command
+    file: "/home/user/dev/kafo/test/tmp/kafo20230714-122517-3y4ba5/installer/modules/testing/manifests/init.pp"
+    line: 25
+    resource: Exec[failing-command]
+    resource_type: Exec
+    provider_used: posix
+    containment_path:
+    - Stage[main]
+    - Testing
+    - Exec[failing-command]
+    evaluation_time: 0.007901807
+    tags:
+    - exec
+    - failing-command
+    - class
+    - testing
+    - kafo_configure
+    time: '2023-07-14T17:13:14.648841523+02:00'
+    failed: true
+    failed_to_restart: false
+    changed: false
+    out_of_sync: true
+    skipped: false
+    change_count: 0
+    out_of_sync_count: 1
+    events:
+    - audited: false
+      property: returns
+      previous_value: notrun
+      desired_value:
+      - '0'
+      historical_value:
+      message: 'change from ''notrun'' to [''0''] failed: ''/tmp/failing-command''
+        returned 100 instead of one of [0]'
+      name: executed_command
+      status: failure
+      time: '2023-07-14T17:13:14.655328475+02:00'
+      redacted:
+      corrective_change: false
+    corrective_change: false
+  Schedule[puppet]:
+    title: puppet
+    file:
+    line:
+    resource: Schedule[puppet]
+    resource_type: Schedule
+    provider_used:
+    containment_path:
+    - Schedule[puppet]
+    evaluation_time: 8.7104e-05
+    tags:
+    - schedule
+    - puppet
+    time: '2023-07-14T17:13:14.657537518+02:00'
+    failed: false
+    failed_to_restart: false
+    changed: false
+    out_of_sync: false
+    skipped: false
+    change_count: 0
+    out_of_sync_count: 0
+    events: []
+    corrective_change: false
+  Schedule[hourly]:
+    title: hourly
+    file:
+    line:
+    resource: Schedule[hourly]
+    resource_type: Schedule
+    provider_used:
+    containment_path:
+    - Schedule[hourly]
+    evaluation_time: 3.6198e-05
+    tags:
+    - schedule
+    - hourly
+    time: '2023-07-14T17:13:14.657782007+02:00'
+    failed: false
+    failed_to_restart: false
+    changed: false
+    out_of_sync: false
+    skipped: false
+    change_count: 0
+    out_of_sync_count: 0
+    events: []
+    corrective_change: false
+  Schedule[daily]:
+    title: daily
+    file:
+    line:
+    resource: Schedule[daily]
+    resource_type: Schedule
+    provider_used:
+    containment_path:
+    - Schedule[daily]
+    evaluation_time: 4.8099e-05
+    tags:
+    - schedule
+    - daily
+    time: '2023-07-14T17:13:14.657971322+02:00'
+    failed: false
+    failed_to_restart: false
+    changed: false
+    out_of_sync: false
+    skipped: false
+    change_count: 0
+    out_of_sync_count: 0
+    events: []
+    corrective_change: false
+  Schedule[weekly]:
+    title: weekly
+    file:
+    line:
+    resource: Schedule[weekly]
+    resource_type: Schedule
+    provider_used:
+    containment_path:
+    - Schedule[weekly]
+    evaluation_time: 4.5508e-05
+    tags:
+    - schedule
+    - weekly
+    time: '2023-07-14T17:13:14.658169324+02:00'
+    failed: false
+    failed_to_restart: false
+    changed: false
+    out_of_sync: false
+    skipped: false
+    change_count: 0
+    out_of_sync_count: 0
+    events: []
+    corrective_change: false
+  Schedule[monthly]:
+    title: monthly
+    file:
+    line:
+    resource: Schedule[monthly]
+    resource_type: Schedule
+    provider_used:
+    containment_path:
+    - Schedule[monthly]
+    evaluation_time: 4.7024e-05
+    tags:
+    - schedule
+    - monthly
+    time: '2023-07-14T17:13:14.658363721+02:00'
+    failed: false
+    failed_to_restart: false
+    changed: false
+    out_of_sync: false
+    skipped: false
+    change_count: 0
+    out_of_sync_count: 0
+    events: []
+    corrective_change: false
+  Schedule[never]:
+    title: never
+    file:
+    line:
+    resource: Schedule[never]
+    resource_type: Schedule
+    provider_used:
+    containment_path:
+    - Schedule[never]
+    evaluation_time: 4.5468e-05
+    tags:
+    - schedule
+    - never
+    time: '2023-07-14T17:13:14.658552954+02:00'
+    failed: false
+    failed_to_restart: false
+    changed: false
+    out_of_sync: false
+    skipped: false
+    change_count: 0
+    out_of_sync_count: 0
+    events: []
+    corrective_change: false
+  Filebucket[puppet]:
+    title: puppet
+    file:
+    line:
+    resource: Filebucket[puppet]
+    resource_type: Filebucket
+    provider_used:
+    containment_path:
+    - Filebucket[puppet]
+    evaluation_time: 4.7988e-05
+    tags:
+    - filebucket
+    - puppet
+    time: '2023-07-14T17:13:14.658763601+02:00'
+    failed: false
+    failed_to_restart: false
+    changed: false
+    out_of_sync: false
+    skipped: false
+    change_count: 0
+    out_of_sync_count: 0
+    events: []
+    corrective_change: false
+corrective_change: false
+catalog_uuid: ec83449d-487e-4023-a2ab-c99d70462f80
+cached_catalog_status: not_used
