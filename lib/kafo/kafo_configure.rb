@@ -93,6 +93,7 @@ module Kafo
       # so we limit parsing only to app config options (because of --help and later defined params)
       parse clamp_app_arguments
       parse_app_arguments # set values from ARGS to config.app
+      self.config.configure_application
       Logging.setup(verbose: config.app[:verbose])
       self.class.set_color_scheme
 
@@ -307,7 +308,7 @@ module Kafo
                             :default => false
       self.class.app_option ['-s', '--skip-checks-i-know-better'], :flag, 'Skip all system checks', :default => false
       self.class.app_option ['--skip-puppet-version-check'], :flag, 'Skip check for compatible Puppet versions', :default => false
-      self.class.app_option ['-v', '--verbose'], :flag, 'Display log on STDOUT instead of progressbar'
+      self.class.app_option ['-v', '--[no-]verbose'], :flag, 'Display log on STDOUT instead of progressbar'
       self.class.app_option ['-l', '--verbose-log-level'], 'LEVEL', 'Log level for verbose mode output',
                             :default => 'notice'
       self.class.app_option ['-S', '--scenario'], 'SCENARIO', 'Use installation scenario'
@@ -375,7 +376,14 @@ module Kafo
       self.class.app_options.each do |option|
         name                    = option.attribute_name
         value                   = send(option.flag? ? "#{name}?" : name)
-        config.app[name.to_sym] = value.nil? ? option.default_value : value
+
+        if config.app.key?(name.to_sym)
+          if !value.nil?
+            config.app[name.to_sym] = value
+          end
+        else
+          config.app[name.to_sym] = value.nil? ? option.default_value : value
+        end
       end
     end
 
