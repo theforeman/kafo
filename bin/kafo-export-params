@@ -14,7 +14,7 @@ module Kafo
     end
   end
 
-  class KafoExportParams < Clamp::Command
+  class KafoExportParams < ::Clamp::Command
     TYPES = %w(md html asciidoc parsercache)
 
     option ['-c', '--config'], 'FILE', 'Config file for which should we generate params',

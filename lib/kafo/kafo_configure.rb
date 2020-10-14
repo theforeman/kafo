@@ -3,7 +3,7 @@
 require 'clamp'
 
 module Kafo
-  class KafoConfigure < Clamp::Command
+  class KafoConfigure < ::Clamp::Command
     include StringHelper
 
     class << self
