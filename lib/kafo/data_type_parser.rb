@@ -1,5 +1,3 @@
-require 'kafo/data_type'
-
 module Kafo
   class DataTypeParser
     TYPE_DEFINITION = /^type\s+([^\s=]+)\s*=\s*(.+?)(\s+#.*)?\s*$/

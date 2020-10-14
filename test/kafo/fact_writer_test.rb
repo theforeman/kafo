@@ -1,5 +1,4 @@
 require 'test_helper'
-require 'kafo/fact_writer'
 
 module Kafo
   describe FactWriter do

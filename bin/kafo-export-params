@@ -3,20 +3,18 @@ require 'rubygems'
 require 'ostruct'
 require 'clamp'
 require 'logging'
-require 'kafo/configuration'
-require 'kafo/exceptions'
-require 'kafo/parser_cache_writer'
-require 'kafo/string_helper'
+require 'kafo'
 require 'logger'
 require 'yaml'
 
-KafoConfigure = OpenStruct.new
-def KafoConfigure.exit(code)
-  Kernel.exit(1)
-end
-
 module Kafo
-  class KafoExportParams < Clamp::Command
+  class KafoConfigure
+    def exit(code)
+      Kernel.exit(1)
+    end
+  end
+
+  class KafoExportParams < ::Clamp::Command
     TYPES = %w(md html asciidoc parsercache)
 
     option ['-c', '--config'], 'FILE', 'Config file for which should we generate params',

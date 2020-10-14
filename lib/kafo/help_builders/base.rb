@@ -1,4 +1,5 @@
 # encoding: UTF-8
+require 'clamp'
 
 module Kafo
   module HelpBuilders
@@ -6,7 +7,7 @@ module Kafo
     DEFAULT_MODULE_NAME  = 'Generic'
     IGNORE_IN_GROUP_NAME = /\s*parameters:?/
 
-    class Base < Clamp::Help::Builder
+    class Base < ::Clamp::Help::Builder
       include StringHelper
 
       def initialize(params)

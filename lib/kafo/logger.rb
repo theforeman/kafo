@@ -1,5 +1,4 @@
 # encoding: UTF-8
-require 'kafo/logging'
 
 module Kafo
   class Logger

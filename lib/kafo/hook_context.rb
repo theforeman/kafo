@@ -1,6 +1,3 @@
-require 'kafo/data_type'
-require 'kafo/base_context'
-
 module Kafo
   class HookContext < BaseContext
     attr_reader :kafo, :logger

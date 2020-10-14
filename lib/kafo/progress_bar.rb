@@ -114,6 +114,3 @@ module Kafo
 
   end
 end
-
-require 'kafo/progress_bars/colored'
-require 'kafo/progress_bars/black_white'

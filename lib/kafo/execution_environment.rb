@@ -1,9 +1,5 @@
 require 'tmpdir'
 
-require 'kafo/fact_writer'
-require 'kafo/hiera_configurer'
-require 'kafo/puppet_configurer'
-
 module Kafo
   class ExecutionEnvironment
     def initialize(config, logger = KafoConfigure.logger)

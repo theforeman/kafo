@@ -1,5 +1,3 @@
-require 'kafo/hook_context'
-
 module Kafo
   class Hooking
     # pre_migrations - just after kafo reads its configuration - useful for config file updates. Only in this stage it is posible to request config reload (`Kafo.request_config_reload`) to get in our changes

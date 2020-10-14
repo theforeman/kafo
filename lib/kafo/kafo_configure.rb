@@ -1,36 +1,9 @@
 # encoding: UTF-8
 
-# First of all we have to store ENV variable, requiring facter can override them
-module Kafo
-  module ENV
-    LANG = ::ENV['LANG']
-  end
-end
-
-require 'pty'
 require 'clamp'
-require 'kafo/color_scheme'
-require 'kafo_parsers/exceptions'
-require 'kafo/exceptions'
-require 'kafo/migrations'
-require 'kafo/store'
-require 'kafo/configuration'
-require 'kafo/logger'
-require 'kafo/string_helper'
-require 'kafo/help_builder'
-require 'kafo/wizard'
-require 'kafo/system_checker'
-require 'kafo/puppet_command'
-require 'kafo/puppet_log_parser'
-require 'kafo/progress_bar'
-require 'kafo/hooking'
-require 'kafo/exit_handler'
-require 'kafo/scenario_manager'
-require 'kafo/execution_environment'
-require 'kafo/logging'
 
 module Kafo
-  class KafoConfigure < Clamp::Command
+  class KafoConfigure < ::Clamp::Command
     include StringHelper
 
     class << self
@@ -446,6 +419,7 @@ module Kafo
         log_parser = PuppetLogParser.new
         logger = Logger.new('configure')
 
+        require 'pty'
         PTY.spawn(*PuppetCommand.format_command(command)) do |stdin, stdout, pid|
           begin
             stdin.each do |line|
