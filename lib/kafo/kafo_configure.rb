@@ -331,7 +331,8 @@ module Kafo
                  :default => false
       app_option ['--skip-puppet-version-check'], :flag, 'Skip check for compatible Puppet versions',
                  :default => false, :advanced => true
-      app_option ['-v', '--verbose'], :flag, 'Display log on STDOUT instead of progressbar'
+      app_option ['-v', '--[no-]verbose'], :flag, 'Display log on STDOUT instead of progressbar',
+                 :default => config.app[:verbose]
       app_option ['-l', '--verbose-log-level'], 'LEVEL', 'Log level for verbose mode output',
                  :default => 'notice'
       app_option ['-S', '--scenario'], 'SCENARIO', 'Use installation scenario'

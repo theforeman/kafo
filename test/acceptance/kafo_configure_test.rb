@@ -58,6 +58,13 @@ module Kafo
         _(code.exitstatus).must_equal 20, err
         _(File.exist?("#{INSTALLER_HOME}/testing")).must_equal false
       end
+
+      it 'must default verbose to false' do
+        code, _, err = run_command '../bin/kafo-configure'
+
+        _(code).must_equal 0, err
+        _(YAML.load_file(KAFO_CONFIG)[:verbose]).must_equal false
+      end
     end
 
     describe '--noop' do
@@ -65,6 +72,57 @@ module Kafo
         code, _, err = run_command '../bin/kafo-configure -n'
         _(code).must_equal 0, err
         _(File.exist?("#{INSTALLER_HOME}/testing")).must_equal false
+      end
+    end
+
+    describe 'verbose in the config file' do
+      it 'must respect verbose true' do
+        config = YAML.load_file(KAFO_CONFIG)
+        config[:verbose] = true
+        File.open(KAFO_CONFIG, "w") { |file| file.write(config.to_yaml) }
+
+        code, stdout, err = run_command '../bin/kafo-configure'
+
+        _(code).must_equal 0, err
+        _(stdout).must_include "NOTICE"
+        _(YAML.load_file(KAFO_CONFIG)[:verbose]).must_equal true
+      end
+
+      it 'must respect verbose false' do
+        config = YAML.load_file(KAFO_CONFIG)
+        config[:verbose] = false
+        File.open(KAFO_CONFIG, "w") { |file| file.write(config.to_yaml) }
+
+        code, stdout, err = run_command '../bin/kafo-configure'
+
+        _(code).must_equal 0, err
+        _(stdout).wont_include "NOTICE"
+        _(YAML.load_file(KAFO_CONFIG)[:verbose]).must_equal false
+      end
+
+      it 'must respect --verbose' do
+        config = YAML.load_file(KAFO_CONFIG)
+        config[:verbose] = false
+        File.open(KAFO_CONFIG, "w") { |file| file.write(config.to_yaml) }
+
+        code, stdout, err = run_command '../bin/kafo-configure --verbose'
+
+        _(code).must_equal 0, err
+        _(stdout).must_include "NOTICE"
+        _(YAML.load_file(KAFO_CONFIG)[:verbose]).must_equal true
+      end
+
+      it 'must respect --no-verbose' do
+        config = YAML.load_file(KAFO_CONFIG)
+        config[:verbose] = true
+        File.open(KAFO_CONFIG, "w") { |file| file.write(config.to_yaml) }
+
+        code, stdout, err = run_command '../bin/kafo-configure --no-verbose'
+        updated_config = YAML.load_file(KAFO_CONFIG)
+
+        _(code).must_equal 0, err
+        _(stdout).wont_include "NOTICE"
+        _(updated_config[:verbose]).must_equal false
       end
     end
 
