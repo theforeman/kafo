@@ -173,5 +173,57 @@ module Kafo
         _(File.exist?("#{INSTALLER_HOME}/testing")).must_equal true
       end
     end
+
+    describe 'the configuration file' do
+      before do
+        @saved_values = Kafo::Configuration::DEFAULT.reject do |key, value|
+          value.nil?
+        end
+      end
+
+      it 'must only save defined values' do
+        code, _, err = run_command '../bin/kafo-configure'
+
+        _(code).must_equal 0, err
+        _(YAML.load_file(KAFO_CONFIG).keys.sort).must_equal @saved_values.keys.sort
+      end
+
+      it 'must not save command line options when --noop' do
+        config = YAML.load_file(KAFO_CONFIG)
+        config[:color_of_background] = "bright"
+        File.open(KAFO_CONFIG, 'w') do |file|
+          file.write(config.to_yaml)
+        end
+
+        code, _, err = run_command '../bin/kafo-configure --noop --color-of-background dark'
+
+        _(code).must_equal 0, err
+        _(YAML.load_file(KAFO_CONFIG).keys.sort).must_equal @saved_values.keys.sort
+        _(YAML.load_file(KAFO_CONFIG).keys).wont_include 'noop'
+        _(YAML.load_file(KAFO_CONFIG)[:color_of_background]).must_equal "bright"
+      end
+
+      it 'must not save non-persisted command line options' do
+        code, _, err = run_command '../bin/kafo-configure --profile'
+
+        _(code).must_equal 0, err
+        _(YAML.load_file(KAFO_CONFIG).keys.sort).must_equal @saved_values.keys.sort
+        _(YAML.load_file(KAFO_CONFIG).keys).wont_include 'profile'
+      end
+
+      it 'must save persisted command line options' do
+        config = YAML.load_file(KAFO_CONFIG)
+        config[:color_of_background] = "bright"
+        File.open(KAFO_CONFIG, 'w') do |file|
+          file.write(config.to_yaml)
+        end
+
+        code, _, err = run_command '../bin/kafo-configure --color-of-background dark'
+
+        _(code).must_equal 0, err
+        _(YAML.load_file(KAFO_CONFIG).keys.sort).must_equal @saved_values.keys.sort
+        _(YAML.load_file(KAFO_CONFIG)[:color_of_background]).must_equal "dark"
+      end
+    end
   end
 end

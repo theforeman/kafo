@@ -198,6 +198,7 @@ module Kafo
 
       self.class.hooking.execute(:pre_commit)
       unless dont_save_answers? || noop?
+        config.configure_application
         store_params
         self.class.scenario_manager.link_last_scenario(self.class.config_file) if self.class.scenario_manager.configured?
       end
@@ -312,13 +313,13 @@ module Kafo
 
     def set_app_options
       app_option ['--[no-]colors'], :flag, 'Use color output on STDOUT',
-                 :default => !!config.app[:colors], :advanced => true
+                 :default => config.app[:colors], :advanced => true
       app_option ['--color-of-background'], 'COLOR', 'Your terminal background is :bright or :dark',
                  :default => config.app[:color_of_background], :advanced => true
       app_option ['--dont-save-answers'], :flag, "Skip saving answers to '#{self.class.config.answer_file}'?",
-                 :default => !!config.app[:dont_save_answers], :advanced => true
+                 :default => config.app[:dont_save_answers], :advanced => true
       app_option '--ignore-undocumented', :flag, 'Ignore inconsistent parameter documentation',
-                 :default => false, :advanced => true
+                 :default => config.app[:ignore_undocumented], :advanced => true
       app_option ['-i', '--interactive'], :flag, 'Run in interactive mode'
       app_option '--log-level', 'LEVEL', 'Log level for log file output',
                  :default => config.app[:log_level], :advanced => true
