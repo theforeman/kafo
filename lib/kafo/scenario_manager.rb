@@ -1,4 +1,5 @@
 # encoding: UTF-8
+require 'highline/import'
 require 'kafo_wizards'
 require 'pathname'
 

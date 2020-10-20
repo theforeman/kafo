@@ -1,4 +1,5 @@
 # encoding: UTF-8
+require 'highline'
 require 'powerbar'
 require 'ansi/code'
 require 'set'
@@ -20,7 +21,7 @@ module Kafo
       @all_lines                                = 0
       @total                                    = :unknown
       @resources                                = Set.new
-      @term_width                               = HighLine::SystemExtensions.terminal_size[0] || 0
+      @term_width                               = terminal_width
       @bar                                      = PowerBar.new
       @bar.settings.tty.infinite.template.main  = infinite_template
       @bar.settings.tty.finite.template.main    = finite_template
@@ -84,6 +85,17 @@ module Kafo
     end
 
     private
+
+    def terminal_width
+      # HighLine 2 has Terminal, 1 has SystemExtensions
+      terminal_size = if HighLine.respond_to?(:default_instance)
+                        HighLine.default_instance.terminal.terminal_size
+                      else
+                        HighLine::SystemExtensions.terminal_size
+                      end
+
+      terminal_size ? (terminal_size[0] || 0) : 0
+    end
 
     def done_message
       text = 'Done'

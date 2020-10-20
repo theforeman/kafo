@@ -1,5 +1,6 @@
 # encoding: UTF-8
-require 'highline/import'
+require 'forwardable'
+require 'highline'
 require 'yaml'
 
 module Kafo
@@ -8,14 +9,17 @@ module Kafo
       Kafo::ENV::LANG =~ /UTF-8\z/
     end
 
+    extend Forwardable
+    def_delegators :@highline, :agree, :ask, :choose, :say
+
     OK = utf_support? ? '✓' : 'y'
     NO = utf_support? ? '✗' : 'n'
 
-    def initialize(kafo)
+    def initialize(kafo, input=$stdin, output=$stdout)
       @kafo   = kafo
       @config = kafo.config
       @name   = @config.app[:name] || 'Kafo'
-      setup_terminal
+      @highline = setup_terminal(input, output)
     end
 
     def run
@@ -178,11 +182,17 @@ END
       say "\n" + HighLine.color("Value for #{param.name} reset to default", :important)
     end
 
-    def setup_terminal
-      $terminal         = HighLine.new
-      data              = HighLine::SystemExtensions.terminal_size
-      $terminal.wrap_at = data.first > 80 ? 80 : data.first if data.first
-      $terminal.page_at = data.last if data.last
+    def setup_terminal(input, output)
+      highline = HighLine.new(input, output)
+      # HighLine 2 vs 1
+      data = if highline.respond_to?(:terminal)
+               highline.terminal.terminal_size
+             else
+               HighLine::SystemExtensions.terminal_size
+             end
+      highline.wrap_at = data.first > 80 ? 80 : data.first if data.first
+      highline.page_at = data.last if data.last
+      highline
     end
   end
 end
