@@ -6,6 +6,27 @@ module Kafo
   describe ScenarioManager do
     let(:manager) { ScenarioManager.new('/path/to/scenarios.d') }
     let(:manager_with_file) { ScenarioManager.new('/path/to/scenarios.d/foreman.yaml') }
+    let(:input) { StringIO.new }
+    let(:output) { StringIO.new }
+    before do
+      ColorScheme.new(:colors => false).setup
+      new_instance = ::HighLine.new(input, output)
+      if ::HighLine.respond_to?(:default_instance)
+        @old_default = ::HighLine.default_instance
+        ::HighLine.default_instance = new_instance
+      else
+        @old_default = $terminal
+        $terminal = new_instance
+      end
+    end
+
+    after do
+      if ::HighLine.respond_to?(:default_instance)
+        ::HighLine.default_instance = @old_default
+      else
+        $terminal = @old_default
+      end
+    end
 
     describe "#config_dir" do
       specify { _(manager.config_dir).must_equal '/path/to/scenarios.d' }
@@ -131,8 +152,6 @@ module Kafo
     end
 
     describe "#list_available_scenarios" do
-      let(:input) { StringIO.new }
-      let(:output) { StringIO.new }
       let(:available_scenarios) do
         {
           '/path/first.yaml' => { :name => 'First', :description => 'First scenario'},
@@ -141,7 +160,6 @@ module Kafo
       end
       before do
         ColorScheme.new(:colors => false).setup
-        $terminal.instance_variable_set '@output', output
       end
 
       it "prints available scenarios" do
@@ -161,11 +179,8 @@ module Kafo
     end
 
     describe '#select_scenario' do
-      let(:input) { StringIO.new }
-      let(:output) { StringIO.new }
       before do
         ColorScheme.new(:colors => false).setup
-        $terminal.instance_variable_set '@output', output
       end
 
       it 'fails if disabled scenario is selected' do
@@ -244,9 +259,9 @@ module Kafo
         end
 
         KafoConfigure.stub :exit, 0 do
-          out, err = capture_subprocess_io { manager.confirm_scenario_change(new_config) }
+          out, _ = capture_subprocess_io { manager.confirm_scenario_change(new_config) }
 
-        _(out).must_match(/You are trying to replace existing installation with different scenario. This may lead to unpredictable states. Use --force to override. You can use --compare-scenarios to see the differences/)
+          _(out).must_match(/You are trying to replace existing installation with different scenario. This may lead to unpredictable states. Use --force to override. You can use --compare-scenarios to see the differences/)
         end
       end
 
@@ -282,13 +297,6 @@ module Kafo
       let(:p_old_foo) { fake_param('foo', 2) }
       let(:p_old_bar) { fake_param('bar', 10) }
       let(:p_old_baz) { fake_param('baz', 100) }
-
-      let(:input) { StringIO.new }
-      let(:output) { StringIO.new }
-      before do
-        ColorScheme.new(:colors => false).setup
-        $terminal.instance_variable_set '@output', output
-      end
 
       it 'prints no updates' do
         old_config.stub(:modules, [fake_module('mod', [p_old_bar])]) do

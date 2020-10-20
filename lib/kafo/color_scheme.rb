@@ -1,4 +1,4 @@
-require 'highline/import'
+require 'highline'
 
 module Kafo
   class ColorScheme

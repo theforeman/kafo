@@ -17,6 +17,11 @@ require 'kafo'
 require 'ostruct'
 require 'dummy_logger'
 
+begin
+  require 'highline/io_console_compatible'
+rescue LoadError
+  # HighLine 1 doesn't need this
+end
 
 BASIC_CONFIGURATION = <<EOS
 :name: Basic

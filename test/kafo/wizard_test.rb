@@ -25,29 +25,56 @@ module Kafo
     end
 
     let(:wizard) do
-      wizard = Wizard.new(kafo)
-      $terminal.instance_variable_set '@input', input
-      $terminal.instance_variable_set '@output', output
-      wizard
+      Wizard.new(kafo, input, output)
     end
 
-    describe "#setup_termial" do
-      describe "small terminal" do
-        it "must configure correct width and preserve height" do
-          HighLine::SystemExtensions.stub :terminal_size, [40, 10] do
-            wizard.send :setup_terminal
-            _($terminal.wrap_at).must_equal 40
-            _($terminal.page_at).must_equal 10
+    describe "#setup_terminal" do
+      if defined?(HighLine::Terminal)
+        describe "highline 2" do
+          describe "small terminal" do
+            it "must configure correct width and preserve height" do
+              output.stub :winsize, [10, 40] do
+                wizard.send :setup_terminal, input, output
+                _(wizard.instance_variable_get(:@highline).wrap_at).must_equal 40
+                _(wizard.instance_variable_get(:@highline).page_at).must_equal 10
+              end
+            end
+          end
+
+          describe "big terminal" do
+            it "must configure max width to 80 and preserve height" do
+              output.stub :winsize, [50, 100] do
+                wizard.send :setup_terminal, input, output
+                _(wizard.instance_variable_get(:@highline).wrap_at).must_equal 80
+                _(wizard.instance_variable_get(:@highline).page_at).must_equal 50
+              end
+            end
           end
         end
-      end
+      else
+        describe "highline 1" do
+          let(:terminal) do
+            HighLine::SystemExtensions
+          end
 
-      describe "big terminal" do
-        it "must configure max width to 80 and preserve height" do
-          HighLine::SystemExtensions.stub :terminal_size, [100, 50] do
-            wizard.send :setup_terminal
-            _($terminal.wrap_at).must_equal 80
-            _($terminal.page_at).must_equal 50
+          describe "small terminal" do
+            it "must configure correct width and preserve height" do
+              terminal.stub :terminal_size, [40, 10] do
+                wizard.send :setup_terminal, input, output
+                _(wizard.instance_variable_get(:@highline).wrap_at).must_equal 40
+                _(wizard.instance_variable_get(:@highline).page_at).must_equal 10
+              end
+            end
+          end
+
+          describe "big terminal" do
+            it "must configure max width to 80 and preserve height" do
+              terminal.stub :terminal_size, [100, 50] do
+                wizard.send :setup_terminal, input, output
+                _(wizard.instance_variable_get(:@highline).wrap_at).must_equal 80
+                _(wizard.instance_variable_get(:@highline).page_at).must_equal 50
+              end
+            end
           end
         end
       end
@@ -99,7 +126,7 @@ module Kafo
           end
 
           it "dumps yaml" do
-            wizard.stub(:display_hash, Proc.new { say('hash was displayed') }) do
+            wizard.stub(:display_hash, Proc.new { wizard.say('hash was displayed') }) do
               must_exit_with_code(0) { wizard.send :main_menu }
             end
             must_be_on_stdout(output, 'hash was displayed')
@@ -114,7 +141,7 @@ module Kafo
           end
 
           it "configures module" do
-            wizard.stub(:configure_module, Proc.new { say('puppet was configured') }) do
+            wizard.stub(:configure_module, Proc.new { wizard.say('puppet was configured') }) do
               must_exit_with_code(0) { wizard.send :main_menu }
             end
             must_be_on_stdout(output, 'puppet was configured')
@@ -184,7 +211,7 @@ module Kafo
           end
 
           it "executes configure_group(group)" do
-            wizard.stub :configure_group, Proc.new { say('configure_group executed') } do
+            wizard.stub :configure_group, Proc.new { wizard.say('configure_group executed') } do
               must_not_raise_eof(input, output) { wizard.send(:configure_module, puppet_module) }
             end
             must_be_on_stdout(output, 'configure_group executed')
@@ -200,7 +227,7 @@ module Kafo
           end
 
           it "executes configure" do
-            wizard.stub :configure, Proc.new { say('configure executed') } do
+            wizard.stub :configure, Proc.new { wizard.say('configure executed') } do
               must_not_raise_eof(input, output) { wizard.send(:configure_module, puppet_module) }
             end
             must_be_on_stdout(output, 'configure executed')
@@ -216,7 +243,7 @@ module Kafo
           end
 
           it "executes reset_module_params" do
-            wizard.stub :reset_module_params, Proc.new { say('reset_module_params executed') } do
+            wizard.stub :reset_module_params, Proc.new { wizard.say('reset_module_params executed') } do
               must_not_raise_eof(input, output) { wizard.send(:configure_module, puppet_module) }
             end
             must_be_on_stdout(output, 'reset_module_params executed')
@@ -306,7 +333,7 @@ module Kafo
         end
 
         it "displays params of group and subgroups" do
-          wizard.stub :configure, Proc.new { say('configure executed') } do
+          wizard.stub :configure, Proc.new { wizard.say('configure executed') } do
             wizard.send(:configure_group, advanced_group)
           end
           must_be_on_stdout(output, 'configure executed')
@@ -348,7 +375,7 @@ module Kafo
         end
 
         it "displays params of module" do
-          wizard.stub :reset, Proc.new { say('reset executed') } do
+          wizard.stub :reset, Proc.new { wizard.say('reset executed') } do
             wizard.send(:reset_module_params, puppet_module)
           end
           must_be_on_stdout(output, 'reset executed')
