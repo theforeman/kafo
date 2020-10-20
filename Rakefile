@@ -4,7 +4,7 @@ load 'tasks/jenkins.rake'
 
 Rake::TestTask.new('test:ruby') do |t|
   t.libs << 'lib' << 'test'
-  t.test_files = FileList['test/**/*_test.rb']
+  t.test_files = FileList['test/**/*_test.rb'] - FileList['test/tmp/**/*_test.rb']
   t.verbose = true
 end
 
