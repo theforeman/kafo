@@ -295,33 +295,39 @@ module Kafo
 
     def set_app_options
       self.class.app_option ['--[no-]colors'], :flag, 'Use color output on STDOUT',
-                            :default => !!config.app[:colors]
+                            :default => !!config.app[:colors], :advanced => true
       self.class.app_option ['--color-of-background'], 'COLOR', 'Your terminal background is :bright or :dark',
-                            :default => config.app[:color_of_background]
+                            :default => config.app[:color_of_background], :advanced => true
       self.class.app_option ['--dont-save-answers'], :flag, "Skip saving answers to '#{self.class.config.answer_file}'?",
-                            :default => !!config.app[:dont_save_answers]
+                            :default => !!config.app[:dont_save_answers], :advanced => true
       self.class.app_option '--ignore-undocumented', :flag, 'Ignore inconsistent parameter documentation',
-                            :default => false
+                            :default => false, :advanced => true
       self.class.app_option ['-i', '--interactive'], :flag, 'Run in interactive mode'
       self.class.app_option '--log-level', 'LEVEL', 'Log level for log file output',
-                            :default => config.app[:log_level]
+                            :default => config.app[:log_level], :advanced => true
       self.class.app_option ['-n', '--noop'], :flag, 'Run puppet in noop mode?',
                             :default => false
       self.class.app_option ['-p', '--profile'], :flag, 'Run puppet in profile mode?',
-                            :default => false
-      self.class.app_option ['-s', '--skip-checks-i-know-better'], :flag, 'Skip all system checks', :default => false
-      self.class.app_option ['--skip-puppet-version-check'], :flag, 'Skip check for compatible Puppet versions', :default => false
+                            :default => false, :advanced => true
+      self.class.app_option ['-s', '--skip-checks-i-know-better'], :flag, 'Skip all system checks', :default => false, :advanced => true
+      self.class.app_option ['--skip-puppet-version-check'], :flag, 'Skip check for compatible Puppet versions', :default => false, :advanced => true
       self.class.app_option ['-v', '--verbose'], :flag, 'Display log on STDOUT instead of progressbar'
       self.class.app_option ['-l', '--verbose-log-level'], 'LEVEL', 'Log level for verbose mode output',
                             :default => 'info'
       self.class.app_option ['-S', '--scenario'], 'SCENARIO', 'Use installation scenario'
-      self.class.app_option ['--disable-scenario'], 'SCENARIO', 'Disable installation scenario'
-      self.class.app_option ['--enable-scenario'], 'SCENARIO', 'Enable installation scenario'
       self.class.app_option ['--list-scenarios'], :flag, 'List available installation scenarios'
-      self.class.app_option ['--force'], :flag, 'Force change of installation scenario'
-      self.class.app_option ['--compare-scenarios'], :flag, 'Show changes between last used scenario and the scenario specified with -S or --scenario argument'
-      self.class.app_option ['--migrations-only'], :flag, 'Apply migrations to a selected scenario and exit'
-      self.class.app_option ['--[no-]parser-cache'], :flag, 'Force use or bypass of Puppet module parser cache'
+      self.class.app_option ['--disable-scenario'], 'SCENARIO', 'Disable installation scenario',
+                            :advanced => true
+      self.class.app_option ['--enable-scenario'], 'SCENARIO', 'Enable installation scenario',
+                            :advanced => true
+      self.class.app_option ['--force'], :flag, 'Force change of installation scenario',
+                            :advanced => true
+      self.class.app_option ['--compare-scenarios'], :flag, 'Show changes between last used scenario and the scenario specified with -S or --scenario argument',
+                            :advanced => true
+      self.class.app_option ['--migrations-only'], :flag, 'Apply migrations to a selected scenario and exit',
+                            :advanced => true
+      self.class.app_option ['--[no-]parser-cache'], :flag, 'Force use or bypass of Puppet module parser cache',
+                            :advanced => true
     end
 
     def set_options
@@ -331,10 +337,13 @@ module Kafo
       end
 
       modules.each do |mod|
-        self.class.option d("--[no-]enable-#{mod.name}"),
-                          :flag,
-                          "Enable '#{mod.name}' puppet module",
-                          :default => mod.enabled?
+        self.class.app_option(
+          d("--[no-]enable-#{mod.name}"),
+          :flag,
+          "Enable '#{mod.name}' puppet module",
+          :default => mod.enabled?,
+          :advanced => true
+        )
       end
 
       params.sort.each do |param|
