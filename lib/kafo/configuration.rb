@@ -60,7 +60,9 @@ module Kafo
       begin
         FileUtils.touch @config_file
         File.chmod 0600, @config_file
-        File.open(@config_file, 'w') { |file| file.write(format(YAML.dump(configuration))) }
+        File.open(@config_file, 'w') do |file|
+          file.write(format(YAML.dump(configuration.sort.to_h)))
+        end
       rescue Errno::EACCES
         puts "Insufficient permissions to write to #{@config_file}, can not continue"
         KafoConfigure.exit(:insufficient_permissions)
