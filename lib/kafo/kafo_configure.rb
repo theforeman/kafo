@@ -125,7 +125,7 @@ module Kafo
       parse_cli_arguments
 
       if !config.app[:verbose]
-        @progress_bar = config.app[:colors] ? ProgressBars::Colored.new : ProgressBars::BlackWhite.new
+        @progress_bar = config.use_colors? ? ProgressBars::Colored.new : ProgressBars::BlackWhite.new
       end
 
       unless skip_checks_i_know_better?
@@ -291,7 +291,7 @@ module Kafo
 
     def set_app_options
       self.class.app_option ['--[no-]colors'], :flag, 'Use color output on STDOUT',
-                            :default => !!config.app[:colors]
+                            :default => config.use_colors?
       self.class.app_option ['--color-of-background'], 'COLOR', 'Your terminal background is :bright or :dark',
                             :default => config.app[:color_of_background]
       self.class.app_option ['--dont-save-answers'], :flag, "Skip saving answers to '#{self.class.config.answer_file}'?",
@@ -497,12 +497,14 @@ module Kafo
 
     def self.use_colors?
       if config
-        colors = config.app[:colors]
+        config.use_colors?
+      elsif ARGV.include?('--no-colors')
+        false
+      elsif ARGV.include?('--colors')
+        true
       else
-        colors = ARGV.include?('--no-colors') ? false : nil
-        colors = ARGV.include?('--colors') ? true : nil if colors.nil?
+        Kafo::ColorScheme.colors_possible?
       end
-      colors
     end
 
     def self.preset_color_scheme

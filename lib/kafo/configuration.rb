@@ -23,7 +23,7 @@ module Kafo
         :answer_file          => './config/answers.yaml',
         :installer_dir        => '.',
         :module_dirs          => ['./modules'],
-        :colors               => Kafo::ColorScheme.colors_possible?,
+        :colors               => nil,
         :color_of_background  => :dark,
         :hook_dirs            => [],
         :custom               => {},
@@ -86,6 +86,10 @@ module Kafo
         result.delete(:modules_dir)
         result
       end
+    end
+
+    def use_colors?
+      app[:colors].nil? ? Kafo::ColorScheme.colors_possible? : app[:colors]
     end
 
     def get_custom(key)
