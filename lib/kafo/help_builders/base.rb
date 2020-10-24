@@ -2,8 +2,8 @@
 
 module Kafo
   module HelpBuilders
-    DEFAULT_GROUP_NAME   = 'Basic'
-    DEFAULT_MODULE_NAME  = 'Generic'
+    DEFAULT_GROUP_NAME = 'Basic'
+    DEFAULT_MODULE_NAME = 'Generic'
     IGNORE_IN_GROUP_NAME = /\s*parameters:?/
 
     class Base < Clamp::Help::Builder
@@ -20,8 +20,9 @@ module Kafo
           puts "\n#{heading}:"
 
           data = by_module(items)
+
           sorted_keys(data).each do |section|
-            if section == 'Generic'
+            if section == DEFAULT_MODULE_NAME
               add_list(header(1, section), data[section])
             else
               add_module(section, data[section])
