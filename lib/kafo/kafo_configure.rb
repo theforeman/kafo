@@ -28,14 +28,17 @@ require 'kafo/exit_handler'
 require 'kafo/scenario_manager'
 require 'kafo/execution_environment'
 require 'kafo/logging'
+require 'kafo/app_option/declaration'
 
 module Kafo
   class KafoConfigure < Clamp::Command
     include StringHelper
 
     class << self
+      include AppOption::Declaration
+
       attr_accessor :config, :root_dir, :config_file, :gem_root,
-                    :module_dirs, :kafo_modules_dir, :verbose, :app_options, :logger,
+                    :module_dirs, :kafo_modules_dir, :verbose, :logger,
                     :check_dirs, :exit_handler, :scenario_manager, :store
       attr_writer :hooking
 
@@ -66,12 +69,6 @@ module Kafo
         builder_class = kafo.full_help? ? HelpBuilders::Advanced : HelpBuilders::Basic
         args.push builder_class.new(kafo.params)
         super(*args)
-      end
-
-      def app_option(*args, &block)
-        self.app_options ||= []
-        self.app_options.push self.option(*args, &block)
-        self.app_options.last
       end
 
       def use_colors?
@@ -309,55 +306,59 @@ module Kafo
       end
     end
 
+    def app_option(*args, &block)
+      self.class.app_option(*args, &block)
+    end
+
     def set_app_options
-      self.class.app_option ['--[no-]colors'], :flag, 'Use color output on STDOUT',
+      app_option ['--[no-]colors'], :flag, 'Use color output on STDOUT',
                             :default => !!config.app[:colors]
-      self.class.app_option ['--color-of-background'], 'COLOR', 'Your terminal background is :bright or :dark',
+      app_option ['--color-of-background'], 'COLOR', 'Your terminal background is :bright or :dark',
                             :default => config.app[:color_of_background]
-      self.class.app_option ['--dont-save-answers'], :flag, "Skip saving answers to '#{self.class.config.answer_file}'?",
+      app_option ['--dont-save-answers'], :flag, "Skip saving answers to '#{self.class.config.answer_file}'?",
                             :default => !!config.app[:dont_save_answers]
-      self.class.app_option '--ignore-undocumented', :flag, 'Ignore inconsistent parameter documentation',
+      app_option '--ignore-undocumented', :flag, 'Ignore inconsistent parameter documentation',
                             :default => false
-      self.class.app_option ['-i', '--interactive'], :flag, 'Run in interactive mode'
-      self.class.app_option '--log-level', 'LEVEL', 'Log level for log file output',
+      app_option ['-i', '--interactive'], :flag, 'Run in interactive mode'
+      app_option '--log-level', 'LEVEL', 'Log level for log file output',
                             :default => config.app[:log_level]
-      self.class.app_option ['-n', '--noop'], :flag, 'Run puppet in noop mode?',
+      app_option ['-n', '--noop'], :flag, 'Run puppet in noop mode?',
                             :default => false
-      self.class.app_option ['-p', '--profile'], :flag, 'Run puppet in profile mode?',
+      app_option ['-p', '--profile'], :flag, 'Run puppet in profile mode?',
                             :default => false
-      self.class.app_option ['-s', '--skip-checks-i-know-better'], :flag, 'Skip all system checks', :default => false
-      self.class.app_option ['--skip-puppet-version-check'], :flag, 'Skip check for compatible Puppet versions', :default => false
-      self.class.app_option ['-v', '--verbose'], :flag, 'Display log on STDOUT instead of progressbar'
-      self.class.app_option ['-l', '--verbose-log-level'], 'LEVEL', 'Log level for verbose mode output',
+      app_option ['-s', '--skip-checks-i-know-better'], :flag, 'Skip all system checks', :default => false
+      app_option ['--skip-puppet-version-check'], :flag, 'Skip check for compatible Puppet versions', :default => false
+      app_option ['-v', '--verbose'], :flag, 'Display log on STDOUT instead of progressbar'
+      app_option ['-l', '--verbose-log-level'], 'LEVEL', 'Log level for verbose mode output',
                             :default => 'notice'
-      self.class.app_option ['-S', '--scenario'], 'SCENARIO', 'Use installation scenario'
-      self.class.app_option ['--disable-scenario'], 'SCENARIO', 'Disable installation scenario'
-      self.class.app_option ['--enable-scenario'], 'SCENARIO', 'Enable installation scenario'
-      self.class.app_option ['--list-scenarios'], :flag, 'List available installation scenarios'
-      self.class.app_option ['--force'], :flag, 'Force change of installation scenario'
-      self.class.app_option ['--compare-scenarios'], :flag, 'Show changes between last used scenario and the scenario specified with -S or --scenario argument'
-      self.class.app_option ['--migrations-only'], :flag, 'Apply migrations to a selected scenario and exit'
-      self.class.app_option ['--[no-]parser-cache'], :flag, 'Force use or bypass of Puppet module parser cache'
+      app_option ['-S', '--scenario'], 'SCENARIO', 'Use installation scenario'
+      app_option ['--disable-scenario'], 'SCENARIO', 'Disable installation scenario'
+      app_option ['--enable-scenario'], 'SCENARIO', 'Enable installation scenario'
+      app_option ['--list-scenarios'], :flag, 'List available installation scenarios'
+      app_option ['--force'], :flag, 'Force change of installation scenario'
+      app_option ['--compare-scenarios'], :flag, 'Show changes between last used scenario and the scenario specified with -S or --scenario argument'
+      app_option ['--migrations-only'], :flag, 'Apply migrations to a selected scenario and exit'
+      app_option ['--[no-]parser-cache'], :flag, 'Force use or bypass of Puppet module parser cache'
     end
 
     def set_options
-      self.class.option '--full-help', :flag, "print complete help" do
+      app_option '--full-help', :flag, "print complete help" do
         @full_help = true
         request_help
       end
 
       modules.each do |mod|
-        self.class.option d("--[no-]enable-#{mod.name}"),
-                          :flag,
-                          "Enable '#{mod.name}' puppet module",
-                          :default => mod.enabled?
+        app_option d("--[no-]enable-#{mod.name}"),
+                   :flag,
+                   "Enable '#{mod.name}' puppet module",
+                   :default => mod.enabled?
       end
 
       params.sort.each do |param|
         doc = param.doc.nil? ? 'UNDOCUMENTED' : param.doc.join("\n")
-        self.class.option parametrize(param), '', doc + " (current: #{param.value_to_s})",
+        app_option parametrize(param), '', doc + " (current: #{param.value_to_s})",
                           :multivalued => param.multivalued?
-        self.class.option parametrize(param, 'reset-'), :flag,
+        app_option parametrize(param, 'reset-'), :flag,
                           "Reset #{param.name} to the default value (#{param.default_to_s})"
       end
     end
@@ -366,13 +367,15 @@ module Kafo
     # so we accept either allowed args or those that does not start with '-' and are right after
     # accepted argument
     def clamp_app_arguments
-      @allowed_clamp_app_arguments = self.class.app_options.map do |option|
+      @allowed_clamp_app_arguments = self.class.declared_options.map do |option|
         option.switches.map { |s| is_yes_no_flag?(s) ? build_yes_no_variants(s) : s }
       end
       @allowed_clamp_app_arguments.flatten!
 
       last_was_accepted = false
-      ARGV.select { |arg| last_was_accepted = is_allowed_attribute_name?(arg) || (last_was_accepted && is_value?(arg)) }
+      ARGV.select do |arg|
+        last_was_accepted = is_allowed_attribute_name?(arg) || (last_was_accepted && is_value?(arg))
+      end
     end
 
     def is_yes_no_flag?(s)
@@ -392,7 +395,7 @@ module Kafo
     end
 
     def parse_app_arguments
-      self.class.app_options.each do |option|
+      self.class.declared_options.each do |option|
         name                    = option.attribute_name
         value                   = send(option.flag? ? "#{name}?" : name)
         config.app[name.to_sym] = value.nil? ? option.default_value : value
