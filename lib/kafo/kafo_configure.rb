@@ -42,6 +42,59 @@ module Kafo
       def hooking
         @hooking ||= Hooking.new
       end
+
+      def run
+        return super
+      rescue SystemExit
+        self.exit_handler.exit(self.exit_code) # fail in initialize
+      end
+
+      def exit(code, &block)
+        exit_handler.exit(code, &block)
+      end
+
+      def exit_code
+        self.exit_handler.exit_code
+      end
+
+      def in_help_mode?
+        ARGV.include?('--help') || ARGV.include?('--full-help') || ARGV.include?('-h')
+      end
+
+      def help(*args)
+        kafo          = args.pop
+        builder_class = kafo.full_help? ? HelpBuilders::Advanced : HelpBuilders::Basic
+        args.push builder_class.new(kafo.params)
+        super(*args)
+      end
+
+      def app_option(*args, &block)
+        self.app_options ||= []
+        self.app_options.push self.option(*args, &block)
+        self.app_options.last
+      end
+
+      def use_colors?
+        if config
+          colors = config.app[:colors]
+        else
+          colors = ARGV.include?('--no-colors') ? false : nil
+          colors = ARGV.include?('--colors') ? true : nil if colors.nil?
+        end
+        colors
+      end
+
+      def preset_color_scheme
+        match = ARGV.join(' ').match(/--color-of-background[ =](\w+)/)
+        background = match && match[1]
+        ColorScheme.new(:background => background, :colors => use_colors?).setup
+      end
+
+      def set_color_scheme
+        ColorScheme.new(
+          :background => config.app[:color_of_background],
+          :colors => use_colors?).setup
+      end
     end
 
     def initialize(*args)
@@ -157,44 +210,12 @@ module Kafo
       return self
     end
 
-    def self.run
-      return super
-    rescue SystemExit
-      self.exit_handler.exit(self.exit_code) # fail in initialize
-    end
-
-    def self.exit(code, &block)
-      exit_handler.exit(code, &block)
-    end
-
-    def self.exit_code
-      self.exit_handler.exit_code
-    end
-
-    def self.in_help_mode?
-      ARGV.include?('--help') || ARGV.include?('--full-help') || ARGV.include?('-h')
-    end
-
     def exit_code
       self.class.exit_code
     end
 
-
     def help
       self.class.help(invocation_path, self)
-    end
-
-    def self.help(*args)
-      kafo          = args.pop
-      builder_class = kafo.full_help? ? HelpBuilders::Advanced : HelpBuilders::Basic
-      args.push builder_class.new(kafo.params)
-      super(*args)
-    end
-
-    def self.app_option(*args, &block)
-      self.app_options ||= []
-      self.app_options.push self.option(*args, &block)
-      self.app_options.last
     end
 
     def params
@@ -234,7 +255,6 @@ module Kafo
     def request_config_reload
       @config_reload_requested = true
     end
-
 
     private
 
@@ -494,30 +514,6 @@ module Kafo
       return "#{::RbConfig::CONFIG['sysconfdir']}/kafo/kafo.yaml" if File.exists?("#{::RbConfig::CONFIG['sysconfdir']}/kafo/kafo.yaml")
       File.join(Dir.pwd, 'config', 'kafo.yaml')
     end
-
-    def self.use_colors?
-      if config
-        colors = config.app[:colors]
-      else
-        colors = ARGV.include?('--no-colors') ? false : nil
-        colors = ARGV.include?('--colors') ? true : nil if colors.nil?
-      end
-      colors
-    end
-
-    def self.preset_color_scheme
-      match = ARGV.join(' ').match(/--color-of-background[ =](\w+)/)
-      background = match && match[1]
-      ColorScheme.new(:background => background, :colors => use_colors?).setup
-    end
-
-    def self.set_color_scheme
-      ColorScheme.new(
-        :background => config.app[:color_of_background],
-        :colors => use_colors?).setup
-    end
-
-    private
 
     def normalize_encoding(line)
       if line.respond_to?(:encode) && line.respond_to?(:valid_encoding?)
