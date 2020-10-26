@@ -312,33 +312,41 @@ module Kafo
 
     def set_app_options
       app_option ['--[no-]colors'], :flag, 'Use color output on STDOUT',
-                            :default => !!config.app[:colors]
+                 :default => !!config.app[:colors], :advanced => true
       app_option ['--color-of-background'], 'COLOR', 'Your terminal background is :bright or :dark',
-                            :default => config.app[:color_of_background]
+                 :default => config.app[:color_of_background], :advanced => true
       app_option ['--dont-save-answers'], :flag, "Skip saving answers to '#{self.class.config.answer_file}'?",
-                            :default => !!config.app[:dont_save_answers]
+                 :default => !!config.app[:dont_save_answers], :advanced => true
       app_option '--ignore-undocumented', :flag, 'Ignore inconsistent parameter documentation',
-                            :default => false
+                 :default => false, :advanced => true
       app_option ['-i', '--interactive'], :flag, 'Run in interactive mode'
       app_option '--log-level', 'LEVEL', 'Log level for log file output',
-                            :default => config.app[:log_level]
+                 :default => config.app[:log_level], :advanced => true
       app_option ['-n', '--noop'], :flag, 'Run puppet in noop mode?',
-                            :default => false
+                 :default => false
       app_option ['-p', '--profile'], :flag, 'Run puppet in profile mode?',
-                            :default => false
-      app_option ['-s', '--skip-checks-i-know-better'], :flag, 'Skip all system checks', :default => false
-      app_option ['--skip-puppet-version-check'], :flag, 'Skip check for compatible Puppet versions', :default => false
+                 :default => false, :advanced => true
+      app_option ['-s', '--skip-checks-i-know-better'], :flag, 'Skip all system checks',
+                 :default => false
+      app_option ['--skip-puppet-version-check'], :flag, 'Skip check for compatible Puppet versions',
+                 :default => false, :advanced => true
       app_option ['-v', '--verbose'], :flag, 'Display log on STDOUT instead of progressbar'
       app_option ['-l', '--verbose-log-level'], 'LEVEL', 'Log level for verbose mode output',
-                            :default => 'notice'
+                 :default => 'notice'
       app_option ['-S', '--scenario'], 'SCENARIO', 'Use installation scenario'
-      app_option ['--disable-scenario'], 'SCENARIO', 'Disable installation scenario'
-      app_option ['--enable-scenario'], 'SCENARIO', 'Enable installation scenario'
+      app_option ['--disable-scenario'], 'SCENARIO', 'Disable installation scenario',
+                 :advanced => true
+      app_option ['--enable-scenario'], 'SCENARIO', 'Enable installation scenario',
+                 :advanced => true
       app_option ['--list-scenarios'], :flag, 'List available installation scenarios'
-      app_option ['--force'], :flag, 'Force change of installation scenario'
-      app_option ['--compare-scenarios'], :flag, 'Show changes between last used scenario and the scenario specified with -S or --scenario argument'
-      app_option ['--migrations-only'], :flag, 'Apply migrations to a selected scenario and exit'
-      app_option ['--[no-]parser-cache'], :flag, 'Force use or bypass of Puppet module parser cache'
+      app_option ['--force'], :flag, 'Force change of installation scenario',
+                 :advanced => true
+      app_option ['--compare-scenarios'], :flag, 'Show changes between last used scenario and the scenario specified with -S or --scenario argument',
+                 :advanced => true
+      app_option ['--migrations-only'], :flag, 'Apply migrations to a selected scenario and exit',
+                 :advanced => true
+      app_option ['--[no-]parser-cache'], :flag, 'Force use or bypass of Puppet module parser cache',
+                 :advanced => true
     end
 
     def set_options
@@ -348,9 +356,7 @@ module Kafo
       end
 
       modules.each do |mod|
-        app_option d("--[no-]enable-#{mod.name}"),
-                   :flag,
-                   "Enable '#{mod.name}' puppet module",
+        app_option d("--[no-]enable-#{mod.name}"), :flag, "Enable '#{mod.name}' puppet module",
                    :default => mod.enabled?
       end
 
