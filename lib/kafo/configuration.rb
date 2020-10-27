@@ -30,7 +30,8 @@ module Kafo
         :facts                => {},
         :low_priority_modules => [],
         :verbose_log_level    => 'notice',
-        :skip_puppet_version_check => false
+        :skip_puppet_version_check => false,
+        :disablable_modules   => nil,
     }
 
     def self.get_scenario_id(filename)

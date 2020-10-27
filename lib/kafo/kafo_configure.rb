@@ -347,12 +347,7 @@ module Kafo
         request_help
       end
 
-      modules.each do |mod|
-        app_option d("--[no-]enable-#{mod.name}"),
-                   :flag,
-                   "Enable '#{mod.name}' puppet module",
-                   :default => mod.enabled?
-      end
+      set_enable_disable_module_options
 
       params.sort.each do |param|
         doc = param.doc.nil? ? 'UNDOCUMENTED' : param.doc.join("\n")
@@ -360,6 +355,24 @@ module Kafo
                           :multivalued => param.multivalued?
         app_option parametrize(param, 'reset-'), :flag,
                           "Reset #{param.name} to the default value (#{param.default_to_s})"
+      end
+    end
+
+    def set_enable_disable_module_options
+      if (disablable_modules = config.app[:disablable_modules])
+        modules.each do |mod|
+          if disablable_modules.include?(mod.name)
+            app_option d("--[no-]enable-#{mod.name}"), :flag, "Enable '#{mod.name}' puppet module",
+                       :default => mod.enabled?
+          elsif !mod.enabled?
+            app_option d("--enable-#{mod.name}"), :flag, "Enable '#{mod.name}' puppet module"
+          end
+        end
+      else
+        modules.each do |mod|
+          app_option d("--[no-]enable-#{mod.name}"), :flag, "Enable '#{mod.name}' puppet module",
+                     :default => mod.enabled?
+        end
       end
     end
 

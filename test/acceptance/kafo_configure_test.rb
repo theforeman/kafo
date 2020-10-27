@@ -5,6 +5,8 @@ module Kafo
     before do
       generate_installer
       add_manifest
+      @config_file = "#{INSTALLER_HOME}/config/installer-scenarios.d/default.yaml"
+      @answers_file = "#{INSTALLER_HOME}/config/installer-scenarios.d/default-answers.yaml"
     end
 
     describe '--help' do
@@ -171,6 +173,51 @@ module Kafo
         code, _, err = run_command '../bin/kafo-configure --skip-puppet-version-check'
         _(code.exitstatus).must_equal 0, err
         _(File.exist?("#{INSTALLER_HOME}/testing")).must_equal true
+      end
+    end
+
+    describe 'with disablable modules' do
+      it 'must only --[no-]enabled option for disablable module' do
+        config = YAML.load_file(@config_file)
+        config[:disablable_modules] = ['testing']
+        File.open(@config_file, 'w') do |file|
+          file.write(config.to_yaml)
+        end
+
+        code, out, err = run_command '../bin/kafo-configure --help --scenario default'
+        _(out).must_include '--[no-]enable-testing'
+      end
+
+      it 'must show no --enable option for enabled module not on disablable_modules list' do
+        config = YAML.load_file(@config_file)
+        config[:disablable_modules] = []
+        File.open(@config_file, 'w') do |file|
+          file.write(config.to_yaml)
+        end
+
+        code, out, err = run_command '../bin/kafo-configure --help --scenario default'
+        _(out).wont_include '--[no-]enable-testing'
+        _(out).wont_include '--enable-testing'
+      end
+
+      it 'must show --enable option for disabled module not on disablable_modules list' do
+        config = YAML.load_file(@config_file)
+        config[:disablable_modules] = []
+        File.open(@config_file, 'w') do |file|
+          file.write(config.to_yaml)
+        end
+
+        answers = YAML.load_file(@answers_file)
+        answers['testing::disabled_testing_module'] = false
+        File.open(@answers_file, 'w') do |file|
+          file.write(answers.to_yaml)
+        end
+
+        FileUtils.mkdir_p MANIFEST_PATH
+        FileUtils.cp File.expand_path("../../fixtures/manifests/disabled_testing_module.pp", __FILE__), File.join(MANIFEST_PATH, 'disabled_testing_module.pp')
+
+        code, out, err = run_command '../bin/kafo-configure --help'
+        _(out).must_include '--enable-testing-disabled-testing-module'
       end
     end
   end
