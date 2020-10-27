@@ -2,14 +2,14 @@ require 'kafo/hook_context'
 
 module Kafo
   class Hooking
-    # pre_migrations - just after kafo reads its configuration - useful for config file updates. Only in this stage it is posible to request config reload (`Kafo.request_config_reload`) to get in our changes
-    # boot - before kafo is ready to work, useful for adding new app arguments, logger won't work yet
-    # init - just after hooking is initialized and kafo is configured, parameters have no values yet
-    # pre_values - just before value from CLI is set to parameters (they already have default values)
-    # pre_validations - just after system checks and before validations are executed (and before interactive wizard is started), at this point all parameter values are already set but not yet stored in answer file
-    # pre_commit - after validations or interactive wizard have completed, all parameter values are set but not yet stored in the answer file
-    # pre - just before puppet is executed to converge system
-    # post - just after puppet is executed to converge system
+    # * pre_migrations - just after kafo reads its configuration - useful for config file updates. Only in this stage it is posible to request config reload (`Kafo.request_config_reload`) to get in our changes
+    # * boot - before kafo is ready to work, useful for adding new app arguments, logger won't work yet
+    # * init - just after hooking is initialized and kafo is configured, parameters have no values yet
+    # * pre_values - just before value from CLI is set to parameters (they already have default values)
+    # * pre_validations - just after system checks and before validations are executed (and before interactive wizard is started), at this point all parameter values are already set but not yet stored in answer file
+    # * pre_commit - after validations or interactive wizard have completed, all parameter values are set but not yet stored in the answer file
+    # * pre - just before puppet is executed to converge system
+    # * post - just after puppet is executed to converge system
     TYPES = [:pre_migrations, :boot, :init, :pre, :post, :pre_values, :pre_validations, :pre_commit]
 
     attr_accessor :hooks, :kafo
