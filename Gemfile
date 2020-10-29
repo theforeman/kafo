@@ -24,3 +24,7 @@ group :puppet_module do
   gem 'metadata-json-lint'
   gem 'puppetlabs_spec_helper'
 end
+
+group :test do
+  gem 'rubocop'
+end

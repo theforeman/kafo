@@ -7,7 +7,7 @@ module Kafo
       ::ENV['TERM'] && !`which tput 2> /dev/null`.empty? && `tput colors`.to_i > 0
     end
 
-    def initialize(options={})
+    def initialize(options = {})
       @background = options[:background].nil? ? :dark : options[:background]
       @colors = options[:colors].nil? ? self.class.colors_possible? : options[:colors]
     end

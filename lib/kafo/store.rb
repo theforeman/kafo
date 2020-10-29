@@ -4,7 +4,7 @@ module Kafo
   class Store
     attr_accessor :data
 
-    def initialize(path=nil)
+    def initialize(path = nil)
       @data = {}
       load_path(path) if path
     end

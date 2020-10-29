@@ -365,9 +365,9 @@ module Kafo
       params.sort.each do |param|
         doc = param.doc.nil? ? 'UNDOCUMENTED' : param.doc.join("\n")
         app_option parametrize(param), '', doc + " (current: #{param.value_to_s})",
-                          :multivalued => param.multivalued?
+                   :multivalued => param.multivalued?
         app_option parametrize(param, 'reset-'), :flag,
-                          "Reset #{param.name} to the default value (#{param.default_to_s})"
+                   "Reset #{param.name} to the default value (#{param.default_to_s})"
       end
     end
 
