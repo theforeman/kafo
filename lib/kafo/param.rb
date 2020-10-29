@@ -123,12 +123,12 @@ module Kafo
       @type.multivalued?
     end
 
-    def <=> o
+    def <=>(other)
       unless @module.configuration.app[:no_prefix]
-        r = self.module_name <=> o.module_name
+        r = self.module_name <=> other.module_name
         return r unless r == 0
       end
-      self.name <=> o.name
+      self.name <=> other.name
     end
 
     def visible?(context = [])

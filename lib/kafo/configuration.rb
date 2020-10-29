@@ -170,7 +170,7 @@ module Kafo
       save_configuration(app)
     end
 
-    def migrate_configuration(from_config, options={})
+    def migrate_configuration(from_config, options = {})
       keys_to_skip = options.fetch(:skip, [])
       keys = [:log_dir, :log_name, :log_level, :no_prefix,
         :colors, :color_of_background, :custom, :verbose_log_level]

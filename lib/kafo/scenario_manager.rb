@@ -6,7 +6,7 @@ module Kafo
   class ScenarioManager
     attr_reader :config_dir, :last_scenario_link, :previous_scenario
 
-    def initialize(config, last_scenario_link_name='last_scenario.yaml')
+    def initialize(config, last_scenario_link_name = 'last_scenario.yaml')
       @logger = Logger.new('scenario_manager')
       @config_dir = File.file?(config) ? File.dirname(config) : config
       @last_scenario_link = File.join(config_dir, last_scenario_link_name)
@@ -77,7 +77,7 @@ module Kafo
       !!(defined?(CONFIG_DIR) && CONFIG_DIR)
     end
 
-    def scenario_from_args(arg_name='--scenario|-S')
+    def scenario_from_args(arg_name = '--scenario|-S')
       # try scenario provided in the args via -S or --scenario
       ARGV.each_with_index do |arg, index|
         parsed = arg.match(/^(#{arg_name})($|=(?<scenario>\S+))/)

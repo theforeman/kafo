@@ -96,16 +96,16 @@ module Kafo
       Hash[params.map { |param| [param.name, param.value] }]
     end
 
-    def <=> o
+    def <=>(other)
       @configuration.app[:low_priority_modules].each do |module_name|
-        return 1 if self.name.include?(module_name) && !o.name.include?(module_name)
-        return -1 if !self.name.include?(module_name) && o.name.include?(module_name)
-        if self.name.include?(module_name) && o.name.include?(module_name)
-          return self.name.sub(/.*#{module_name}/, '') <=> o.name.sub(/.*#{module_name}/, '')
+        return 1 if self.name.include?(module_name) && !other.name.include?(module_name)
+        return -1 if !self.name.include?(module_name) && other.name.include?(module_name)
+        if self.name.include?(module_name) && other.name.include?(module_name)
+          return self.name.sub(/.*#{module_name}/, '') <=> other.name.sub(/.*#{module_name}/, '')
         end
       end
 
-      self.name <=> o.name
+      self.name <=> other.name
     end
 
     private

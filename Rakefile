@@ -31,6 +31,13 @@ namespace 'test' do
   end
 end
 
+begin
+  require 'rubocop/rake_task'
+  RuboCop::RakeTask.new
+rescue LoadError
+  puts 'Rubocop not loaded'
+end
+
 CLEAN.include 'test/tmp'
 
 task :test => ['test:ruby', 'test:puppet_modules']

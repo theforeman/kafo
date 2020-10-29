@@ -3,7 +3,6 @@ require_relative 'definition'
 module Kafo
   module AppOption
     module Declaration
-
       include Clamp::Option::Declaration
 
       def app_option(switches, type, description, opts = {}, &block)
@@ -13,7 +12,6 @@ module Kafo
           declared_options << option
         end
       end
-
     end
   end
 end
