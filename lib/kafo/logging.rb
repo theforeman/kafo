@@ -46,7 +46,8 @@ module Kafo
             level: log_level,
             filename: filename,
             layout: layout(color: false),
-            truncate: true
+            truncate: true,
+            roll_by: 'date'
           )
 
           FileUtils.chown(
