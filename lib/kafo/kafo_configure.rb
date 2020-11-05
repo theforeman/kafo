@@ -459,7 +459,7 @@ module Kafo
       execution_env.store_answers
       puppetconf = execution_env.configure_puppet(
         'color'     => false,
-        'evaltrace' => !!@progress_bar,
+        'evaltrace' => true,
         'noop'      => !!noop?,
         'profile'   => !!profile?,
         'show_diff' => true,
@@ -476,7 +476,14 @@ module Kafo
         command = PuppetCommand.new('include kafo_configure', options, puppetconf).command
         log_parser = PuppetLogParser.new
         logger = Logger.new('configure')
-        logger.notice("Starting system configuration")
+
+        start_message = <<-HEREDOC
+Starting system configuration.
+  The total number of configuration tasks may increase during the run.
+  Observe logs or specify --verbose-log-level to see individual configuration tasks.
+HEREDOC
+
+        logger.notice(start_message.chomp)
 
         PTY.spawn(*PuppetCommand.format_command(command)) do |stdin, stdout, pid|
           begin
@@ -484,6 +491,13 @@ module Kafo
               line = normalize_encoding(line)
               method, message = log_parser.parse(line)
               progress_log(method, message, logger)
+
+              if (output = line.match(%r{(.+\]): Starting to evaluate the resource( \((?<count>\d+) of (?<total>\d+)\))?}))
+                if (output[:count].to_i % 100) == 1 && output[:count].to_i != 1
+                  logger.notice("#{output[:count].to_i - 1} out of #{output[:total]} done.")
+                end
+              end
+
               @progress_bar.update(line) if @progress_bar
             end
           rescue Errno::EIO # we reach end of input
@@ -502,7 +516,7 @@ module Kafo
       end
 
       @progress_bar.close if @progress_bar
-      logger.notice "Puppet has finished, bye!"
+      logger.notice "System configuration has finished."
 
       self.class.hooking.execute(:post)
       self.class.exit(exit_code)
