@@ -283,5 +283,17 @@ module Kafo
         _(YAML.load_file(KAFO_CONFIG)[:color_of_background]).must_equal "dark"
       end
     end
+
+    describe 'exit codes' do
+      it 'exit code should be set before post hooks' do
+        code, stdout, err = run_command '../bin/kafo-configure'
+
+        _(stdout).must_include "2"
+
+        code, stdout, err = run_command '../bin/kafo-configure'
+
+        _(stdout).must_include "0"
+      end
+    end
   end
 end
