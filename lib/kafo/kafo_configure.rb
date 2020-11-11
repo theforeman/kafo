@@ -465,7 +465,7 @@ module Kafo
         'show_diff' => true,
       )
 
-      exit_code   = 0
+      self.class.exit_handler.exit_code = 0
       exit_status = nil
       options     = [
           '--verbose',
@@ -493,12 +493,12 @@ module Kafo
                 Process.wait(pid)
               rescue Errno::ECHILD # process could exit meanwhile so we rescue
               end
-              exit_code = $?.exitstatus
+              self.class.exit_handler.exit_code = $?.exitstatus
             end
           end
         end
       rescue PTY::ChildExited => e # could be raised by Process.wait on older ruby or by PTY.check
-        exit_code = e.status.exitstatus
+        self.class.exit_handler.exit_code = e.status.exitstatus
       end
 
       @progress_bar.close if @progress_bar

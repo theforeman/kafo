@@ -51,6 +51,7 @@ def generate_installer
   config = YAML.load_file(KAFO_CONFIG)
   config[:log_dir] = INSTALLER_HOME
   File.open(KAFO_CONFIG, 'w') { |f| f.write(config.to_yaml) }
+  add_hooks
 end
 
 def add_manifest(name = 'basic')
@@ -71,4 +72,8 @@ end
 def add_metadata(name = 'basic')
   FileUtils.mkdir_p TEST_MODULE_PATH
   FileUtils.cp File.expand_path("../../fixtures/metadata/#{name}.json", __FILE__), File.join(TEST_MODULE_PATH, 'metadata.json')
+end
+
+def add_hooks
+  FileUtils.cp_r File.expand_path("../../fixtures/hooks", __FILE__), INSTALLER_HOME
 end
