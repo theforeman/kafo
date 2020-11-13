@@ -28,7 +28,14 @@ module Kafo
           KafoConfigure.config.app[:log_owner],
           KafoConfigure.config.app[:log_group]
         )
-        setup_verbose(level: KafoConfigure.config.app[:verbose_log_level] || level) if verbose
+        verbose_log_level = KafoConfigure.config.app[:verbose_log_level]
+        terminal_log_level = KafoConfigure.config.app[:terminal_log_level]
+        if !verbose_log_level.nil?
+          STDERR.puts '--verbose-log-level is deprecated and will be removed. Please use --terminal-log-level instead.'
+          setup_verbose(level: verbose_log_level || level) if verbose
+        else
+          setup_verbose(level: terminal_log_level || level) if verbose
+        end
       end
 
       def setup_file_logging(log_level, log_dir, log_owner, log_group)
