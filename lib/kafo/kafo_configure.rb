@@ -143,7 +143,7 @@ module Kafo
       # so we limit parsing only to app config options (because of --help and later defined params)
       parse clamp_app_arguments
       parse_app_arguments # set values from ARGS to config.app
-      Logging.setup(verbose: config.app[:verbose])
+      Logging.setup(verbose: config.app[:verbose]) unless ARGV.any? { |option| ['--help', '--full-help'].include? option }
       self.class.set_color_scheme
 
       self.class.hooking.execute(:init)

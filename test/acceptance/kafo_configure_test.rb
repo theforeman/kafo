@@ -18,6 +18,14 @@ module Kafo
         _(out).wont_include "--reset-"
         _(out).must_include "Use --full-help to view the complete list."
       end
+
+      it 'does not include log output with verbose mode' do
+        code, out, err = run_command '../bin/kafo-configure --help --verbose'
+        _(code).must_equal 0, err
+        _(out).must_include "Usage:"
+        _(out).wont_include "NOTICE"
+        _(out).wont_include "Executing hooks"
+      end
     end
 
     describe '--full-help' do
@@ -33,6 +41,14 @@ module Kafo
         _(out).must_match(/--testing-db-type\s*can be mysql or sqlite \(current: "mysql"\)/)
         _(out).must_match(/--reset-testing-db-type\s*Reset db_type to the default value \("mysql"\)/)
         _(out).wont_include "Use --full-help to view the complete list."
+      end
+
+      it 'does not include log output with verbose mode' do
+        code, out, err = run_command '../bin/kafo-configure --full-help --verbose'
+        _(code).must_equal 0, err
+        _(out).must_include "Usage:"
+        _(out).wont_include "NOTICE"
+        _(out).wont_include "Executing hooks"
       end
     end
 
