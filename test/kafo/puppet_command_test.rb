@@ -81,5 +81,45 @@ module Kafo
         specify { File.stub(:executable?, false) { _(pc).must_equal 'puppet' } }
       end
     end
+
+    describe '.is_aio_puppet?' do
+      subject do
+        PuppetCommand.stub(:format_command, puppet_command) do
+          PuppetCommand.is_aio_puppet?
+        end
+      end
+
+      describe 'with an absolute path' do
+        let(:puppet_command) { '/usr/bin/puppet' }
+
+        specify 'as a real file' do
+          File.stub(:realpath, ->(path) { path }) do
+            refute subject
+          end
+        end
+
+        specify 'as a symlink to AIO' do
+          File.stub(:realpath, '/opt/puppetlabs/puppet/bin/wrapper.sh') do
+            assert subject
+          end
+        end
+
+        specify 'as a broken symlink' do
+          File.stub(:realpath, ->(path) { raise Errno::ENOENT, 'No such file or directory' }) do
+            refute subject
+          end
+        end
+      end
+
+      describe 'with a relative path' do
+        let(:puppet_command) { 'puppet' }
+
+        specify 'non-existant' do
+          File.stub(:realpath, ->(path) { raise Errno::ENOENT, 'No such file or directory' }) do
+            refute subject
+          end
+        end
+      end
+    end
   end
 end
