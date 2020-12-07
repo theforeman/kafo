@@ -31,7 +31,7 @@ module Kafo
     end
 
     def list_available_scenarios
-      say ::HighLine.color("Available scenarios", :notice)
+      say ::HighLine.color("Available scenarios", :info)
       available_scenarios.each do |config_file, content|
         scenario = File.basename(config_file, '.yaml')
         use = (File.expand_path(config_file) == @previous_scenario ? 'INSTALLED' : "use: --scenario #{scenario}")
@@ -111,7 +111,7 @@ module Kafo
     end
 
     def show_scenario_diff(prev_scenario, new_scenario)
-      say ::HighLine.color("Scenarios are being compared, that may take a while...", :notice)
+      say ::HighLine.color("Scenarios are being compared, that may take a while...", :info)
       prev_conf = load_and_setup_configuration(prev_scenario)
       new_conf = load_and_setup_configuration(new_scenario)
       print_scenario_diff(prev_conf, new_conf)
