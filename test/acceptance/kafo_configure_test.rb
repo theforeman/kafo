@@ -52,6 +52,15 @@ module Kafo
       end
     end
 
+    describe '--list-scenarios' do
+      it 'lists scenarios' do
+        code, out, err = run_command '../bin/kafo-configure --list-scenarios --no-colors'
+        _(code).must_equal 0, err
+        _(out).must_include "Available scenarios"
+        _(out).must_include "default (use: --scenario default)"
+      end
+    end
+
     describe 'default args' do
       it 'must create file' do
         code, _, err = run_command '../bin/kafo-configure'
