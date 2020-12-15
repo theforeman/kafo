@@ -320,5 +320,13 @@ module Kafo
         _(stdout).must_include "0"
       end
     end
+
+    describe 'hooks ordering' do
+      it 'should execute hooks in globally sorted order' do
+        code, stdout, err = run_command '../bin/kafo-configure'
+
+        _(stdout).must_include "Runs before exit code hook in post\n2"
+      end
+    end
   end
 end
