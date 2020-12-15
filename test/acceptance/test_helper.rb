@@ -50,6 +50,7 @@ def generate_installer
   run_command "kafofy -c #{KAFO_CONFIG_DIR}", :dir => TMPDIR
   config = YAML.load_file(KAFO_CONFIG)
   config[:log_dir] = INSTALLER_HOME
+  config[:hook_dirs] = ['hooks', 'additional_hooks']
   File.open(KAFO_CONFIG, 'w') { |f| f.write(config.to_yaml) }
   add_hooks
 end
@@ -76,4 +77,5 @@ end
 
 def add_hooks
   FileUtils.cp_r File.expand_path("../../fixtures/hooks", __FILE__), INSTALLER_HOME
+  FileUtils.cp_r File.expand_path("../../fixtures/additional_hooks", __FILE__), INSTALLER_HOME
 end

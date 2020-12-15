@@ -48,11 +48,17 @@ module Kafo
     def execute(group, log_stage: true)
       logger = Logger.new(group)
       logger.notice "Executing hooks in group #{group}" if log_stage
-      self.hooks[group].keys.sort_by(&:to_s).each do |name|
+
+      sorted_hooks = self.hooks[group].keys.sort do |a, b|
+        File.basename(a.to_s) <=> File.basename(b.to_s)
+      end
+
+      sorted_hooks.each do |name|
         hook = self.hooks[group][name]
         result = HookContext.execute(self.kafo, logger, &hook)
         logger.debug "Hook #{name} returned #{result.inspect}"
       end
+
       logger.notice "All hooks in group #{group} finished" if log_stage
       @group = nil
     end
