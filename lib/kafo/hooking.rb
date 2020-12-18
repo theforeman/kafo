@@ -47,7 +47,7 @@ module Kafo
 
     def execute(group, log_stage: true)
       logger = Logger.new(group)
-      logger.notice "Executing hooks in group #{group}" if log_stage
+      logger.info "Executing hooks in group #{group}" if log_stage
 
       sorted_hooks = self.hooks[group].keys.sort do |a, b|
         File.basename(a.to_s) <=> File.basename(b.to_s)
@@ -59,7 +59,7 @@ module Kafo
         logger.debug "Hook #{name} returned #{result.inspect}"
       end
 
-      logger.notice "All hooks in group #{group} finished" if log_stage
+      logger.info "All hooks in group #{group} finished" if log_stage
       @group = nil
     end
 
