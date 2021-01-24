@@ -101,7 +101,7 @@ module Kafo
     describe '#migrate_configuration' do
 
       let(:keys) { [:log_dir, :log_name, :log_level, :no_prefix,
-          :colors, :color_of_background, :custom, :verbose_log_level] }
+          :colors, :color_of_background, :custom, :terminal_log_level] }
 
       before do
         (keys + [:description]).each { |key| old_config.app[key] = 'old value' }

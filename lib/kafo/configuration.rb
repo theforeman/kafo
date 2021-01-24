@@ -33,7 +33,7 @@ module Kafo
         :facts                => {},
         :low_priority_modules => [],
         :verbose              => false,
-        :verbose_log_level    => 'notice',
+        :terminal_log_level   => 'notice',
         :skip_puppet_version_check => false,
         :parser_cache_path    => nil,
         :ignore_undocumented  => nil,
@@ -173,7 +173,7 @@ module Kafo
     def migrate_configuration(from_config, options = {})
       keys_to_skip = options.fetch(:skip, [])
       keys = [:log_dir, :log_name, :log_level, :no_prefix,
-        :colors, :color_of_background, :custom, :verbose_log_level]
+        :colors, :color_of_background, :custom, :terminal_log_level]
       keys += options.fetch(:with, [])
       keys.each do |key|
         next if keys_to_skip.include?(key)

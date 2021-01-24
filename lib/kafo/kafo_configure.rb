@@ -333,7 +333,9 @@ module Kafo
                  :default => false, :advanced => true
       app_option ['-v', '--[no-]verbose'], :flag, 'Display log on STDOUT instead of progressbar',
                  :default => config.app[:verbose]
-      app_option ['-l', '--verbose-log-level'], 'LEVEL', 'Log level for verbose mode output',
+      app_option ['--verbose-log-level'], 'LEVEL', 'Log level for verbose mode output',
+                 :default => 'notice', :hidden => true
+      app_option ['-l', '--terminal-log-level'], 'LEVEL', 'Log level for verbose mode terminal output',
                  :default => 'notice'
       app_option ['-S', '--scenario'], 'SCENARIO', 'Use installation scenario'
       app_option ['--disable-scenario'], 'SCENARIO', 'Disable installation scenario',
