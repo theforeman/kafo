@@ -480,7 +480,7 @@ module Kafo
         start_message = <<-HEREDOC
 Starting system configuration.
   The total number of configuration tasks may increase during the run.
-  Observe logs or specify --verbose-log-level to see individual configuration tasks.
+  Observe logs or use `--verbose-log-level info` to see individual configuration tasks.
 HEREDOC
 
         logger.notice(start_message.chomp)
