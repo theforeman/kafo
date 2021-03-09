@@ -166,6 +166,10 @@ module Kafo
     def run(*args)
       started_at = Time.now
       logger.debug("Running installer with args #{args.inspect}")
+      if config.app[:verbose]
+        logger.notice("Running installer with log based terminal output at level #{config.app[:verbose_log_level].upcase}.")
+        logger.notice("Use -l to set the terminal output log level to ERROR, WARN, NOTICE, INFO, or DEBUG.")
+      end
       super
     ensure
       logger.debug("Installer finished in #{Time.now - started_at} seconds")
@@ -477,13 +481,7 @@ module Kafo
         log_parser = PuppetLogParser.new
         logger = Logger.new('configure')
 
-        start_message = <<-HEREDOC
-Starting system configuration.
-  The total number of configuration tasks may increase during the run.
-  Observe logs or use `--verbose-log-level info` to see individual configuration tasks.
-HEREDOC
-
-        logger.notice(start_message.chomp)
+        logger.notice("Starting system configuration.")
 
         PTY.spawn(*PuppetCommand.format_command(command)) do |stdin, stdout, pid|
           begin
