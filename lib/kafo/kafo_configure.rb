@@ -169,7 +169,7 @@ module Kafo
       logger.debug("Running installer with args #{args.inspect}")
       if config.app[:verbose]
         logger.notice("Running installer with log based terminal output at level #{config.app[:verbose_log_level].upcase}.")
-        logger.notice("Use -l to set the terminal output log level to ERROR, WARN, NOTICE, INFO, or DEBUG.")
+        logger.notice("Use -l to set the terminal output log level to ERROR, WARN, NOTICE, INFO, or DEBUG. See --full-help for definitions.")
       end
       super
     ensure
@@ -316,6 +316,25 @@ module Kafo
       self.class.app_option(*args, &block)
     end
 
+    def terminal_log_levels_message
+      if ARGV.include?('--full-help')
+        <<~HEREDOC.chomp
+          Log level for log based terminal output.
+          The available levels are
+          ERROR  - Only show errors which prevented the installer from completing successfully.
+          WARN   - Deprecation warnings and other information users may want to be aware of.
+          NOTICE - High level information about installer execution and progress.
+          INFO   - More detailed information about execution and progress. Also shows when the installer makes a change to system configuration.
+          DEBUG  - Show all information about execution, including configuration items where no change was needed.
+        HEREDOC
+      else
+        <<~HEREDOC.chomp
+          Log level for log based terminal output.
+          The available levels are ERROR, WARN, NOTICE, INFO, DEBUG. See --full-help for definitions.
+        HEREDOC
+      end
+    end
+
     def set_app_options
       app_option ['--[no-]colors'], :flag, 'Use color output on STDOUT',
                  :default => config.app[:colors], :advanced => true
@@ -338,7 +357,7 @@ module Kafo
                  :default => false, :advanced => true
       app_option ['-v', '--[no-]verbose'], :flag, 'Display log on STDOUT instead of progressbar',
                  :default => config.app[:verbose]
-      app_option ['-l', '--verbose-log-level'], 'LEVEL', 'Log level for verbose mode output',
+      app_option ['-l', '--verbose-log-level'], 'LEVEL', terminal_log_levels_message,
                  :default => 'notice'
       app_option ['-S', '--scenario'], 'SCENARIO', 'Use installation scenario'
       app_option ['--disable-scenario'], 'SCENARIO', 'Disable installation scenario',

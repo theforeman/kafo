@@ -17,13 +17,15 @@ module Kafo
         _(out).wont_include "--testing-db-type"
         _(out).wont_include "--reset-"
         _(out).must_include "Use --full-help to view the complete list."
+        _(out).must_include "The available levels are ERROR, WARN, NOTICE, INFO, DEBUG. See --full-help for definitions."
+        _(out).wont_include "High level information about installer execution and progress."
       end
 
       it 'does not include log output with verbose mode' do
         code, out, err = run_command '../bin/kafo-configure --help --verbose'
         _(code).must_equal 0, err
         _(out).must_include "Usage:"
-        _(out).wont_include "NOTICE"
+        _(out).wont_include "[NOTICE]"
         _(out).wont_include "Executing hooks"
       end
     end
@@ -41,13 +43,15 @@ module Kafo
         _(out).must_match(/--testing-db-type\s*can be mysql or sqlite \(current: "mysql"\)/)
         _(out).must_match(/--reset-testing-db-type\s*Reset db_type to the default value \("mysql"\)/)
         _(out).wont_include "Use --full-help to view the complete list."
+        _(out).wont_include "The available levels are ERROR, WARN, NOTICE, INFO, DEBUG. See --full-help for definitions."
+        _(out).must_include "High level information about installer execution and progress."
       end
 
       it 'does not include log output with verbose mode' do
         code, out, err = run_command '../bin/kafo-configure --full-help --verbose'
         _(code).must_equal 0, err
         _(out).must_include "Usage:"
-        _(out).wont_include "NOTICE"
+        _(out).wont_include "[NOTICE]"
         _(out).wont_include "Executing hooks"
       end
     end
