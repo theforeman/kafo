@@ -144,6 +144,7 @@ module Kafo
       parse clamp_app_arguments
       parse_app_arguments # set values from ARGS to config.app
       Logging.setup(verbose: config.app[:verbose]) unless ARGV.any? { |option| ['--help', '--full-help'].include? option }
+      logger.notice("Loading installer configuration. This will take some time.")
       self.class.set_color_scheme
 
       self.class.hooking.execute(:init)
@@ -444,7 +445,7 @@ module Kafo
     end
 
     def validate_all(logging = true)
-      logger.notice 'Running validation checks'
+      logger.info "Running validation checks."
       results = enabled_params.map do |param|
         result = param.valid?
         errors = param.validation_errors.join(', ')
@@ -491,8 +492,8 @@ module Kafo
               progress_log(method, message, logger)
 
               if (output = line.match(%r{(.+\]): Starting to evaluate the resource( \((?<count>\d+) of (?<total>\d+)\))?}))
-                if (output[:count].to_i % 100) == 1 && output[:count].to_i != 1
-                  logger.notice("#{output[:count].to_i - 1} out of #{output[:total]} done.")
+                if (output[:count].to_i % 250) == 1 && output[:count].to_i != 1
+                  logger.notice("#{output[:count].to_i - 1} configuration steps out of #{output[:total]} steps complete.")
                 end
               end
 
