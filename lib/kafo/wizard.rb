@@ -15,7 +15,7 @@ module Kafo
     OK = utf_support? ? '✓' : 'y'
     NO = utf_support? ? '✗' : 'n'
 
-    def initialize(kafo, input=$stdin, output=$stdout)
+    def initialize(kafo, input = $stdin, output = $stdout)
       @kafo   = kafo
       @config = kafo.config
       @name   = @config.app[:name] || 'Kafo'
