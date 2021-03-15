@@ -8,7 +8,4 @@ module Kafo
 
   class ParserError < StandardError
   end
-
-  class TypeError < StandardError
-  end
 end

@@ -2,7 +2,9 @@ module Kafo
   module DataTypes
     class Numeric < DataType
       def typecast(value)
-        value =~ /\d+/ ? value.to_f : value
+        Float(value)
+      rescue TypeError, ArgumentError
+        value
       end
 
       def valid?(input, errors = [])

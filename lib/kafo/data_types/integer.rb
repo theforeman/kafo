@@ -19,7 +19,9 @@ module Kafo
       end
 
       def typecast(value)
-        value =~ /\d+/ ? value.to_i : value
+        Integer(value)
+      rescue TypeError, ArgumentError
+        value
       end
 
       def valid?(input, errors = [])

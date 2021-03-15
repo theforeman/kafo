@@ -10,7 +10,7 @@ module Kafo
       describe "#typecast" do
         it { _(Numeric.new.typecast(1.1)).must_be_close_to 1.1 }
         it { _(Numeric.new.typecast('1.1')).must_be_close_to 1.1 }
-        it { _(Numeric.new.typecast('1foo')).must_be_close_to 1.0 }
+        it { _(Numeric.new.typecast('1foo')).must_equal '1foo' }
         it { _(Numeric.new.typecast('foo')).must_equal 'foo' }
       end
 

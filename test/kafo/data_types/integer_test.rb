@@ -17,7 +17,9 @@ module Kafo
       describe "#typecast" do
         it { _(Integer.new.typecast(1)).must_equal 1 }
         it { _(Integer.new.typecast('1')).must_equal 1 }
-        it { _(Integer.new.typecast('1foo')).must_equal 1 }
+        it { _(Integer.new.typecast('1.5')).must_equal '1.5' }
+        it { _(Integer.new.typecast(' 10 ')).must_equal 10 }
+        it { _(Integer.new.typecast('1foo')).must_equal '1foo' }
         it { _(Integer.new.typecast('foo')).must_equal 'foo' }
       end
 
