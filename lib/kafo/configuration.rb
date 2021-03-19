@@ -130,7 +130,7 @@ module Kafo
     def modules
       @modules ||= begin
         register_data_types
-        @data.keys.map { |mod| PuppetModule.new(mod, PuppetModule.find_parser, self).parse }.sort
+        @data.keys.map { |mod| PuppetModule.new(mod, configuration: self).parse }.sort
       end
     end
 
@@ -159,7 +159,7 @@ module Kafo
     end
 
     def add_module(name)
-      mod = PuppetModule.new(name, PuppetModule.find_parser, self).parse
+      mod = PuppetModule.new(name, configuration: self).parse
       unless modules.map(&:name).include?(mod.name)
         mod.enable
         @modules << mod
