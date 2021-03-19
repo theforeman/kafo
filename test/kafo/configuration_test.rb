@@ -161,7 +161,7 @@ module Kafo
 
     describe '#module' do
       it 'finds module by name' do
-        basic_config.stub(:modules, [PuppetModule.new('a', nil), PuppetModule.new('b', nil)]) do
+        basic_config.stub(:modules, [PuppetModule.new('a'), PuppetModule.new('b')]) do
           _(basic_config.module('b')).must_be_kind_of PuppetModule
           _(basic_config.module('c')).must_be_nil
         end

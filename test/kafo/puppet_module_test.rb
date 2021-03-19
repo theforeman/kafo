@@ -7,7 +7,7 @@ module Kafo
     end
 
     let(:parser) { TestParser.new(BASIC_MANIFEST) }
-    let(:mod) { PuppetModule.new 'puppet', parser }
+    let(:mod) { PuppetModule.new 'puppet', parser: parser }
 
     describe "#enabled?" do
       specify { _(mod.enabled?).must_equal true }
@@ -24,11 +24,11 @@ module Kafo
     end
 
     # Uses default Puppet autoloader locations
-    let(:plugin1_mod) { PuppetModule.new 'foreman::plugin::default_hostgroup', parser }
+    let(:plugin1_mod) { PuppetModule.new 'foreman::plugin::default_hostgroup', parser: parser }
     # BASIC_CONFIGURATION has mapping configured for this module
-    let(:plugin2_mod) { PuppetModule.new 'foreman::plugin::chef', parser }
+    let(:plugin2_mod) { PuppetModule.new 'foreman::plugin::chef', parser: parser }
     # BASIC_CONFIGURATION has mapping configured for this module
-    let(:certs_mod) { PuppetModule.new 'certs', parser }
+    let(:certs_mod) { PuppetModule.new 'certs', parser: parser }
 
     describe "#name" do
       specify { _(mod.name).must_equal 'puppet' }
@@ -94,7 +94,7 @@ module Kafo
           KafoConfigure.config.app[:ignore_undocumented] = true
         end
 
-        let(:mod) { PuppetModule.new 'puppet', TestParser.new(NO_DOC_MANIFEST) }
+        let(:mod) { PuppetModule.new 'puppet', parser: TestParser.new(NO_DOC_MANIFEST) }
         let(:docs) { parsed.params.map(&:doc) }
         specify { docs.each { |doc| _(doc).must_be_nil } }
       end
@@ -127,7 +127,12 @@ module Kafo
 
       describe "with nil parser and no cache" do
         let(:parser) { nil }
-        specify { _(Proc.new { parsed }).must_raise ParserError }
+
+        it do
+          PuppetModule.stub(:find_parser, nil) do
+            _(Proc.new { parsed }).must_raise ParserError
+          end
+        end
       end
 
       describe "without :none parser and no cache" do
@@ -182,7 +187,7 @@ module Kafo
       specify { _(advanced_params).wont_include('log_level') }
 
       describe "manifest without primary group" do
-        let(:mod_wo_prim) { @@mod_wo_prim ||= PuppetModule.new('puppet', TestParser.new(MANIFEST_WITHOUT_PRIMARY_GROUP)).parse }
+        let(:mod_wo_prim) { @@mod_wo_prim ||= PuppetModule.new('puppet', parser: TestParser.new(MANIFEST_WITHOUT_PRIMARY_GROUP)).parse }
         let(:primary_group) { mod_wo_prim.primary_parameter_group }
         specify { _(primary_group.params).must_be_empty }
         let(:children_group_names) { primary_group.children.map(&:name) }
@@ -191,7 +196,7 @@ module Kafo
       end
 
       describe "manifest without any group" do
-        let(:mod_wo_any) { @@mod_wo_any ||= PuppetModule.new('puppet', TestParser.new(MANIFEST_WITHOUT_ANY_GROUP)).parse }
+        let(:mod_wo_any) { @@mod_wo_any ||= PuppetModule.new('puppet', parser: TestParser.new(MANIFEST_WITHOUT_ANY_GROUP)).parse }
         let(:primary_group) { mod_wo_any.primary_parameter_group }
         let(:primary_params) { primary_group.params }
         specify { _(primary_params).wont_be_empty }

@@ -25,7 +25,7 @@ module Kafo
       end
     end
 
-    def initialize(identifier, parser = self.class.find_parser, configuration = KafoConfigure.config)
+    def initialize(identifier, parser: nil, configuration: KafoConfigure.config)
       @identifier        = identifier
       @configuration     = configuration
       @name              = get_name
@@ -65,6 +65,7 @@ module Kafo
     def parse(builder_klass = ParamBuilder)
       @raw_data = @parser_cache.get(identifier, manifest_path) if @parser_cache
       if @raw_data.nil?
+        @parser = self.class.find_parser if @parser.nil?
         if @parser.nil? || @parser == :none
           raise ParserError.new("No Puppet module parser is installed and no cache of the file #{manifest_path} is available. Please check debug logs and install optional dependencies for the parser.")
         else

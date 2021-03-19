@@ -63,7 +63,7 @@ module Kafo
       end
 
       let(:parser) { TestParser.new(BASIC_MANIFEST) }
-      let(:mod) { PuppetModule.new('puppet', parser) }
+      let(:mod) { PuppetModule.new('puppet', parser: parser) }
       let(:writer) { ParserCacheWriter.write([mod]) }
       let(:cache) { ParserCacheFactory.build(writer) }
 
