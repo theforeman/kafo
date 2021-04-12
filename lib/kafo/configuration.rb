@@ -188,7 +188,7 @@ module Kafo
         execution_env = ExecutionEnvironment.new(self)
         KafoConfigure.exit_handler.register_cleanup_path(execution_env.directory)
 
-        puppetconf = execution_env.configure_puppet('noop' => true)
+        puppetconf = execution_env.configure_puppet('noop' => true, 'hiera_config' => {})
 
         dump_manifest = <<EOS
           #{includes}
