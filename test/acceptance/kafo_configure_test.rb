@@ -215,7 +215,7 @@ module Kafo
 
     describe 'with module data' do
       before do
-        add_manifest('basic_module_data')
+        add_manifest
         add_module_data
       end
 

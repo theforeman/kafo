@@ -29,7 +29,6 @@
 #
 # @param file       filename
 #                   group: Advanced parameters, Sqlite
-#
 class testing(
   Any $version,
   Optional[Integer] $undef,
@@ -42,8 +41,8 @@ class testing(
   Boolean $remote,
   String $server,
   String $username,
-  Integer $pool_size,
-  Optional[String] $file) {
+  Integer $pool_size = $testing::params::pool_size,
+  Optional[String] $file) inherits testing::params {
 
   file { "${base_dir}/testing":
     ensure  => present,

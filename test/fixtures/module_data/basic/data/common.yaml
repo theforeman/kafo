@@ -1,7 +1,6 @@
 ---
 testing::base_dir: ~
 testing::db_type: 'mysql'
-testing::debug: true
 testing::file: ~
 testing::multiline: ~
 testing::multivalue:
@@ -14,3 +13,4 @@ testing::typed: true
 testing::undef: ~
 testing::username: 'root'
 testing::version: '1.0'
+testing::params::hiera_alias: "%{alias('testing::debug')}"

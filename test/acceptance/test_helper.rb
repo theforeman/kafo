@@ -5,7 +5,8 @@ tmp = File.expand_path('../../tmp', __FILE__)
 Dir.mkdir(tmp) unless File.exist?(tmp)
 TMPDIR = Dir.mktmpdir('kafo', tmp)
 INSTALLER_HOME = File.join(TMPDIR, 'installer')
-KAFO_CONFIG_DIR = File.join(INSTALLER_HOME, 'config', 'installer-scenarios.d')
+KAFO_CONFIG_DIR = File.join(INSTALLER_HOME, 'config')
+KAFO_SCENARIO_CONFIG_DIR = File.join(INSTALLER_HOME, 'config', 'installer-scenarios.d')
 KAFO_CONFIG = File.join(INSTALLER_HOME, 'config', 'installer-scenarios.d', 'default.yaml')
 KAFO_ANSWERS = File.join(INSTALLER_HOME, 'config', 'installer-scenarios.d', 'default-answers.yaml')
 TEST_MODULE_PATH = File.join(INSTALLER_HOME, 'modules', 'testing')
@@ -47,7 +48,7 @@ def generate_installer
   generate_gemfile
   FileUtils.cp Dir["#{TMPDIR}/Gemfile*"], INSTALLER_HOME
 
-  run_command "kafofy -c #{KAFO_CONFIG_DIR}", :dir => TMPDIR
+  run_command "kafofy -c #{KAFO_SCENARIO_CONFIG_DIR}", :dir => TMPDIR
   config = YAML.load_file(KAFO_CONFIG)
   config[:log_dir] = INSTALLER_HOME
   config[:hook_dirs] = ['hooks', 'additional_hooks']
@@ -58,6 +59,7 @@ end
 def add_manifest(name = 'basic')
   FileUtils.mkdir_p MANIFEST_PATH
   FileUtils.cp File.expand_path("../../fixtures/manifests/#{name}.pp", __FILE__), File.join(MANIFEST_PATH, 'init.pp')
+  FileUtils.cp File.expand_path("../../fixtures/manifests/params.pp", __FILE__), File.join(MANIFEST_PATH, 'params.pp')
   unless File.exist?(KAFO_ANSWERS) && File.read(KAFO_ANSWERS).include?('testing:')
     File.open(KAFO_ANSWERS, 'a') do |answers|
       answers.write "testing:\n  base_dir: #{INSTALLER_HOME}\n"
@@ -66,8 +68,8 @@ def add_manifest(name = 'basic')
 end
 
 def add_module_data(name = 'basic')
-  FileUtils.mkdir_p TEST_MODULE_PATH
-  FileUtils.cp_r File.expand_path("../../fixtures/module_data/#{name}", __FILE__) + '/.', TEST_MODULE_PATH
+  FileUtils.mkdir_p KAFO_CONFIG_DIR
+  FileUtils.cp_r File.expand_path("../../fixtures/module_data/#{name}", __FILE__) + '/.', KAFO_CONFIG_DIR
 end
 
 def add_metadata(name = 'basic')

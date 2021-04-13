@@ -1,6 +1,10 @@
 ---
-version: 4
-datadir: data
+version: 5
+defaults:
+  datadir: data
+  data_hash: yaml_data
 hierarchy:
+  - name: "Kafo Answers"
+    path: "%{facts.kafo.scenario.answer_file}"
   - name: "common"
-    backend: yaml
+    path: "common.yaml"

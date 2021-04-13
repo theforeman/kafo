@@ -40,9 +40,9 @@ class testing(
   Boolean $remote = true,
   $server = 'mysql.example.com',
   $username = 'root',
-  Integer $pool_size = 10,
+  Integer $pool_size = $testing::params::pool_size,
   $file = undef,
-  $base_dir = undef) {
+  $base_dir = undef) inherits testing::params {
 
   file { "${base_dir}/testing":
     ensure  => present,
