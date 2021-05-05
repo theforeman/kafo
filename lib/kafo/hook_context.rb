@@ -34,8 +34,8 @@ module Kafo
     #
     # @example
     #   app_option ['-n', '--noop'], :flag, 'Run puppet in noop mode?', :default => false
-    def app_option(*args)
-      self.kafo.class.app_option(*args)
+    def app_option(*args, &block)
+      self.kafo.class.app_option(*args, &block)
     end
 
     # Returns whether the given app option exists. This is useful when there's a conditional option that is
