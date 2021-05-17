@@ -18,7 +18,7 @@ module Kafo
     end
 
     describe '#wrapper' do
-      specify { _(subject.wrapper).must_equal("      require 'yaml'\n      Facter.add(:kafo) { setcode { YAML.load_file(File.join(__dir__, 'kafo.yaml')) } }\n") }
+      specify { _(subject.wrapper).must_equal("require 'yaml'\nFacter.add(:kafo) { setcode { YAML.load_file(File.join(__dir__, 'kafo.yaml')) } }\n") }
     end
   end
 end

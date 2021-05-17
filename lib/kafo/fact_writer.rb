@@ -14,10 +14,9 @@ module Kafo
     end
 
     def self.wrapper
-      # Ruby 2.0 doesn't have <<~ heredocs
-      <<-WRAPPER
-      require 'yaml'
-      Facter.add(:kafo) { setcode { YAML.load_file(File.join(__dir__, '#{DATA_FILENAME}')) } }
+      <<~WRAPPER
+        require 'yaml'
+        Facter.add(:kafo) { setcode { YAML.load_file(File.join(__dir__, '#{DATA_FILENAME}')) } }
       WRAPPER
     end
   end
