@@ -525,8 +525,8 @@ module Kafo
               @progress_bar.update(line) if @progress_bar
             end
           rescue Errno::EIO # we reach end of input
-            exit_status = PTY.check(pid, true) if PTY.respond_to?(:check) # ruby >= 1.9.2
-            if exit_status.nil? # process is still running or we have old ruby so we don't know
+            exit_status = PTY.check(pid, true)
+            if exit_status.nil? # process is still running
               begin
                 Process.wait(pid)
               rescue Errno::ECHILD # process could exit meanwhile so we rescue
@@ -535,7 +535,7 @@ module Kafo
             end
           end
         end
-      rescue PTY::ChildExited => e # could be raised by Process.wait on older ruby or by PTY.check
+      rescue PTY::ChildExited => e # could be raised by PTY.check
         self.class.exit_handler.exit_code = e.status.exitstatus
       end
 
@@ -564,11 +564,7 @@ module Kafo
     end
 
     def normalize_encoding(line)
-      if line.respond_to?(:encode) && line.respond_to?(:valid_encoding?)
-        line.valid_encoding? ? line : line.encode('UTF-16be', :invalid => :replace, :replace => '?').encode('UTF-8')
-      else  # Ruby 1.8.7, doesn't worry about invalid encodings
-        line
-      end
+      line.valid_encoding? ? line : line.encode('UTF-16be', :invalid => :replace, :replace => '?').encode('UTF-8')
     end
   end
 end
