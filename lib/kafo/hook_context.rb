@@ -114,6 +114,11 @@ module Kafo
       !mod.nil?
     end
 
+    # Check if --disable-system-checks was passed by the user
+    def disable_system_checks?
+      self.kafo.disable_system_checks?
+    end
+
     # You can trigger installer exit by this method. You must specify exit code as a first
     # argument. You can also specify a symbol alias which is built-in (see exit_handler.rb
     # for more details).
