@@ -1,0 +1,6 @@
+---
+class_a: true
+class_b:
+  key: value
+class_c: {}
+class_d: false

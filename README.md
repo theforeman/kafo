@@ -158,6 +158,32 @@ As you may have noticed there are several ways how to specify arguments. Here's 
   * values specified on CLI
   * interactive mode arguments
 
+## Answer File Schema
+
+The answer file schema can be described using Puppet types as such:
+
+```
+Hash[
+  String $puppet_class => Hash[
+    String $parameter => Enum[true, false, Hash[String, Variant[String, Boolean, Integer, Array, Hash]]]
+  ]
+]
+```
+
+An example of each available option:
+
+```
+class_a: true
+class_b: false
+class_c: {}
+class_d:
+  key: value
+  key2: 'value'
+  key3: false
+  key4: 1
+  key5: ['a', 'b']
+```
+
 ## Requirements
 
 Kafo is supported with Puppet versions 4.9+, 5 and 6. Puppet may be installed

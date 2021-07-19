@@ -464,9 +464,9 @@ module Kafo
       !!self.class.declared_options.find { |opt| opt.handles?(value) }
     end
 
-    def store_params(file = nil)
+    def store_params
       data = Hash[config.modules.map { |mod| [mod.identifier, mod.enabled? ? mod.params_hash : false] }]
-      config.store(data, file)
+      config.store(data)
     end
 
     def validate_all(logging = true)
