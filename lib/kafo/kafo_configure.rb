@@ -388,8 +388,11 @@ module Kafo
       end
 
       modules.each do |mod|
-        app_option d("--[no-]enable-#{mod.name}"), :flag, "Enable '#{mod.name}' puppet module",
-                   :default => mod.enabled?
+        if mod.can_disable?
+          app_option d("--[no-]enable-#{mod.name}"), :flag, "Enable '#{mod.name}' puppet module (current: #{mod.enabled?})", :default => mod.enabled?
+        elsif !mod.enabled?
+          app_option d("--enable-#{mod.name}"), :flag, "Enable '#{mod.name}' puppet module (current: #{mod.enabled?})"
+        end
       end
 
       params.sort.each do |param|

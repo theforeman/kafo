@@ -88,5 +88,7 @@ module Kafo
     # implements checks to verify this is correct with the Puppet version
     # that's running. This can be used to bypass the checks
     SKIP_PUPPET_VERSION_CHECK = :skip_puppet_version_check
+
+    CLASSES = :classes
   end
 end

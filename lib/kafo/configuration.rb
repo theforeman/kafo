@@ -43,6 +43,7 @@ module Kafo
       ScenarioOption::KAFO_MODULES_DIR          => nil,
       ScenarioOption::CONFIG_HEADER_FILE        => nil,
       ScenarioOption::DONT_SAVE_ANSWERS         => nil,
+      ScenarioOption::CLASSES                   => {},
     }
 
     def self.get_scenario_id(filename)
@@ -132,8 +133,15 @@ module Kafo
         register_data_types
 
         @data.map do |name, values|
+          if (class_config = app[:classes][name.to_sym])
+            can_disable = class_config[:can_disable] || false
+          else
+            can_disable = true
+          end
+
           enabled = !!values || values.is_a?(Hash)
-          puppet_mod = PuppetModule.new(name, configuration: self, enabled: enabled)
+
+          puppet_mod = PuppetModule.new(name, configuration: self, enabled: enabled, can_disable: can_disable)
           puppet_mod.parse
         end.sort
       end
