@@ -11,7 +11,7 @@ module Kafo
     let(:output) { StringIO.new }
 
     let(:parser) { @@puppet_parser ||= TestParser.new(BASIC_MANIFEST) }
-    let(:puppet_module) { PuppetModule.new('puppet', parser: parser).parse }
+    let(:puppet_module) { PuppetModule.new('puppet', parser: parser, enabled: true).parse }
 
     let(:kafo) do
       kafo                     = OpenStruct.new

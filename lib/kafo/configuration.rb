@@ -130,7 +130,12 @@ module Kafo
     def modules
       @modules ||= begin
         register_data_types
-        @data.keys.map { |mod| PuppetModule.new(mod, configuration: self).parse }.sort
+
+        @data.map do |name, values|
+          enabled = !!values || values.is_a?(Hash)
+          puppet_mod = PuppetModule.new(name, configuration: self, enabled: enabled)
+          puppet_mod.parse
+        end.sort
       end
     end
 
@@ -159,7 +164,7 @@ module Kafo
     end
 
     def add_module(name)
-      mod = PuppetModule.new(name, configuration: self).parse
+      mod = PuppetModule.new(name, configuration: self, enabled: false).parse
       unless modules.map(&:name).include?(mod.name)
         mod.enable
         @modules << mod
@@ -236,11 +241,6 @@ EOS
       value.is_a?(Hash) ? value : {}
     end
 
-    def module_enabled?(mod)
-      value = @data[mod.is_a?(String) ? mod : mod.identifier]
-      !!value || value.is_a?(Hash)
-    end
-
     def config_header
       files          = [app[:config_header_file], File.join(gem_root, '/config/config_header.txt')].compact
       file           = files.find { |f| File.exist?(f) }
@@ -295,7 +295,7 @@ EOS
     def params_missing(old_config)
       # finds params that are present but will be missing in the new config
       old_config.params.select do |par|
-        next if !par.module.enabled? || !module_enabled?(par.module.name)
+        next if !par.module.enabled?
         param(par.module.class_name, par.name).nil?
       end
     end

@@ -25,7 +25,7 @@ module Kafo
       end
     end
 
-    def initialize(identifier, parser: nil, configuration: KafoConfigure.config)
+    def initialize(identifier, parser: nil, configuration: KafoConfigure.config, enabled: nil)
       @identifier        = identifier
       @configuration     = configuration
       @name              = get_name
@@ -47,11 +47,11 @@ module Kafo
       @params_path       = get_params_path
       @params_class_name = get_params_class_name
       @raw_data          = nil
-      @enabled           = nil
+      @enabled           = enabled
     end
 
     def enabled?
-      @enabled.nil? ? @enabled = @configuration.module_enabled?(self) : @enabled
+      @enabled
     end
 
     def disable

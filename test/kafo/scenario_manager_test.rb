@@ -330,10 +330,8 @@ module Kafo
       it 'prints values that will be lost' do
         old_config.stub(:modules, [fake_module('mod', [p_old_baz])]) do
           new_config.stub(:modules, []) do
-            new_config.stub(:module_enabled?, true) do
-              manager.print_scenario_diff(old_config, new_config)
-              must_be_on_stdout(output, "mod::baz: 100\n")
-            end
+            manager.print_scenario_diff(old_config, new_config)
+            must_be_on_stdout(output, "mod::baz: 100\n")
           end
         end
       end
