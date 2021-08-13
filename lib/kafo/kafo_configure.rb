@@ -396,6 +396,7 @@ module Kafo
       end
 
       params.sort.each do |param|
+        next if param.module.excluded_param?(dashize(param.name))
         doc = param.doc.nil? ? 'UNDOCUMENTED' : param.doc.join("\n")
         app_option parametrize(param), '', doc + " (current: #{param.value_to_s})",
                    :multivalued => param.multivalued?

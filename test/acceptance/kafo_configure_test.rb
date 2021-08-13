@@ -376,6 +376,18 @@ module Kafo
         _(code).must_equal 0, err
         _(out).must_include "--enable-testing"
       end
+
+      it 'allows declaring parameters that should be excluded as command line options' do
+        config = YAML.load_file(KAFO_CONFIG)
+        config[:classes] = {:testing => {:exclude => ['version']}}
+        File.open(KAFO_CONFIG, 'w') do |file|
+          file.write(config.to_yaml)
+        end
+
+        code, out, err = run_command '../bin/kafo-configure --full-help'
+        _(code).must_equal 0, err
+        _(out).wont_include "--testing-version"
+      end
     end
   end
 end

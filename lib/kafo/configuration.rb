@@ -135,13 +135,21 @@ module Kafo
         @data.map do |name, values|
           if (class_config = app[:classes][name.to_sym])
             can_disable = class_config[:can_disable] || false
+            excluded_params = class_config[:exclude] || []
           else
             can_disable = true
+            excluded_params = []
           end
 
           enabled = !!values || values.is_a?(Hash)
 
-          puppet_mod = PuppetModule.new(name, configuration: self, enabled: enabled, can_disable: can_disable)
+          puppet_mod = PuppetModule.new(
+            name,
+            configuration: self,
+            enabled: enabled,
+            can_disable: can_disable,
+            excluded_params: excluded_params
+          )
           puppet_mod.parse
         end.sort
       end
