@@ -12,6 +12,18 @@ module Kafo
     # Path to answer file, if the file does not exist a $pwd/config/answers.yaml is used as a fallback
     ANSWER_FILE = :answer_file
 
+    # Hash containing different params files and their paths
+    PARAMS_FILES = :params_files
+
+    # Path to file that will store the default params
+    DEFAULT_PARAMS_FILE = :default_params_file
+
+    # Path to file that will store the user input params from the CLI
+    USER_PARAMS_FILE = :user_params_file
+
+    # Path to file that will store the user input params from the CLI
+    SCENARIO_DEFAULT_PARAMS_FILE = :scenario_default_params_file
+
     # Enable colors? If you don't touch this, we'll autodetect terminal capabilities
     COLORS = :colors
     # Color scheme, we support :bright and :dark (first is better for white background, dark for black background)

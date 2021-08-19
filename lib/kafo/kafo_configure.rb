@@ -155,7 +155,43 @@ module Kafo
 
       self.class.hooking.execute(:init)
       set_parameters # here the params gets parsed and we need app config populated
+      migrate_answers_to_user_params_file
       set_options
+    end
+
+    def migrate_answers_to_user_params_file
+      return unless config.app[:answer_file]
+      return if config.user_params_file.nil?
+      return if File.exist?(config.user_params_file)
+
+      enabled_modules = config.modules.select(&:enabled?)
+      default_params = Hash[enabled_modules.map { |mod| [mod.identifier, mod.default_params_hash] }]
+      default_params = default_params.reject { |key, value| !value.is_a?(Hash) }
+
+      user_params = Hash[config.modules.map { |mod| [mod.identifier, {}] }]
+
+      config.answers.each do |puppet_class, values|
+        if values.is_a?(Hash)
+          values.each do |param, value|
+            user_params[puppet_class][param] = value unless default_params[puppet_class][param] == value
+          end
+        else
+          user_params[puppet_class] = values unless default_params[puppet_class] == values
+        end
+      end
+
+      config.scenario_params.each do |puppet_class, values|
+        if values.is_a?(Hash)
+          values.each do |param, value|
+            user_params[puppet_class].delete(param) if user_params[puppet_class][param] == value
+          end
+        else
+          user_params.delete(puppet_class) if user_params[puppet_class] == values
+        end
+      end
+
+      config.store(user_params, config.user_params_file)
+      config.app[:answer_file].delete
     end
 
     def config
@@ -210,6 +246,8 @@ module Kafo
       self.class.hooking.execute(:pre_commit)
       unless dont_save_answers? || noop?
         config.configure_application
+        store_default_params
+        store_user_params
         store_params
         self.class.scenario_manager.link_last_scenario(self.class.config_file) if self.class.scenario_manager.configured?
       end
@@ -253,8 +291,8 @@ module Kafo
       config.modules.sort
     end
 
-    def module(name)
-      modules.detect { |m| m.name == name }
+    def module(identifier)
+      modules.detect { |m| m.identifier == identifier }
     end
 
     def param(mod, name)
@@ -457,6 +495,7 @@ module Kafo
           self.class.exit(:missing_argument)
         end
         param.value   = cli_value unless cli_value.nil?
+        param.user_value = cli_value unless cli_value.nil?
       end
     end
 
@@ -466,7 +505,31 @@ module Kafo
 
     def store_params(file = nil)
       data = Hash[config.modules.map { |mod| [mod.identifier, mod.enabled? ? mod.params_hash : false] }]
-      config.store(data, file)
+      config.store(data, config.answer_file)
+    end
+
+    def store_default_params
+      return unless config.default_params_file
+
+      data = Hash[enabled_params.map { |param| [param.identifier, param.default] }]
+      config.store(data, config.default_params_file, header: nil)
+    end
+
+    def store_user_params
+      return unless config.user_params_file
+      user_params = {}
+
+      config.scenario_params.each do |mod_name, params|
+        mod = self.module(mod_name)
+
+        next if mod.user_params_hash == false && params == false
+        next if mod.user_params_hash.empty? && params != false
+        next if mod.user_params_hash == params
+
+        user_params[mod.identifier] = mod.user_params_hash
+      end
+
+      config.store(user_params, config.user_params_file)
     end
 
     def validate_all(logging = true)
