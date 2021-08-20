@@ -134,7 +134,7 @@ module Kafo
     end
 
     def module(name)
-      modules.find { |m| m.name == name }
+      modules.find { |m| m.identifier == name }
     end
 
     def root_dir

@@ -204,7 +204,7 @@ def wont_be_on_stdout(output, *args)
 end
 
 def fake_module(mod_name, params)
-  OpenStruct.new( { :class_name => mod_name, :name => mod_name, :enabled? => true, :params => params } ).tap do |m|
+  OpenStruct.new( { :identifier => mod_name, :class_name => mod_name, :name => mod_name.gsub('::', '_'), :enabled? => true, :params => params } ).tap do |m|
     params.each { |p| p.module = m }
   end
 end
