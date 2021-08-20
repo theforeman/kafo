@@ -49,11 +49,11 @@ module Kafo
       File.basename(filename, '.yaml')
     end
 
-    def initialize(file, persist = true)
+    def initialize(file, persist = true, logger:)
       @config_file = file
       @persist = persist
       configure_application
-      @logger = KafoConfigure.logger
+      @logger = logger
 
       @answer_file = app[:answer_file]
       begin

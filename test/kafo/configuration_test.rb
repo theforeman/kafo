@@ -4,8 +4,9 @@ require 'yaml'
 module Kafo
   describe Configuration do
     let(:basic_config_file) { ConfigFileFactory.build('basic', BASIC_CONFIGURATION).path }
-    let(:basic_config) { Kafo::Configuration.new(basic_config_file, false) }
-    let(:old_config) { Kafo::Configuration.new(basic_config_file, false) }
+    let(:logger) { Kafo::KafoConfigure.logger }
+    let(:basic_config) { Kafo::Configuration.new(basic_config_file, false, logger: logger) }
+    let(:old_config) { Kafo::Configuration.new(basic_config_file, false, logger: logger) }
     let(:current_dir) { File.expand_path('.') }
 
     let(:p_foo) { fake_param('foo', 1) }
@@ -33,7 +34,7 @@ module Kafo
                   :answer_file => 'test/fixtures/basic_answers.yaml',
                   :log_dir => log_dir }
           config_file = ConfigFileFactory.build('log_dir', cfg.to_yaml).path
-          config = Kafo::Configuration.new(config_file, false)
+          config = Kafo::Configuration.new(config_file, false, logger: logger)
           assert_equal File.join(log_dir, 'configuration.log'), config.log_file
           refute config.log_exists?
           File.open(config.log_file, 'w') { |f| f.write 'non-empty-log' }
@@ -51,14 +52,14 @@ module Kafo
       it 'takes modules_dir' do
         cfg = { :modules_dir => './my_modules', :answer_file => 'test/fixtures/basic_answers.yaml'}
         config_file = ConfigFileFactory.build('modules_dir_single', cfg.to_yaml).path
-        config = Kafo::Configuration.new(config_file, false)
+        config = Kafo::Configuration.new(config_file, false, logger: logger)
         assert_equal [File.join(current_dir, 'my_modules')], config.module_dirs
       end
 
       it 'takes module_dirs' do
         cfg = { :module_dirs => ['./my_modules','./their_modules'] , :answer_file => 'test/fixtures/basic_answers.yaml'}
         config_file = ConfigFileFactory.build('module_dirs_plural', cfg.to_yaml).path
-        config = Kafo::Configuration.new(config_file, false)
+        config = Kafo::Configuration.new(config_file, false, logger: logger)
         assert_equal [File.join(current_dir, 'my_modules'), File.join(current_dir, 'their_modules')], config.module_dirs
       end
     end
