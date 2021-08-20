@@ -63,7 +63,6 @@ module Kafo
         KafoConfigure.exit(:no_answer_file)
       end
 
-      @config_dir = File.dirname(@config_file)
       @scenario_id = Configuration.get_scenario_id(@config_file)
     end
 
