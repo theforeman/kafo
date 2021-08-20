@@ -51,7 +51,7 @@ module Kafo
 
     def initialize(file, persist = true)
       @config_file = file
-      @persist     = persist
+      @persist = persist
       configure_application
       @logger = KafoConfigure.logger
 
@@ -100,7 +100,7 @@ module Kafo
           configuration = {}
         end
 
-        result            = DEFAULT.merge(configuration || {})
+        result = DEFAULT.merge(configuration || {})
         result[:module_dirs] = result[:modules_dir] || result[:module_dirs]
         result.delete(:modules_dir)
         result
@@ -242,8 +242,8 @@ EOS
     end
 
     def config_header
-      files          = [app[:config_header_file], File.join(gem_root, '/config/config_header.txt')].compact
-      file           = files.find { |f| File.exist?(f) }
+      files = [app[:config_header_file], File.join(gem_root, '/config/config_header.txt')].compact
+      file = files.find { |f| File.exist?(f) }
       @config_header ||= file.nil? ? '' : File.read(file)
     end
 
