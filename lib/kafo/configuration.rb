@@ -63,7 +63,7 @@ module Kafo
         KafoConfigure.exit(:no_answer_file)
       end
 
-      @scenario_id = Configuration.get_scenario_id(@config_file)
+      @scenario_id = self.class.get_scenario_id(@config_file)
     end
 
     def save_configuration(configuration)
