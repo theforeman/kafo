@@ -388,6 +388,18 @@ module Kafo
         _(code).must_equal 0, err
         _(out).wont_include "--testing-version"
       end
+
+      it 'allows declaring if a module is enabled' do
+        config = YAML.load_file(KAFO_CONFIG)
+        config[:classes] = {:testing => {:enabled => false}}
+        File.open(KAFO_CONFIG, 'w') do |file|
+          file.write(config.to_yaml)
+        end
+
+        code, out, err = run_command '../bin/kafo-configure --help'
+        _(code).must_equal 0, err
+        _(out).must_include "--[no-]enable-testing         Enable 'testing' puppet module (current: false)"
+      end
     end
   end
 end

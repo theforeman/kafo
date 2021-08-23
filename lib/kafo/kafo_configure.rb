@@ -446,7 +446,13 @@ module Kafo
 
     def parse_cli_arguments
       # enable/disable modules according to CLI
-      config.modules.each { |mod| send("enable_#{mod.name}?") ? mod.enable : mod.disable }
+      config.modules.each do |mod|
+        send("enable_#{mod.name}?") ? mod.enable : mod.disable
+
+        if config.app.dig(:classes, mod.identifier.to_sym)
+          config.app[:classes][mod.identifier.to_sym][:enabled] = true
+        end
+      end
 
       # set and reset values coming from CLI arguments
       params.each do |param|

@@ -134,14 +134,14 @@ module Kafo
 
         @data.map do |name, values|
           if (class_config = app[:classes][name.to_sym])
-            can_disable = class_config[:can_disable] || false
+            can_disable = class_config[:can_disable] || true
             excluded_params = class_config[:exclude] || []
+            enabled = class_config[:enabled]
           else
             can_disable = true
             excluded_params = []
+            enabled = !!values || values.is_a?(Hash)
           end
-
-          enabled = !!values || values.is_a?(Hash)
 
           puppet_mod = PuppetModule.new(
             name,
