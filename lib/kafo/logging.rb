@@ -118,7 +118,7 @@ module Kafo
 
       def dump_buffer
         @buffer.each do |log|
-          ::Logging.logger[log[0]].send(log[1], *([log[2]].flatten(2)), &log[3])
+          ::Logging.logger[log[0]].send(:log_event, log[1])
         end
         @buffer.clear
       end

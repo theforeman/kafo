@@ -13,7 +13,13 @@ module Kafo
 
     def log(level, *args, &block)
       if Logging.buffering?
-        Logging.to_buffer(@name, level, args, &block)
+        if block_given?
+          data = yield
+        else
+          data = args
+        end
+
+        Logging.to_buffer(@name, ::Logging::LogEvent.new(@name, ::Logging::LEVELS[level.to_s], data, false))
       else
         Logging.dump_buffer if Logging.dump_needed?
         @logger.send(level, *args, &block)
