@@ -6,7 +6,11 @@ module Kafo
     let(:module_name) { 'testing' }
     let(:manifest) { BASIC_MANIFEST }
     let(:parser) { TestParser.new(manifest) }
-    let(:mod) { PuppetModule.new(module_name, parser: parser, configuration: config) }
+    let(:mod) { PuppetModule.new(module_name, configuration: config) }
+
+    before do
+      config.instance_variable_set(:@parser, parser)
+    end
 
     describe "#enabled?" do
       specify { _(mod.enabled?).must_equal true }
@@ -23,11 +27,11 @@ module Kafo
     end
 
     # Uses default Puppet autoloader locations
-    let(:plugin1_mod) { PuppetModule.new('foreman::plugin::default_hostgroup', parser: parser, configuration: config) }
+    let(:plugin1_mod) { PuppetModule.new('foreman::plugin::default_hostgroup', configuration: config) }
     # BASIC_CONFIGURATION has mapping configured for this module
-    let(:plugin2_mod) { PuppetModule.new('foreman::plugin::chef', parser: parser, configuration: config) }
+    let(:plugin2_mod) { PuppetModule.new('foreman::plugin::chef', configuration: config) }
     # BASIC_CONFIGURATION has mapping configured for this module
-    let(:certs_mod) { PuppetModule.new('certs', parser: parser, configuration: config) }
+    let(:certs_mod) { PuppetModule.new('certs', configuration: config) }
 
     describe "#name" do
       specify { _(mod.name).must_equal 'testing' }
@@ -107,38 +111,10 @@ module Kafo
         describe "undocumented params" do
           it "does throw an error" do
             KafoConfigure.stub(:exit, 'expected to exit') do
-              _(mod.parse).must_equal 'expected to exit'
+              _(subject).must_equal 'expected to exit'
             end
           end
         end
-      end
-
-      describe "with parser cache" do
-        let(:parser_cache_factory) do
-          ParserCacheFactory.build({:files => {module_name => {:data => {:parameters => [], :groups => []}}}})
-        end
-        before do
-          config.app[:parser_cache_path] = parser_cache_factory.path
-        end
-
-        specify { _(subject.raw_data[:parameters]).must_equal [] }
-        specify { _(subject.raw_data[:groups]).must_equal [] }
-      end
-
-      describe "with nil parser and no cache" do
-        let(:parser) { nil }
-
-        specify do
-          PuppetModule.stub(:find_parser, nil) do
-            _(Proc.new { subject }).must_raise ParserError
-          end
-        end
-      end
-
-      describe "without :none parser and no cache" do
-        let(:parser) { :none }
-
-        specify { _(Proc.new { subject }).must_raise ParserError }
       end
     end
 
@@ -229,10 +205,10 @@ module Kafo
     end
 
     describe "#<=>" do
-      let(:a) { PuppetModule.new('a', parser: parser, configuration: config) }
-      let(:b) { PuppetModule.new('b', parser: parser, configuration: config) }
-      let(:c) { PuppetModule.new('c', parser: parser, configuration: config) }
-      let(:d) { PuppetModule.new('d', parser: parser, configuration: config) }
+      let(:a) { PuppetModule.new('a', configuration: config) }
+      let(:b) { PuppetModule.new('b', configuration: config) }
+      let(:c) { PuppetModule.new('c', configuration: config) }
+      let(:d) { PuppetModule.new('d', configuration: config) }
       let(:sorted) { [a, b, c, d] }
 
       specify { _([a, c, b, d].sort).must_equal sorted }

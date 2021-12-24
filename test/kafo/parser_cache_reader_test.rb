@@ -59,11 +59,13 @@ module Kafo
 
     describe "compatibility with writer" do
       before do
-        KafoConfigure.config = Configuration.new(ConfigFileFactory.build('basic', BASIC_CONFIGURATION).path)
+        KafoConfigure.config = config
+        config.stub(:parser, parser)
       end
 
+      let(:config) { Configuration.new(ConfigFileFactory.build('basic', BASIC_CONFIGURATION).path) }
       let(:parser) { TestParser.new(BASIC_MANIFEST) }
-      let(:mod) { PuppetModule.new('puppet', parser: parser) }
+      let(:mod) { PuppetModule.new('puppet') }
       let(:writer) { ParserCacheWriter.write([mod]) }
       let(:cache) { ParserCacheFactory.build(writer) }
 

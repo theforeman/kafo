@@ -212,6 +212,46 @@ module Kafo
           end
         end
       end
+
+      describe '#parse' do
+        describe "with parser cache" do
+          let(:module_name) { 'testing' }
+          let(:parser_cache_factory) do
+            ParserCacheFactory.build({:files => {module_name => {:data => {:parameters => [], :groups => []}}}})
+          end
+          before do
+            config.app[:parser_cache_path] = parser_cache_factory.path
+          end
+          subject { config.parse(module_name, '/path/to/manifest' }
+
+          specify { _(subject.raw_data[:parameters]).must_equal [] }
+          specify { _(subject.raw_data[:groups]).must_equal [] }
+        end
+      end
+
+      describe '#parser' do
+        subject { config.send(:parser) }
+
+        describe "with nil parser and no cache" do
+          before { config.instance_variable_set(:@parser, nil) }
+
+          it do
+            KafoParsers::Parsers.stub(:find_available, nil) do
+              _(subject).must_raise ParserError
+            end
+          end
+        end
+
+        describe "with :none parser cached" do
+          before { config.instance_variable_set(:@parser, :none) }
+
+          specify do
+            KafoParsers::Parsers.stub(:find_available, 'something') do
+              _(config.parser).must_raise ParserError
+            end
+          end
+        end
+      end
     end
   end
 end

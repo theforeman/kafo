@@ -12,6 +12,8 @@ else
 end
 
 gem 'puppet-strings', '>= 1.2.1'
+# https://github.com/theforeman/kafo_parsers/pull/49
+gem 'kafo_parsers', github: 'ekohl/kafo_parsers', branch: 'bulk-strings'
 
 group :puppet_module do
   gem 'metadata-json-lint'
