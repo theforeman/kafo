@@ -13,6 +13,9 @@ end
 
 gem 'puppet-strings', '>= 1.2.1'
 
+# Do not pull in Psych 4 since it's incompatible with Puppet
+gem 'rdoc', '< 6.4' if RUBY_VERSION < '3.1'
+
 group :puppet_module do
   gem 'metadata-json-lint'
   gem 'puppetlabs_spec_helper'
