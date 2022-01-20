@@ -24,6 +24,8 @@
 #                   group: Advanced parameters, MySQL
 # @param username   username
 #                   group: Advanced parameters, MySQL
+# @param password   password
+#                   group: Advanced parameters, MySQL
 # @param pool_size  DB pool size
 #                   group: Advanced parameters, MySQL
 #
@@ -42,6 +44,7 @@ class testing(
   Boolean $remote,
   String $server,
   String $username,
+  Sensitive[String[1]] $password,
   Integer $pool_size,
   Optional[String] $file) {
 

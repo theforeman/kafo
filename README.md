@@ -493,6 +493,39 @@ as key:value.
 When parsing the value, the first colon divides key and value. All other
 colons are ignored.
 
+## Sensitive arguments
+
+Puppet's `Sensitive` data type can be used as long as it's configured in Hiera
+too. Given the following manifest:
+
+```puppet
+class example (
+  Sensitive[String[1]] $password,
+) {
+```
+
+Here the following Hiera configuration is needed:
+```yaml
+lookup_options:
+  example::password:
+    convert_to: "Sensitive"
+```
+
+This is based on [Puppet's documentation](https://puppet.com/docs/puppet/6/securing-sensitive-data.html).
+
+Note that to provide a default inside the manifest inheritance must be used.
+
+`puppet
+class example (
+  Sensitive[String[1]] $password = $example::params::password,
+) inherits example::params {
+}
+
+class example::params {
+  $password = Sensitive('supersecret')
+}
+```
+
 ## Default values
 
 Default values for parameters are read from the class definitions in the

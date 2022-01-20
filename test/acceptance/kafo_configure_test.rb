@@ -5,6 +5,7 @@ module Kafo
     before do
       generate_installer
       add_manifest
+      add_module_data
     end
 
     describe '--help' do
@@ -216,7 +217,7 @@ module Kafo
     describe 'with module data' do
       before do
         add_manifest('basic_module_data')
-        add_module_data
+        add_module_data('basic_module_data')
       end
 
       it 'must create file' do

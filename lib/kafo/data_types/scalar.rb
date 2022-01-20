@@ -7,7 +7,7 @@ module Kafo
       def_delegators :@inner_type, :condition_value, :dump_default, :multivalued?, :typecast, :valid?
 
       def initialize
-        @inner_type = DataTypes::Variant.new('Integer', 'Float', 'String', 'Boolean', 'Regexp')
+        @inner_type = DataTypes::WrappedDataType.new('Integer', 'Float', 'String', 'Boolean', 'Regexp')
       end
     end
 

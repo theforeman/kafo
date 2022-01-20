@@ -1,6 +1,6 @@
 module Kafo
   module DataTypes
-    class Variant < DataType
+    class WrappedDataType < DataType
       def initialize(*inner_types)
         @inner_types = inner_types.map { |t| DataType.new_from_string(t) }
       end
@@ -45,6 +45,7 @@ module Kafo
       end
     end
 
-    DataType.register_type('Variant', Variant)
+    DataType.register_type('Sensitive', WrappedDataType)
+    DataType.register_type('Variant', WrappedDataType)
   end
 end

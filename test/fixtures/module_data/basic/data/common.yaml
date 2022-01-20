@@ -1,16 +1,4 @@
 ---
-testing::base_dir: ~
-testing::db_type: 'mysql'
-testing::debug: true
-testing::file: ~
-testing::multiline: ~
-testing::multivalue:
-  - 'x'
-  - 'y'
-testing::pool_size: 10
-testing::remote: true
-testing::server: 'mysql.example.com'
-testing::typed: true
-testing::undef: ~
-testing::username: 'root'
-testing::version: '1.0'
+lookup_options:
+  testing::password:
+    convert_to: "Sensitive"

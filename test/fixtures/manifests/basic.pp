@@ -23,6 +23,7 @@
 # $server::          hostname
 #                    condition: $remote
 # $username::        username
+# $password::        password
 # $pool_size::       DB pool size
 #
 # ==== Sqlite        condition: $db_type == 'sqlite'
@@ -40,6 +41,7 @@ class testing(
   Boolean $remote = true,
   $server = 'mysql.example.com',
   $username = 'root',
+  Sensitive[String[1]] $password = Sensitive('supersecret'),
   Integer $pool_size = 10,
   $file = undef,
   $base_dir = undef) {
