@@ -8,6 +8,12 @@ Puppet::Functions.create_function(:'kafo_configure::dump_variables') do
 
   def dump_variables(variables)
     scope = closure_scope
-    Hash[variables.map { |var| [var, scope[var]] }]
+    Hash[variables.map { |var| [var, unwrap(scope[var])] }]
+  end
+
+  private
+
+  def unwrap(value)
+    value.respond_to?(:unwrap) ? value.unwrap : value
   end
 end

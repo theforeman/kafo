@@ -10,6 +10,13 @@ Puppet::Functions.create_function(:'kafo_configure::dump_lookups') do
   end
 
   def dump_lookups(parameters)
-    Hash[parameters.map { |param| [param, call_function('lookup', [param], 'default_value' => nil)] }]
+    Hash[parameters.map { |param| [param, lookup(param)] }]
+  end
+
+  private
+
+  def lookup(param)
+    value = call_function('lookup', [param], 'default_value' => nil)
+    value.respond_to?(:unwrap) ? value.unwrap : value
   end
 end

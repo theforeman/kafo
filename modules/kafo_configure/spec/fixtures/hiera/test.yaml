@@ -2,3 +2,8 @@
 classes:
   - dummy
 my_module::param: override
+my_module::password: batteryhorsestaple
+
+lookup_options:
+  my_module::password:
+    convert_to: "Sensitive"
