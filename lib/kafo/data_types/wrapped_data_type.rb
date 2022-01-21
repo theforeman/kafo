@@ -16,7 +16,7 @@ module Kafo
       end
 
       def multivalued?
-        @inner_types.any? { |t| t.multivalued? }
+        @inner_types.any?(&:multivalued?)
       end
 
       def to_s
@@ -33,7 +33,7 @@ module Kafo
         if type
           type.valid?(value, errors)
         else
-          errors << "#{value} is not one of #{to_s}"
+          errors << "#{value} is not one of #{self}"
           false
         end
       end
