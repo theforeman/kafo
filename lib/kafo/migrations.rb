@@ -36,10 +36,10 @@ module Kafo
         short_name = File.basename(filename.to_s)
         KafoConfigure.logger.debug "Executing migration: #{scenario[:name]}::#{short_name}"
         migration = @migrations[filename]
-        scenario, answers = Kafo::MigrationContext.execute(short_name, scenario, answers, &migration)
-        applied << short_name
+        scenario, answers, keep_migration = Kafo::MigrationContext.execute(short_name, scenario, answers, &migration)
+        applied << short_name unless keep_migration
       end
-      return scenario, answers
+      scenario, answers
     end
 
     def store_applied

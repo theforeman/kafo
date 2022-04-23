@@ -8,7 +8,7 @@ module Kafo
     def self.execute(migration_name, scenario, answers, &migration)
       context = new(migration_name, scenario, answers)
       context.instance_eval(&migration)
-      return context.scenario, context.answers
+      return context.scenario, context.answers, context.keep_migration?
     end
 
     def initialize(migration_name, scenario, answers)
@@ -30,8 +30,25 @@ module Kafo
       @migration_name
     end
 
+    def self.keep_migration?
+      keep_migration?
+    end
+
+    def self.keep_migration
+      logger.debug "Migration #{migration_name} has been marked for keeping. "\
+      "It may update configuration and answers, but it will not be written to "\
+      "applied migrations."
+      @keep_migration = true
+    end
+
+    private
+
     def logger
       @logger
+    end
+
+    def keep_migration?
+      !!@keep_migration
     end
   end
 end
