@@ -515,7 +515,7 @@ This is based on [Puppet's documentation](https://puppet.com/docs/puppet/6/secur
 
 Note that to provide a default inside the manifest inheritance must be used.
 
-`puppet
+```puppet
 class example (
   Sensitive[String[1]] $password = $example::params::password,
 ) inherits example::params {
