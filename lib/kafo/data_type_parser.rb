@@ -10,7 +10,7 @@ module Kafo
       @logger = KafoConfigure.logger
       @types = {}
       manifest.each_line do |line|
-        if (type = TYPE_DEFINITION.match(line))
+        if (type = TYPE_DEFINITION.match(line.force_encoding("UTF-8")))
           @types[type[1]] = type[2]
         end
       end
