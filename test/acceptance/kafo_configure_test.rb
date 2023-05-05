@@ -316,11 +316,11 @@ module Kafo
 
     describe 'exit codes' do
       it 'exit code should be set before post hooks' do
-        code, stdout, err = run_command '../bin/kafo-configure'
+        _code, stdout, _err = run_command '../bin/kafo-configure'
 
         _(stdout).must_include "2"
 
-        code, stdout, err = run_command '../bin/kafo-configure'
+        _code, stdout, _err = run_command '../bin/kafo-configure'
 
         _(stdout).must_include "0"
       end
@@ -328,7 +328,7 @@ module Kafo
 
     describe 'hooks ordering' do
       it 'should execute hooks in globally sorted order' do
-        code, stdout, err = run_command '../bin/kafo-configure'
+        _code, stdout, _err = run_command '../bin/kafo-configure'
 
         _(stdout).must_include "Runs before exit code hook in post\n2"
       end
@@ -336,7 +336,7 @@ module Kafo
 
     describe 'multi-stage hooks' do
       it 'should execute multi-stage hooks' do
-        code, stdout, err = run_command '../bin/kafo-configure --print-hello-kafo'
+        _code, stdout, _err = run_command '../bin/kafo-configure --print-hello-kafo'
 
         _(stdout).must_include "Hello Kafo\nGoodbye"
       end
