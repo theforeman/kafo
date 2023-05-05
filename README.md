@@ -160,9 +160,8 @@ As you may have noticed there are several ways how to specify arguments. Here's 
 
 ## Requirements
 
-Kafo is supported with Puppet versions 4.9+, 5 and 6. Puppet may be installed
-as a gem (add it to Gemfile) or through a package, including official AIO
-packages.
+Kafo is supported with Puppet version 7. Puppet may be installed as a gem (add
+it to Gemfile) or through a package, including official AIO packages.
 
 ## How do I report bugs or contribute?
 
