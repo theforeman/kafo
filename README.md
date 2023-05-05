@@ -207,13 +207,12 @@ When using Puppet via a Gemfile, Bundler should set up PATH to point at the
 gem version. If using a system/packaged version, it will typically find and
 execute /usr/bin/puppet from the regular PATH.
 
-When using an AIO/PC1 packaged version of Puppet, other versions of Puppet from
+When using an AIO packaged version of Puppet, other versions of Puppet from
 PATH will be preferred if they exist, so they should either be removed or PATH
 set to prefer /opt/puppetlabs/bin, i.e. `export PATH=/opt/puppetlabs/bin:$PATH`.
 Debug logs from Kafo should indicate the full path of the binary used.
 
-Note that Kafo parsers supports specific versions of Puppet, and may require
-extra modules (such as puppet-strings on Puppet 4+) to parse manifests.
+Note that Kafo parsers relies on puppet-strings to parse manifests.
 
 ## Parameters prefixes
 
@@ -728,7 +727,7 @@ If you use "params_path" for this purpose, "params_name" is ignored.
 
 ## Validations
 
-If class parameters are declared with Puppet 4 data types then Kafo will
+If class parameters are declared with Puppet data types then Kafo will
 validate user inputs against Puppet's type validation rules.
 
 ## Enabling or disabling module

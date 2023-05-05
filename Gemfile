@@ -8,7 +8,7 @@ gem 'json_pure'
 if ENV['PUPPET_VERSION']
   gem 'puppet', "~> #{ENV['PUPPET_VERSION']}"
 else
-  gem 'puppet', '>= 4.5.0', '< 8.0.0'
+  gem 'puppet', '>= 7.0.0', '< 8.0.0'
 end
 
 gem 'puppet-strings', '>= 1.2.1'
