@@ -304,7 +304,7 @@ module Kafo
       store = Store.new()
       store_path = self.class.config.app[:store_dir]
       store_path = File.expand_path(File.join(CONFIG_DIR, '../store.d')) if store_path.empty? && defined?(CONFIG_DIR)
-      store.add_dir(store_path) if File.exists?(store_path)
+      store.add_dir(store_path) if File.exist?(store_path)
       store
     end
 
@@ -556,10 +556,10 @@ module Kafo
     end
 
     def config_file
-      return CONFIG_FILE if defined?(CONFIG_FILE) && File.exists?(CONFIG_FILE)
+      return CONFIG_FILE if defined?(CONFIG_FILE) && File.exist?(CONFIG_FILE)
       return self.class.scenario_manager.select_scenario if self.class.scenario_manager.configured?
-      return '/etc/kafo/kafo.yaml' if File.exists?('/etc/kafo/kafo.yaml')
-      return "#{::RbConfig::CONFIG['sysconfdir']}/kafo/kafo.yaml" if File.exists?("#{::RbConfig::CONFIG['sysconfdir']}/kafo/kafo.yaml")
+      return '/etc/kafo/kafo.yaml' if File.exist?('/etc/kafo/kafo.yaml')
+      return "#{::RbConfig::CONFIG['sysconfdir']}/kafo/kafo.yaml" if File.exist?("#{::RbConfig::CONFIG['sysconfdir']}/kafo/kafo.yaml")
       File.join(Dir.pwd, 'config', 'kafo.yaml')
     end
 
