@@ -36,7 +36,7 @@ module Kafo
       if @configuration.module_dirs.count == 1
         module_dir       = @configuration.module_dirs.first
       else
-        module_dir         = @configuration.module_dirs.find { |dir| File.exists?(File.join(dir, module_manifest_path)) } ||
+        module_dir         = @configuration.module_dirs.find { |dir| File.exist?(File.join(dir, module_manifest_path)) } ||
           warn("Manifest #{module_manifest_path} was not found in #{@configuration.module_dirs.join(', ')}")
       end
       @manifest_path     = File.join(module_dir, module_manifest_path)

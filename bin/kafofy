@@ -47,7 +47,7 @@ end
 
 # Create default config file
 puts "creating #{options[:config_file]} as a default scenario file"
-if !File.exists?(options[:config_file])
+if !File.exist?(options[:config_file])
   puts "... creating config file #{options[:config_file]}"
   FileUtils.touch options[:config_file]
   File.chmod 0600, options[:config_file]
@@ -61,7 +61,7 @@ end
 # Installer script
 script_name = "bin/#{options[:name]}"
 puts "... creating #{script_name}"
-if !File.exists?(script_name)
+if !File.exist?(script_name)
   content = <<EOS
 #!/usr/bin/env ruby
 require 'rubygems'
