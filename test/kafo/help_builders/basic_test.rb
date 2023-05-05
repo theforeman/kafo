@@ -50,7 +50,7 @@ module Kafo
       # note that these test do not preserve any order
       describe "#add_list" do
         before { builder.add_list('Options', clamp_definitions) }
-        let(:output) { stdout.rewind; stdout.read }
+        let(:output) { builder.string }
         specify { _(output).must_include 'Options' }
         specify { _(output).must_include '= Generic:' }
         specify { _(output).must_include '--no-colors' }
@@ -128,7 +128,7 @@ module Kafo
       describe "#add_list" do
         before { builder.add_list('Options', clamp_definitions) }
 
-        let(:output) { stdout.rewind; stdout.read }
+        let(:output) { builder.string }
 
         specify { _(output).must_include 'Options' }
         specify { _(output).must_include '= Generic:' }

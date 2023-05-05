@@ -17,7 +17,7 @@ module Kafo
       def add_list(heading, items)
         return if items.empty?
         if heading == 'Options'
-          puts "\n#{heading}:"
+          line "\n#{heading}:"
 
           data = by_module(items)
 

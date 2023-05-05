@@ -41,7 +41,7 @@ module Kafo
       describe "#add_list" do
         describe "multi group output" do
           before { builder.add_list('Options', clamp_definitions) }
-          let(:output) { stdout.rewind; stdout.read }
+          let(:output) { builder.string }
           specify { _(output).must_include 'Options' }
           specify { _(output).must_include '= Generic:' }
           specify { _(output).must_include '--no-colors' }
@@ -61,7 +61,7 @@ module Kafo
 
         describe "single group output" do
           before { builder.add_list('Options', clamp_definitions[4..6]) }
-          let(:output) { stdout.rewind; stdout.read }
+          let(:output) { builder.string }
           specify { _(output).must_include 'Options' }
           specify { _(output).must_include '= Generic:' }
           specify { _(output).must_include '--no-colors' }
@@ -77,7 +77,7 @@ module Kafo
 
         describe "no group" do
           before { builder.add_list('Options', clamp_definitions[6..6]) }
-          let(:output) { stdout.rewind; stdout.read }
+          let(:output) { builder.string }
           specify { _(output).must_include 'Options' }
           specify { _(output).must_include '= Generic:' }
           specify { _(output).must_include '--no-colors' }
@@ -141,7 +141,7 @@ module Kafo
       describe "#add_list" do
         before { builder.add_list('Options', clamp_definitions) }
 
-        let(:output) { stdout.rewind; stdout.read }
+        let(:output) { builder.string }
 
         specify { _(output).must_include 'Options' }
         specify { _(output).must_include '= Generic:' }
