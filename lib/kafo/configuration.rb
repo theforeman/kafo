@@ -6,6 +6,7 @@ require 'kafo/color_scheme'
 require 'kafo/data_type_parser'
 require 'kafo/execution_environment'
 require 'kafo/scenario_option'
+require 'kafo/answer_file'
 
 module Kafo
   class Configuration
@@ -43,6 +44,7 @@ module Kafo
       ScenarioOption::KAFO_MODULES_DIR          => nil,
       ScenarioOption::CONFIG_HEADER_FILE        => nil,
       ScenarioOption::DONT_SAVE_ANSWERS         => nil,
+      ScenarioOption::ANSWER_FILE_VERSION       => 1,
     }
 
     def self.get_scenario_id(filename)
@@ -55,13 +57,23 @@ module Kafo
       configure_application
       @logger = KafoConfigure.logger
 
-      @answer_file = app[:answer_file]
       begin
-        @data = load_yaml_file(@answer_file)
+        @answer_file = AnswerFile.load_answers(app[:answer_file], app[:answer_file_version] || 1)
       rescue Errno::ENOENT
-        puts "No answer file at #{@answer_file} found, can not continue"
-        KafoConfigure.exit(:no_answer_file)
+        KafoConfigure.exit(:no_answer_file) do
+          @logger.error "No answer file found at #{app[:answer_file]}"
+        end
+      rescue InvalidAnswerFileVersion
+        KafoConfigure.exit(:invalid_values) do
+          @logger.error "Unsupported answer file version"
+        end
+      rescue InvalidAnswerFile => error
+        KafoConfigure.exit(:invalid_values) do
+          @logger.error(error.message)
+        end
       end
+
+      @answers = @answer_file.answers
 
       @config_dir = File.dirname(@config_file)
       @scenario_id = Configuration.get_scenario_id(@config_file)
@@ -95,7 +107,7 @@ module Kafo
     def app
       @app ||= begin
         begin
-          configuration = load_yaml_file(@config_file)
+          configuration = YAML.load_file(@config_file)
         rescue
           configuration = {}
         end
@@ -130,7 +142,7 @@ module Kafo
     def modules
       @modules ||= begin
         register_data_types
-        @data.keys.map { |mod| PuppetModule.new(mod, configuration: self).parse }.sort
+        @answer_file.puppet_classes.map { |mod| PuppetModule.new(mod, configuration: self).parse }.sort
       end
     end
 
@@ -231,27 +243,22 @@ EOS
 
     # if a value is a true we return empty hash because we have no specific options for a
     # particular puppet module
-    def [](key)
-      value = @data[key]
-      value.is_a?(Hash) ? value : {}
+    def [](puppet_class)
+      @answer_file.parameters_for_class(puppet_class)
     end
 
-    def module_enabled?(mod)
-      value = @data[mod.is_a?(String) ? mod : mod.identifier]
-      !!value || value.is_a?(Hash)
+    def module_enabled?(puppet_class)
+      @answer_file.class_enabled?(puppet_class)
     end
 
     def config_header
-      files          = [app[:config_header_file], File.join(gem_root, '/config/config_header.txt')].compact
-      file           = files.find { |f| File.exist?(f) }
+      files = [app[:config_header_file], File.join(gem_root, '/config/config_header.txt')].compact
+      file = files.find { |f| File.exist?(f) }
       @config_header ||= file.nil? ? '' : File.read(file)
     end
 
-    def store(data, file = nil)
-      filename = file || answer_file
-      FileUtils.touch filename
-      File.chmod 0600, filename
-      File.open(filename, 'w') { |f| f.write(config_header + format(YAML.dump(data))) }
+    def store(answers)
+      @answer_file.save(answers, config_header)
     end
 
     def params
@@ -322,11 +329,11 @@ EOS
 
     def run_migrations
       migrations = Kafo::Migrations.new(migrations_dir)
-      @app, @data = migrations.run(app, answers)
+      @app, @answers = migrations.run(app, @answers)
       if migrations.migrations.count > 0
         @modules = nil # force the lazy loaded modules to reload next time they are used
         save_configuration(app)
-        store(answers)
+        store(@answers)
         migrations.store_applied
         @logger.notice("#{migrations.migrations.count} migration/s were applied. Updated configuration was saved.")
       end
@@ -374,10 +381,6 @@ EOS
 
     def format(data)
       data.gsub('!ruby/sym ', ':')
-    end
-
-    def load_yaml_file(filename)
-      YAML.load_file(filename)
     end
 
     # Loads YAML from mixed output, finding the "---" and "..." document start/end delimiters

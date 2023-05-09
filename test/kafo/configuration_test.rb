@@ -213,5 +213,22 @@ module Kafo
         end
       end
     end
+
+    describe 'invalid answer file' do
+      let(:answer_file_path) { 'test/fixtures/answer_files/v1/invalid-answers.yaml' }
+      let(:dummy_logger) { DummyLogger.new }
+      let(:config_file) { ConfigFileFactory.build('invalid-answer', {:answer_file => answer_file_path}.to_yaml).path }
+
+      before do
+        Kafo::KafoConfigure.logger = dummy_logger
+      end
+
+      it 'exits with invalid_answer_file' do
+        must_exit_with_code(21) { Kafo::Configuration.new(config_file, false) }
+
+        dummy_logger.rewind
+        _(dummy_logger.error.read).must_match(%r{Answer file at\s.*\shas invalid values for class_a, class_b, class_c. Please ensure they are either a hash or true/false.\n})
+      end
+    end
   end
 end

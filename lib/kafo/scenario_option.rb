@@ -12,6 +12,9 @@ module Kafo
     # Path to answer file, if the file does not exist a $pwd/config/answers.yaml is used as a fallback
     ANSWER_FILE = :answer_file
 
+    # The version of the answer file schema being used
+    ANSWER_FILE_VERSION = :answer_file_version
+
     # Enable colors? If you don't touch this, we'll autodetect terminal capabilities
     COLORS = :colors
     # Color scheme, we support :bright and :dark (first is better for white background, dark for black background)

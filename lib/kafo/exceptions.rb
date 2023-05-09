@@ -8,4 +8,10 @@ module Kafo
 
   class ParserError < StandardError
   end
+
+  class InvalidAnswerFileVersion < StandardError
+  end
+
+  class InvalidAnswerFile < StandardError
+  end
 end
