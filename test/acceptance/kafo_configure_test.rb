@@ -341,5 +341,66 @@ module Kafo
         _(stdout).must_include "Hello Kafo\nGoodbye"
       end
     end
+
+    describe 'with classes' do
+      it 'includes enable flag by default' do
+        code, out, err = run_command '../bin/kafo-configure --help'
+        _(code).must_equal 0, err
+        _(out).must_include "--[no-]enable-testing"
+      end
+
+      it 'does not show disable flag if class cannot be disabled' do
+        config = YAML.load_file(KAFO_CONFIG)
+        config[:classes] = {:testing => {:can_disable => false}}
+        File.open(KAFO_CONFIG, 'w') do |file|
+          file.write(config.to_yaml)
+        end
+
+        code, out, err = run_command '../bin/kafo-configure --help'
+        _(code).must_equal 0, err
+        _(out).wont_include "--[no-]enable-testing"
+      end
+
+      it 'shows enable flag if class is disabled' do
+        config = YAML.load_file(KAFO_CONFIG)
+        config[:classes] = {:testing => {:can_disable => false}}
+        File.open(KAFO_CONFIG, 'w') do |file|
+          file.write(config.to_yaml)
+        end
+
+        answers = {'testing' => false}
+        File.open(KAFO_ANSWERS, 'w') do |file|
+          file.write(answers.to_yaml)
+        end
+
+        code, out, err = run_command '../bin/kafo-configure --help'
+        _(code).must_equal 0, err
+        _(out).must_include "--enable-testing"
+      end
+
+      it 'allows declaring parameters that should be excluded as command line options' do
+        config = YAML.load_file(KAFO_CONFIG)
+        config[:classes] = {:testing => {:exclude => ['version']}}
+        File.open(KAFO_CONFIG, 'w') do |file|
+          file.write(config.to_yaml)
+        end
+
+        code, out, err = run_command '../bin/kafo-configure --full-help'
+        _(code).must_equal 0, err
+        _(out).wont_include "--testing-version"
+      end
+
+      it 'allows declaring if a module is enabled' do
+        config = YAML.load_file(KAFO_CONFIG)
+        config[:classes] = {:testing => {:enabled => false}}
+        File.open(KAFO_CONFIG, 'w') do |file|
+          file.write(config.to_yaml)
+        end
+
+        code, out, err = run_command '../bin/kafo-configure --help'
+        _(code).must_equal 0, err
+        _(out).must_include "--[no-]enable-testing         Enable 'testing' puppet module (current: false)"
+      end
+    end
   end
 end

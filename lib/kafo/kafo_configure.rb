@@ -388,11 +388,15 @@ module Kafo
       end
 
       modules.each do |mod|
-        app_option d("--[no-]enable-#{mod.name}"), :flag, "Enable '#{mod.name}' puppet module",
-                   :default => mod.enabled?
+        if mod.can_disable?
+          app_option d("--[no-]enable-#{mod.name}"), :flag, "Enable '#{mod.name}' puppet module (current: #{mod.enabled?})", :default => mod.enabled?
+        elsif !mod.enabled?
+          app_option d("--enable-#{mod.name}"), :flag, "Enable '#{mod.name}' puppet module (current: #{mod.enabled?})"
+        end
       end
 
       params.sort.each do |param|
+        next if param.module.excluded_param?(dashize(param.name))
         doc = param.doc.nil? ? 'UNDOCUMENTED' : param.doc.join("\n")
         app_option parametrize(param), '', doc + " (current: #{param.value_to_s})",
                    :multivalued => param.multivalued?
@@ -442,7 +446,13 @@ module Kafo
 
     def parse_cli_arguments
       # enable/disable modules according to CLI
-      config.modules.each { |mod| send("enable_#{mod.name}?") ? mod.enable : mod.disable }
+      config.modules.each do |mod|
+        send("enable_#{mod.name}?") ? mod.enable : mod.disable
+
+        if config.app.dig(:classes, mod.identifier.to_sym)
+          config.app[:classes][mod.identifier.to_sym][:enabled] = true
+        end
+      end
 
       # set and reset values coming from CLI arguments
       params.each do |param|

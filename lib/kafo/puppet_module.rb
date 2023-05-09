@@ -25,7 +25,7 @@ module Kafo
       end
     end
 
-    def initialize(identifier, parser: nil, configuration: KafoConfigure.config)
+    def initialize(identifier, parser: nil, configuration: KafoConfigure.config, enabled: nil, can_disable: true, excluded_params: [])
       @identifier        = identifier
       @configuration     = configuration
       @name              = get_name
@@ -47,14 +47,21 @@ module Kafo
       @params_path       = get_params_path
       @params_class_name = get_params_class_name
       @raw_data          = nil
-      @enabled           = nil
+      @enabled           = enabled
+      @can_disable       = can_disable
+      @excluded_params   = excluded_params
     end
 
     def enabled?
-      @enabled.nil? ? @enabled = @configuration.module_enabled?(self) : @enabled
+      @enabled
+    end
+
+    def can_disable?
+      @can_disable
     end
 
     def disable
+      return unless can_disable?
       @enabled = false
     end
 
@@ -95,6 +102,10 @@ module Kafo
 
     def params_hash
       Hash[params.map { |param| [param.name, param.value] }]
+    end
+
+    def excluded_param?(param)
+      @excluded_params.include?(param)
     end
 
     def <=>(other)

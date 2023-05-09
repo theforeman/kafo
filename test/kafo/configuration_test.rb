@@ -76,10 +76,8 @@ module Kafo
     describe '#params_missing' do
       it 'lists all the params that are missing in the new config' do
         basic_config.stub(:modules, [fake_module('mod', [p_foo, p_bar])]) do
-          basic_config.stub(:module_enabled?, true) do
-            old_config.stub(:modules, [fake_module('mod', [p_old_foo, p_old_baz])]) do
-              _(basic_config.params_missing(old_config)).must_equal([p_old_baz])
-            end
+          old_config.stub(:modules, [fake_module('mod', [p_old_foo, p_old_baz])]) do
+            _(basic_config.params_missing(old_config)).must_equal([p_old_baz])
           end
         end
       end

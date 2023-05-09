@@ -7,7 +7,7 @@ module Kafo
     end
 
     let(:parser) { TestParser.new(BASIC_MANIFEST) }
-    let(:mod) { PuppetModule.new 'puppet', parser: parser }
+    let(:mod) { PuppetModule.new 'puppet', parser: parser, enabled: true }
 
     describe "#enabled?" do
       specify { _(mod.enabled?).must_equal true }
