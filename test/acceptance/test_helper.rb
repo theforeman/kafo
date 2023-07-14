@@ -50,7 +50,7 @@ def generate_installer
   run_command "kafofy -c #{KAFO_CONFIG_DIR}", :dir => TMPDIR
   config = YAML.load_file(KAFO_CONFIG)
   config[:log_dir] = INSTALLER_HOME
-  config[:hook_dirs] = ['hooks', 'additional_hooks']
+  config[:hook_dirs] = ['additional_hooks']
   File.open(KAFO_CONFIG, 'w') { |f| f.write(config.to_yaml) }
   add_hooks
 end
