@@ -3,10 +3,11 @@ inherit_from: .rubocop_todo.yml
 AllCops:
   TargetRubyVersion: '2.7'
   Exclude:
-    - "Gemfile"
-    - "Rakefile"
-    - "test/**/*"
-    - "modules/**/*"
+    - 'Gemfile'
+    - 'Rakefile'
+    - 'test/**/*'
+    - 'modules/**/*'
+    - 'vendor/**/*'
 
 Bundler/OrderedGems:
   Enabled: false
@@ -138,7 +139,7 @@ Style/SlicingWithRange:
   Enabled: true
 
 Lint/MixedRegexpCaptureTypes:
-  Enabled: true
+  Enabled: false
 
 Lint/ShadowingOuterLocalVariable:
   Enabled: true
