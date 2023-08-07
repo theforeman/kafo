@@ -188,7 +188,7 @@ module Kafo
 
     describe '#modules' do
       it 'returns array of parsed PuppetModules' do
-        mod = MiniTest::Mock.new
+        mod = Minitest::Mock.new
         mod.expect(:parse, mod)
         PuppetModule.stub(:new, mod) do
           _(basic_config.modules).must_equal [mod]
@@ -201,7 +201,7 @@ module Kafo
         it 'finds types' do
           Dir.stub(:[], Proc.new { |glob| ['type.pp'] if glob == File.expand_path('../../fixtures/modules/*/types/**/*.pp', __FILE__) }) do
             File.stub(:read, Proc.new { |path| 'type Test = String' if path == 'type.pp' }) do
-              mod = MiniTest::Mock.new
+              mod = Minitest::Mock.new
               mod.expect(:parse, mod)
               PuppetModule.stub(:new, mod) do
                 basic_config.modules
