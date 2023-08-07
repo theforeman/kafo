@@ -20,13 +20,13 @@ Gem::Specification.new do |spec|
   spec.required_ruby_version = '>= 2.7'
 
   spec.add_development_dependency 'bundler', '>= 1.3', '< 3'
-  spec.add_development_dependency 'rake'
   spec.add_development_dependency 'minitest'
   spec.add_development_dependency 'minitest-reporters'
+  spec.add_development_dependency 'rake'
   spec.add_development_dependency 'simplecov'
 
-  spec.add_dependency 'kafo_wizards'
   spec.add_dependency 'ansi'
+  spec.add_dependency 'kafo_wizards'
   # puppet module parsing
   spec.add_dependency 'kafo_parsers', '>= 0.1.6'
   # better logging
