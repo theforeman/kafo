@@ -13,7 +13,7 @@ module Kafo
       describe "with a module" do
         let(:manifest) { Tempfile.new("#{subject}_manifest") }
         let(:mod) do
-          mod = MiniTest::Mock.new
+          mod = Minitest::Mock.new
           mod.expect(:identifier, 'module')
           mod.expect(:manifest_path, manifest.path)
           mod.expect(:raw_data, {:parameters => [], :groups => []})

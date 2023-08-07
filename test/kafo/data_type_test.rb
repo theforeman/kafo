@@ -14,7 +14,7 @@ module Kafo
 
     describe ".new_from_string" do
       let(:data_type) do
-        dt = MiniTest::Mock.new
+        dt = Minitest::Mock.new
         dt.expect(:is_a?, false, [String])
         dt
       end

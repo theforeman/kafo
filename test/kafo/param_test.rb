@@ -82,7 +82,7 @@ module Kafo
 
       describe "with module" do
         let(:mod) do
-          mod = MiniTest::Mock.new
+          mod = Minitest::Mock.new
           mod.expect(:identifier, 'examplemod')
           mod
         end
@@ -105,7 +105,7 @@ module Kafo
 
     describe "#valid?" do
       let(:mod) do
-        MiniTest::Mock.new
+        Minitest::Mock.new
       end
 
       describe "with correct data type" do

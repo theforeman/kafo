@@ -18,7 +18,7 @@ module Kafo
       end
 
       describe "with PuppetConfigurer" do
-        let(:puppetconf) { MiniTest::Mock.new }
+        let(:puppetconf) { Minitest::Mock.new }
         let(:pc) { PuppetCommand.new '', [], puppetconf }
 
         specify do

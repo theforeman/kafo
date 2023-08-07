@@ -3,7 +3,7 @@ require 'test_helper'
 module Kafo
   describe ProgressBar do
     let(:bar) { ProgressBar.new.tap { |pb| pb.instance_variable_set(:@bar, powerbar) } }
-    let(:powerbar) { MiniTest::Mock.new }
+    let(:powerbar) { Minitest::Mock.new }
 
     it "calls powerbar.show" do
       powerbar.expect(:show, nil, [{:msg => 'Notify[test]                                      ', :done => 0, :total => 2}, true])
