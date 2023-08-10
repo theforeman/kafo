@@ -587,15 +587,12 @@ Style/RaiseArgs:
 # Offense count: 2
 # Cop supports --auto-correct.
 Style/RedundantBegin:
-  Exclude:
-    - 'lib/kafo/data_types/not_undef.rb'
-    - 'lib/kafo/data_types/optional.rb'
+  Enabled: false
 
 # Offense count: 1
 # Cop supports --auto-correct.
 Style/RedundantParentheses:
-  Exclude:
-    - 'lib/kafo/logging.rb'
+  Enabled: false
 
 # Offense count: 2
 # Cop supports --auto-correct.

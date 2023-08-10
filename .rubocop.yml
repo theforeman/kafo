@@ -65,7 +65,7 @@ Style/HashSyntax:
   Enabled: false
 
 Style/HashTransformKeys:
-  Enabled: true
+  Enabled: false
 
 Style/HashTransformValues:
   Enabled: true
@@ -132,4 +132,19 @@ Layout/SpaceInsideHashLiteralBraces:
   Enabled: false
 
 Style/RaiseArgs:
+  Enabled: false
+
+Style/SlicingWithRange:
+  Enabled: false
+
+Lint/MixedRegexpCaptureTypes:
+  Enabled: false
+
+Lint/ShadowingOuterLocalVariable:
+  Enabled: false
+
+Layout/SpaceAroundEqualsInParameterDefault:
+  Enabled: false
+
+Naming/PredicateName:
   Enabled: false
