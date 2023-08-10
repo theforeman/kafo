@@ -16,7 +16,7 @@ module Kafo
         'Installing'.ljust(22) +
             ANSI::Code.yellow { ' ${<msg>}' } +
             ANSI::Code.green { ' [${<percent>%}]' } +
-            (@term_width >= 83 ? ' [${<bar>}]' : '')
+            ((@term_width >= 83) ? ' [${<bar>}]' : '')
       end
 
       def infinite_template

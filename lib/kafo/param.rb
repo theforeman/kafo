@@ -47,7 +47,7 @@ module Kafo
     # For literal default values, only use 'manifest_default'. For variable or values from a data
     # lookup, use the value loaded back from the dump in 'default'.
     def default
-      @type.typecast(dump_default_needed? || !@default.nil? ? @default : manifest_default)
+      @type.typecast((dump_default_needed? || !@default.nil?) ? @default : manifest_default)
     end
 
     def default=(default)
@@ -132,7 +132,7 @@ module Kafo
     end
 
     def visible?(context = [])
-      condition.nil? || condition.empty? ? true : evaluate_condition(context)
+      (condition.nil? || condition.empty?) ? true : evaluate_condition(context)
     end
 
     def condition_value
@@ -155,7 +155,7 @@ module Kafo
           arg
         end
       end.map do |arg|
-        arg == :undef ? nil : arg
+        (arg == :undef) ? nil : arg
       end
     end
 

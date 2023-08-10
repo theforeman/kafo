@@ -35,7 +35,7 @@ module Kafo
       say ::HighLine.color("Available scenarios", :info)
       available_scenarios.each do |config_file, content|
         scenario = File.basename(config_file, '.yaml')
-        use = (File.expand_path(config_file) == @previous_scenario ? 'INSTALLED' : "use: --scenario #{scenario}")
+        use = ((File.expand_path(config_file) == @previous_scenario) ? 'INSTALLED' : "use: --scenario #{scenario}")
         say ::HighLine.color("  #{content[:name]} ", :title)
         say "(#{use})"
         say "        " + content[:description] if !content[:description].nil? && !content[:description].empty?

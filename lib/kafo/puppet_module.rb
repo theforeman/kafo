@@ -137,7 +137,7 @@ module Kafo
     end
 
     def get_class_name
-      manifest_name == 'init' ? name : "#{dir_name}::#{manifest_name.gsub('/', '::')}"
+      (manifest_name == 'init') ? name : "#{dir_name}::#{manifest_name.gsub('/', '::')}"
     end
 
     def get_params_path
