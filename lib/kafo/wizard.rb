@@ -190,7 +190,7 @@ END
              else
                HighLine::SystemExtensions.terminal_size
              end
-      highline.wrap_at = data.first > 80 ? 80 : data.first if data.first
+      highline.wrap_at = (data.first > 80) ? 80 : data.first if data.first
       highline.page_at = data.last if data.last
       highline
     end

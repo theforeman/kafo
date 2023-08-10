@@ -102,7 +102,7 @@ module Kafo
     end
 
     def typecast(value)
-      value == 'UNDEF' ? nil : value
+      (value == 'UNDEF') ? nil : value
     end
 
     def valid?(value, errors = [])

@@ -39,7 +39,7 @@ module Kafo
 
       if (line_monitor = MONITOR_RESOURCE.match(line))
         @resources << line_monitor[1]
-        @total = (@total == :unknown ? 1 : @total + 1)
+        @total = ((@total == :unknown) ? 1 : @total + 1)
       end
 
       if (line_start = EVALTRACE_START.match(line))
@@ -71,7 +71,7 @@ module Kafo
 
     def close
       @bar.show({ :msg   => done_message,
-                  :done  => @total == :unknown ? @bar.done + 1 : @total,
+                  :done  => (@total == :unknown) ? @bar.done + 1 : @total,
                   :total => @total }, true)
       @bar.close
     end

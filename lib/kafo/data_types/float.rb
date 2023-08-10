@@ -19,7 +19,7 @@ module Kafo
       end
 
       def typecast(value)
-        value.to_s =~ /\d+/ ? value.to_f : value
+        value.to_s.match?(/\d+/) ? value.to_f : value
       end
 
       def valid?(input, errors = [])
