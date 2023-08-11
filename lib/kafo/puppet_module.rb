@@ -123,7 +123,7 @@ module Kafo
 
     # mapping from configuration with stringified keys
     def mapping
-      @mapping ||= @configuration.app[:mapping].transform_keys { |k| k.to_s }
+      @mapping ||= @configuration.app[:mapping].transform_keys(&:to_s)
     end
 
     # custom module directory name
