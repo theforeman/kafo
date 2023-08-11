@@ -18,7 +18,7 @@ module Kafo
       data = case File.extname(path)
              when '.yaml'
                require 'yaml'
-               content = File.read(path).gsub(/\!ruby\/object.*$/, '')
+               content = File.read(path).gsub(%r{\!ruby/object.*$}, '')
                YAML.safe_load(content, permitted_classes: [Time, Symbol])
              when '.json'
                require 'json'
