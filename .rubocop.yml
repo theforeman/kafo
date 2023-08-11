@@ -65,7 +65,7 @@ Style/HashSyntax:
   Enabled: false
 
 Style/HashTransformKeys:
-  Enabled: false
+  Enabled: true
 
 Style/HashTransformValues:
   Enabled: true
