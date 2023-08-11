@@ -134,7 +134,7 @@ Style/RaiseArgs:
   Enabled: false
 
 Style/SlicingWithRange:
-  Enabled: false
+  Enabled: true
 
 Lint/MixedRegexpCaptureTypes:
   Enabled: false

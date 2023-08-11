@@ -383,7 +383,7 @@ EOS
     # Loads YAML from mixed output, finding the "---" and "..." document start/end delimiters
     def load_yaml_from_output(lines)
       start = lines.find_index { |l| l.start_with?('---') }
-      last = lines[start..-1].find_index("...")
+      last = lines[start..].find_index("...")
       if start.nil? || last.nil?
         puts "Could not find default values in output"
         @logger.error 'Could not find default values in Puppet output, cannot continue'

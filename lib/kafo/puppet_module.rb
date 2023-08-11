@@ -165,11 +165,11 @@ module Kafo
     end
 
     def default_manifest_name
-      identifier.include?('::') ? identifier.split('::')[1..-1].join('/') : 'init'
+      identifier.include?('::') ? identifier.split('::')[1..].join('/') : 'init'
     end
 
     def default_params_name
-      identifier.include?('::') ? (identifier.split('::')[1..-1] + ['params']).join('/') : 'params'
+      identifier.include?('::') ? (identifier.split('::')[1..] + ['params']).join('/') : 'params'
     end
 
     def get_name

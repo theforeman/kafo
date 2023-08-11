@@ -71,7 +71,7 @@ module Kafo
     end
 
     def manifest_default_params_variable
-      manifest_default[1..-1] if dump_default_needed?
+      manifest_default[1..] if dump_default_needed?
     end
 
     def module_name

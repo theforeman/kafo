@@ -61,7 +61,7 @@ module Kafo
             bracket_count = 1
             until bracket_count.zero?
               next_bracket = scanner.scan_until(/[\[\]]/) or raise ConfigurationException, "missing close bracket in argument #{args.count + 1} in data type #{input}"
-              case next_bracket[-1..-1]
+              case next_bracket[-1..]
               when '['
                 bracket_count += 1
               when ']'
