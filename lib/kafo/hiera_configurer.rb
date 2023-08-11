@@ -22,7 +22,7 @@ module Kafo
       classes = []
       data = modules.select(&:enabled?).inject({}) do |config, mod|
         classes << mod.class_name
-        config.update(Hash[mod.params_hash.map { |k, v| ["#{mod.class_name}::#{k}", v] }])
+        config.update(mod.params_hash.transform_keys { |k| "#{mod.class_name}::#{k}" })
       end
       data['classes'] = sort_modules(classes, order)
       data
