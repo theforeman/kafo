@@ -79,10 +79,10 @@ module Kafo
       end
     end
 
-    describe '.is_aio_puppet?' do
+    describe '.aio_puppet?' do
       subject do
         PuppetCommand.stub(:format_command, puppet_command) do
-          PuppetCommand.is_aio_puppet?
+          PuppetCommand.aio_puppet?
         end
       end
 

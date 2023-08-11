@@ -43,7 +43,7 @@ module Kafo
       File.join([bin_path, bin_name].compact)
     end
 
-    def self.is_aio_puppet?
+    def self.aio_puppet?
       puppet_command = search_puppet_path('puppet')
       File.realpath(puppet_command).start_with?('/opt/puppetlabs')
     rescue Errno::ENOENT
@@ -51,7 +51,7 @@ module Kafo
     end
 
     def self.format_command(command)
-      if is_aio_puppet?
+      if aio_puppet?
         [clean_env_vars, command, :unsetenv_others => true]
       else
         [::ENV, command, :unsetenv_others => false]
