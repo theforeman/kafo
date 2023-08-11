@@ -141,7 +141,7 @@ Lint/MixedRegexpCaptureTypes:
   Enabled: true
 
 Lint/ShadowingOuterLocalVariable:
-  Enabled: false
+  Enabled: true
 
 Layout/SpaceAroundEqualsInParameterDefault:
   Enabled: false
