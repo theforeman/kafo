@@ -137,7 +137,7 @@ Style/SlicingWithRange:
   Enabled: true
 
 Lint/MixedRegexpCaptureTypes:
-  Enabled: false
+  Enabled: true
 
 Lint/ShadowingOuterLocalVariable:
   Enabled: false
@@ -146,4 +146,14 @@ Layout/SpaceAroundEqualsInParameterDefault:
   Enabled: false
 
 Naming/PredicateName:
-  Enabled: false
+  Enabled: true
+
+Style/SymbolProc:
+  Enabled: true
+
+Style/RegexpLiteral:
+  Enabled: true
+
+Style/RedundantRegexpEscape:
+  Enabled: true
+  
