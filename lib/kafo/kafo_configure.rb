@@ -517,28 +517,27 @@ module Kafo
         logger.notice("Starting system configuration.")
 
         PTY.spawn(*PuppetCommand.format_command(command)) do |stdin, stdout, pid|
-          begin
-            stdin.each do |line|
-              line = normalize_encoding(line)
-              method, message = log_parser.parse(line)
-              progress_log(method, message, logger)
+          stdin.each do |line|
+            line = normalize_encoding(line)
+            method, message = log_parser.parse(line)
+            progress_log(method, message, logger)
 
             if (output = line.match(/(?:.+\]): Starting to evaluate the resource( \((?<count>\d+) of (?<total>\d+)\))?/))
               if (output[:count].to_i % 250) == 1 && output[:count].to_i != 1
                 logger.notice("#{output[:count].to_i - 1} configuration steps out of #{output[:total]} steps complete.")
               end
+            end
 
-              @progress_bar.update(line) if @progress_bar
+            @progress_bar.update(line) if @progress_bar
+          end
+        rescue Errno::EIO # we reach end of input
+          exit_status = PTY.check(pid, true)
+          if exit_status.nil? # process is still running
+            begin
+              Process.wait(pid)
+            rescue Errno::ECHILD # process could exit meanwhile so we rescue
             end
-          rescue Errno::EIO # we reach end of input
-            exit_status = PTY.check(pid, true)
-            if exit_status.nil? # process is still running
-              begin
-                Process.wait(pid)
-              rescue Errno::ECHILD # process could exit meanwhile so we rescue
-              end
-              self.class.exit_handler.exit_code = $?.exitstatus
-            end
+            self.class.exit_handler.exit_code = $?.exitstatus
           end
         end
       rescue PTY::ChildExited => e # could be raised by PTY.check

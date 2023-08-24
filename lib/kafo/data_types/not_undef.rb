@@ -8,13 +8,11 @@ module Kafo
       attr_reader :inner_type, :inner_value
 
       def initialize(inner_type_or_value)
-        begin
-          @inner_type = DataType.new_from_string(inner_type_or_value)
-          @inner_value = nil
-        rescue ConfigurationException
-          @inner_type = nil
-          @inner_value = inner_type_or_value
-        end
+        @inner_type = DataType.new_from_string(inner_type_or_value)
+        @inner_value = nil
+      rescue ConfigurationException
+        @inner_type = nil
+        @inner_value = inner_type_or_value
       end
 
       def to_s

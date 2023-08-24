@@ -84,10 +84,8 @@ module Kafo
       end
 
       def parametrization
-        @parametrization ||= begin
-          @params.inject({}) do |h,p|
-            h.update(parametrize(p) => p, parametrize(p, 'reset-') => p)
-          end
+        @parametrization ||= @params.inject({}) do |h,p|
+          h.update(parametrize(p) => p, parametrize(p, 'reset-') => p)
         end
       end
     end
