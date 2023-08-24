@@ -36,13 +36,14 @@ module Kafo
   class KafoConfigure < Clamp::Command
     include StringHelper
 
+    attr_accessor :puppet_report
+
     class << self
       include AppOption::Declaration
 
       attr_accessor :config, :root_dir, :config_file, :gem_root,
                     :module_dirs, :kafo_modules_dir, :verbose, :logger,
-                    :check_dirs, :exit_handler, :scenario_manager, :store,
-                    :puppet_report
+                    :check_dirs, :exit_handler, :scenario_manager, :store
       attr_writer :hooking
 
       def hooking
@@ -224,10 +225,6 @@ module Kafo
 
     def exit_code
       self.class.exit_code
-    end
-
-    def puppet_report
-      self.class.puppet_report
     end
 
     def help
@@ -552,7 +549,7 @@ module Kafo
       if (last_report = execution_env.reports.last)
         # For debugging: you can easily copy the last report to fixtures
         # FileUtils.cp(last_report, File.join(__dir__, '..', '..', 'test', 'fixtures', 'reports', File.basename(last_report)))
-        self.class.puppet_report = PuppetReport.load_report_file(last_report)
+        self.puppet_report = PuppetReport.load_report_file(last_report)
       end
 
       self.class.hooking.execute(:post)
