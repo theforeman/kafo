@@ -125,7 +125,7 @@ module Kafo
       end
 
       def print_out
-        puts "| #{('Parameter name').ljust(40)} | #{'Description'.ljust(@max)} |"
+        puts "| #{'Parameter name'.ljust(40)} | #{'Description'.ljust(@max)} |"
         puts "| #{'-'*40} | #{'-' * @max} |"
         @config.modules.sort.each do |mod|
           mod.params.sort.each do |param|
