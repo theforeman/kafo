@@ -12,7 +12,7 @@ module Kafo
 # change more methods like #done_message or #print_error
   class ProgressBar
     MONITOR_RESOURCE = %r{\w*MONITOR_RESOURCE ([^\]]+\])}
-    EVALTRACE_START = %r{/(.+\]): Starting to evaluate the resource}
+    EVALTRACE_START = %r{/(?<resource>.+\]): Starting to evaluate the resource( \((?<number>\d+) of (?<total>\d+)\))?}
     EVALTRACE_END = %r{/(.+\]): Evaluated in [\d\.]+ seconds}
     PREFETCH = %r{Prefetching .* resources for}
 
@@ -38,26 +38,40 @@ module Kafo
       force_update = false
 
       if (line_monitor = MONITOR_RESOURCE.match(line))
+        # In Puppet < 6 Kafo's custom progress bar hooks into internals and
+        # prints a MONITOR_RESOURCE line. This gives a total.
         @resources << line_monitor[1]
         @total = (@total == :unknown ? 1 : @total + 1)
-      end
+      elsif (line_start = EVALTRACE_START.match(line))
+        if line_start[:total]
+          # Puppet 6.6 introduced progress in evaltrace. There is no complete
+          # set prior to evaluation, so the set it built as evaluation is
+          # progressing.
+          line = line_start[:resource]
+          @resources << line
+          update_bar = true
+          force_update = true
 
-      if (line_start = EVALTRACE_START.match(line))
-        if (known_resource = find_known_resource(line_start[1]))
+          # Puppet counts 1-based where Kafo counts 0-based here
+          new_lines = line_start[:number].to_i - 1
+          new_total = line_start[:total].to_i
+          if new_lines != @lines || @total != new_total
+            @lines = new_lines
+            @total = new_total
+          end
+        elsif (known_resource = find_known_resource(line_start[1]))
+          # In Puppet < 6 we have a complete set of all resources prior to
+          # evaluation
           line = known_resource
           update_bar = true
           force_update = true
         end
-      end
-
-      if (line_end = EVALTRACE_END.match(line)) && @total != :unknown && @lines < @total
+      elsif (line_end = EVALTRACE_END.match(line)) && @total != :unknown && @lines < @total
         if (known_resource = find_known_resource(line_end[1]))
           @resources.delete(known_resource)  # ensure it's only counted once
           @lines += 1
         end
-      end
-
-      if PREFETCH =~ line
+      elsif PREFETCH =~ line
         update_bar = true
         force_update = true
       end
