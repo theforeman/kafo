@@ -1,5 +1,8 @@
 module Kafo
   class PuppetFailedResource
+    # @return [Hash] The logs from this resource, directly from the Puppet report
+    attr_reader :logs
+
     # @param [Hash] status
     #   The status hash from the report
     # @param [Array[Hash]] logs
