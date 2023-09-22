@@ -49,5 +49,20 @@ module Kafo
     def log_messages
       @logs.map { |log| log['message'] }
     end
+
+    # A collection of Puppet log messages grouped by source
+    #
+    # The log messages include detailed information of what failed. Some debug
+    # information, such as timing but crucially the command output, both stdout
+    # and stderr.
+    #
+    # A resource can have multiple sources. For example, exec can have both
+    # unless and returns. Combining the output of those can be confusing, so
+    # this presents them separate.
+    #
+    # @return [Hash[String, Array[String]]] The Puppet log messages for this resource
+    def log_messages_by_source
+      @logs.group_by { |log| log['source'] }.transform_values { |logs| logs.map { |log| log['message'] } }
+    end
   end
 end
