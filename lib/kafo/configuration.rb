@@ -12,37 +12,42 @@ module Kafo
     attr_reader :config_file, :answer_file, :scenario_id
 
     DEFAULT = {
-      ScenarioOption::NAME                      => '',
-      ScenarioOption::DESCRIPTION               => '',
-      ScenarioOption::ENABLED                   => true,
-      ScenarioOption::LOG_DIR                   => '/var/log/kafo',
-      ScenarioOption::LOG_OWNER                 => nil,
-      ScenarioOption::LOG_GROUP                 => nil,
-      ScenarioOption::STORE_DIR                 => '',
-      ScenarioOption::LOG_NAME                  => 'configuration.log',
-      ScenarioOption::LOG_LEVEL                 => 'notice',
-      ScenarioOption::NO_PREFIX                 => false,
-      ScenarioOption::MAPPING                   => {},
-      ScenarioOption::ANSWER_FILE               => './config/answers.yaml',
-      ScenarioOption::INSTALLER_DIR             => '.',
-      ScenarioOption::MODULE_DIRS               => ['./modules'],
-      ScenarioOption::COLORS                    => Kafo::ColorScheme.colors_possible?,
-      ScenarioOption::COLOR_OF_BACKGROUND       => :dark,
-      ScenarioOption::HOOK_DIRS                 => [],
-      ScenarioOption::CHECK_DIRS                => nil,
-      ScenarioOption::CUSTOM                    => {},
-      ScenarioOption::FACTS                     => {},
-      ScenarioOption::LOW_PRIORITY_MODULES      => [],
-      ScenarioOption::VERBOSE                   => false,
-      ScenarioOption::VERBOSE_LOG_LEVEL         => 'notice',
-      ScenarioOption::SKIP_PUPPET_VERSION_CHECK => false,
-      ScenarioOption::PARSER_CACHE_PATH         => nil,
-      ScenarioOption::IGNORE_UNDOCUMENTED       => nil,
-      ScenarioOption::ORDER                     => nil,
-      ScenarioOption::HIERA_CONFIG              => nil,
-      ScenarioOption::KAFO_MODULES_DIR          => nil,
-      ScenarioOption::CONFIG_HEADER_FILE        => nil,
-      ScenarioOption::DONT_SAVE_ANSWERS         => nil,
+      ScenarioOption::NAME                         => '',
+      ScenarioOption::DESCRIPTION                  => '',
+      ScenarioOption::ENABLED                      => true,
+      ScenarioOption::LOG_DIR                      => '/var/log/kafo',
+      ScenarioOption::LOG_OWNER                    => nil,
+      ScenarioOption::LOG_GROUP                    => nil,
+      ScenarioOption::STORE_DIR                    => '',
+      ScenarioOption::LOG_NAME                     => 'configuration.log',
+      ScenarioOption::LOG_LEVEL                    => 'notice',
+      ScenarioOption::NO_PREFIX                    => false,
+      ScenarioOption::MAPPING                      => {},
+      ScenarioOption::ANSWER_FILE                  => './config/answers.yaml',
+      ScenarioOption::INSTALLER_DIR                => '.',
+      ScenarioOption::MODULE_DIRS                  => ['./modules'],
+      ScenarioOption::COLORS                       => Kafo::ColorScheme.colors_possible?,
+      ScenarioOption::COLOR_OF_BACKGROUND          => :dark,
+      ScenarioOption::HOOK_DIRS                    => [],
+      ScenarioOption::CHECK_DIRS                   => nil,
+      ScenarioOption::CUSTOM                       => {},
+      ScenarioOption::FACTS                        => {},
+      ScenarioOption::LOW_PRIORITY_MODULES         => [],
+      ScenarioOption::VERBOSE                      => false,
+      ScenarioOption::VERBOSE_LOG_LEVEL            => 'notice',
+      ScenarioOption::SKIP_PUPPET_VERSION_CHECK    => false,
+      ScenarioOption::PARSER_CACHE_PATH            => nil,
+      ScenarioOption::IGNORE_UNDOCUMENTED          => nil,
+      ScenarioOption::ORDER                        => nil,
+      ScenarioOption::HIERA_CONFIG                 => nil,
+      ScenarioOption::KAFO_MODULES_DIR             => nil,
+      ScenarioOption::CONFIG_HEADER_FILE           => nil,
+      ScenarioOption::DONT_SAVE_ANSWERS            => nil,
+      ScenarioOption::PARAMS_FILES                 => {
+        ScenarioOption::DEFAULT_PARAMS_FILE          => nil,
+        ScenarioOption::USER_PARAMS_FILE             => nil,
+        ScenarioOption::SCENARIO_DEFAULT_PARAMS_FILE => nil,
+      },
     }
 
     def self.get_scenario_id(filename)
@@ -128,9 +133,16 @@ module Kafo
     end
 
     def modules
-      @modules ||= begin
-        register_data_types
-        @data.keys.map { |mod| PuppetModule.new(mod, configuration: self).parse }.sort
+      if scenario_params_file
+        @modules ||= begin
+          register_data_types
+          scenario_params.keys.map { |mod| PuppetModule.new(mod, configuration: self).parse }.sort
+        end
+      else
+        @modules ||= begin
+          register_data_types
+          @data.keys.map { |mod| PuppetModule.new(mod, configuration: self).parse }.sort
+        end
       end
     end
 
@@ -247,11 +259,11 @@ EOS
       @config_header ||= file.nil? ? '' : File.read(file)
     end
 
-    def store(data, file = nil)
+    def store(data, file = nil, header: config_header)
       filename = file || answer_file
       FileUtils.touch filename
       File.chmod 0600, filename
-      File.open(filename, 'w') { |f| f.write(config_header + format(YAML.dump(data))) }
+      File.open(filename, 'w') { |f| f.write((header ? header : '') + format(YAML.dump(data))) }
     end
 
     def params
@@ -318,6 +330,42 @@ EOS
 
     def answers
       @data
+    end
+
+    def params_files
+      app[ScenarioOption::PARAMS_FILES]
+    end
+
+    def default_params_file
+      params_files[ScenarioOption::DEFAULT_PARAMS_FILE]
+    end
+
+    def scenario_params_file
+      params_files[ScenarioOption::SCENARIO_DEFAULT_PARAMS_FILE]
+    end
+
+    def user_params_file
+      params_files[ScenarioOption::USER_PARAMS_FILE]
+    end
+
+    def scenario_params
+      return unless scenario_params_file
+
+      begin
+        load_yaml_file(scenario_params_file)
+      rescue Errno::ENOENT
+        {}
+      end
+    end
+
+    def user_params
+      return unless user_params_file
+
+      begin
+        load_yaml_file(user_params_file)
+      rescue Errno::ENOENT
+        {}
+      end
     end
 
     def run_migrations

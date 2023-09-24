@@ -7,7 +7,7 @@ module Kafo
     UNSET_VALUES = ['UNSET', :undef]
 
     attr_reader :name, :module, :type, :manifest_default
-    attr_accessor :doc, :value_set, :condition
+    attr_accessor :doc, :value_set, :condition, :user_value
     attr_writer :groups
 
     def initialize(builder, name, type)
