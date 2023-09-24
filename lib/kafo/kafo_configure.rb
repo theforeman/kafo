@@ -273,7 +273,7 @@ module Kafo
 
     def setup_config(conf_file)
       self.class.config_file      = conf_file
-      self.class.config           = Configuration.new(self.class.config_file)
+      self.class.config           = Configuration.new(self.class.config_file, logger: logger)
 
       if self.class.config.parser_cache
         self.class.config.parser_cache.force = true if ARGV.include?('--parser-cache')

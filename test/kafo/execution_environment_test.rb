@@ -3,7 +3,7 @@ require 'test_helper'
 module Kafo
   describe ExecutionEnvironment do
     let(:config_file) { ConfigFileFactory.build('basic', BASIC_CONFIGURATION).path }
-    let(:config) { Kafo::Configuration.new(config_file, false) }
+    let(:config) { Kafo::Configuration.new(config_file, false, logger: Kafo::KafoConfigure.logger) }
     let(:execution_environment) { ExecutionEnvironment.new(config) }
     let(:directory) { execution_environment.directory }
 
