@@ -54,10 +54,10 @@ module Kafo
         # Create files with different timestamps
         oldest = File.join(hostname_dir, 'oldest.yaml')
         FileUtils.touch(oldest)
-        sleep(0.001)
+        sleep(0.01)
         newer = File.join(hostname_dir, 'newer.yaml')
         FileUtils.touch(newer)
-        sleep(0.001)
+        sleep(0.01)
         aaa_latest = File.join(hostname_dir, 'aaa_latest.yaml')
         FileUtils.touch(aaa_latest)
 
