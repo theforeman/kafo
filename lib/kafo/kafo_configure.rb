@@ -519,7 +519,7 @@ module Kafo
             method, message = log_parser.parse(line)
             progress_log(method, message, logger)
 
-            if (output = line.match(/(?:.+\]): Starting to evaluate the resource( \((?<count>\d+) of (?<total>\d+)\))?/))
+            if (output = line.match(/(?:.+\]): Starting to evaluate the resource(?: \((?<count>\d+) of (?<total>\d+)\))?/))
               if (output[:count].to_i % 250) == 1 && output[:count].to_i != 1
                 logger.notice("#{output[:count].to_i - 1} configuration steps out of #{output[:total]} steps complete.")
               end
