@@ -139,7 +139,7 @@ Style/SlicingWithRange:
   Enabled: true
 
 Lint/MixedRegexpCaptureTypes:
-  Enabled: false
+  Enabled: true
 
 Lint/ShadowingOuterLocalVariable:
   Enabled: true
