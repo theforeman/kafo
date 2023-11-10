@@ -8,9 +8,26 @@ module Kafo
 
     def initialize(manifest)
       @logger = KafoConfigure.logger
-      @types = {}
+
+      lines = []
+      type_line_without_newlines = +''
       manifest.each_line do |line|
-        if (type = TYPE_DEFINITION.match(line.force_encoding("UTF-8")))
+        line = line.force_encoding("UTF-8").strip
+        next if line.start_with?('#')
+
+        line = line.split(' #').first.strip
+        if line =~ TYPE_DEFINITION
+          lines << type_line_without_newlines
+          type_line_without_newlines = line
+        else
+          type_line_without_newlines << line
+        end
+      end
+      lines << type_line_without_newlines
+
+      @types = {}
+      lines.each do |line|
+        if (type = TYPE_DEFINITION.match(line))
           @types[type[1]] = type[2]
         end
       end
