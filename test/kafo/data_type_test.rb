@@ -62,6 +62,11 @@ module Kafo
         _(DataType.new_from_string('Example[1,Float, /(regexp)/, Enum["foo", \'bar\'],-2]')).must_equal 'instance'
       end
 
+      it 'instantiates type with trailing comma' do
+        data_type.expect(:new, 'instance', ['1', 'Float'])
+        _(DataType.new_from_string('Example[1,Float,]')).must_equal 'instance'
+      end
+
       it 'instantiates type with multiple nested arguments' do
         data_type.expect(:new, 'instance', ['Hash[String, String]', 'Hash[String, String]'])
         _(DataType.new_from_string('Example[Hash[String, String], Hash[String, String]]')).must_equal 'instance'
