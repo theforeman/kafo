@@ -26,7 +26,7 @@ module Kafo
       ScenarioOption::ANSWER_FILE               => './config/answers.yaml',
       ScenarioOption::INSTALLER_DIR             => '.',
       ScenarioOption::MODULE_DIRS               => ['./modules'],
-      ScenarioOption::COLORS                    => Kafo::ColorScheme.colors_possible?,
+      ScenarioOption::COLORS                    => nil,
       ScenarioOption::COLOR_OF_BACKGROUND       => :dark,
       ScenarioOption::HOOK_DIRS                 => [],
       ScenarioOption::CHECK_DIRS                => nil,
@@ -105,6 +105,10 @@ module Kafo
         result.delete(:modules_dir)
         result
       end
+    end
+
+    def use_colors?
+      app.fetch(ScenarioOption::COLORS) { Kafo::ColorScheme.colors_possible? }
     end
 
     def get_custom(key)
