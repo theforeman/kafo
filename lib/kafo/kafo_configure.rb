@@ -120,7 +120,7 @@ module Kafo
       request_config_reload if applied_total > 0
 
       if ARGV.include?('--migrations-only')
-        verbose = (ARGV.include?('--verbose') || ARGV.include?('-v'))
+        verbose = ARGV.include?('--verbose') || ARGV.include?('-v')
         Logging.setup(verbose: verbose)
         self.class.logger.notice('Log buffers flushed')
         self.class.exit(0)

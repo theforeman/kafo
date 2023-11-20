@@ -34,7 +34,7 @@ module Kafo
       @all_lines += 1
 
       # we print every 20th line during installation preparing otherwise only update at EVALTRACE_START
-      update_bar = (@total == :unknown && @all_lines % 20 == 0)
+      update_bar = @total == :unknown && @all_lines % 20 == 0
       force_update = false
 
       if (line_monitor = MONITOR_RESOURCE.match(line))
