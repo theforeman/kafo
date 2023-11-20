@@ -23,11 +23,13 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        ruby:
-          - "2.7"
-        puppet:
-          - "7"
-    
+        include:
+          - ruby: '2.7'
+            puppet: '7'
+          - ruby: '3.0'
+            puppet: '7'
+          - ruby: '3.2'
+            puppet: '8'
     env:
       PUPPET_VERSION: ${{ matrix.puppet }}
       

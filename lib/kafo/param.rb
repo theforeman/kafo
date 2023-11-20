@@ -161,7 +161,7 @@ module Kafo
 
     def normalize_value(value)
       case value
-        when ::HighLine::String  # don't persist highline extensions
+        when ::HighLine::String # don't persist highline extensions
           value.to_s
         when Array
           value.map { |v| normalize_value(v) }
