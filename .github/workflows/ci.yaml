@@ -1,3 +1,4 @@
+---
 name: CI
 
 on:
@@ -11,7 +12,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-    
+
   rubocop:
     name: Rubocop
     uses: theforeman/actions/.github/workflows/rubocop.yml@v0
@@ -32,7 +33,7 @@ jobs:
             puppet: '8'
     env:
       PUPPET_VERSION: ${{ matrix.puppet }}
-      
+
     steps:
       - name: Check out code
         uses: actions/checkout@v3
