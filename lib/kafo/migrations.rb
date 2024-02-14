@@ -32,11 +32,12 @@ module Kafo
     end
 
     def run(scenario, answers)
-      @migrations.keys.sort.each do |name|
-        KafoConfigure.logger.debug "Executing migration #{name}"
-        migration = @migrations[name]
-        scenario, answers = Kafo::MigrationContext.execute(scenario, answers, &migration)
-        applied << File.basename(name.to_s)
+      @migrations.keys.sort.each do |filename|
+        short_name = File.basename(filename.to_s)
+        KafoConfigure.logger.debug "Executing migration: #{scenario[:name]}::#{short_name}"
+        migration = @migrations[filename]
+        scenario, answers = Kafo::MigrationContext.execute(short_name, scenario, answers, &migration)
+        applied << short_name
       end
       return scenario, answers
     end
