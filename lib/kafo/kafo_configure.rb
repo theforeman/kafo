@@ -193,12 +193,17 @@ module Kafo
         @progress_bar = config.app[:colors] ? ProgressBars::Colored.new : ProgressBars::BlackWhite.new
       end
 
-      unless skip_checks_i_know_better?
-        unless SystemChecker.check
-          puts "Your system does not meet configuration criteria"
+      if checks_only? || !skip_checks_i_know_better?
+        logger = Logger.new('checks')
+        if SystemChecker.check
+          logger.notice("System checks passed")
+        else
+          logger.error("Your system does not meet configuration criteria")
           self.class.exit(:invalid_system)
         end
       end
+
+      self.class.exit(0) if checks_only?
 
       self.class.hooking.execute(:pre_validations)
       if interactive?
@@ -362,6 +367,8 @@ module Kafo
       app_option ['-p', '--profile'], :flag, 'Run puppet in profile mode?',
                  :default => false, :advanced => true
       app_option ['-s', '--skip-checks-i-know-better'], :flag, 'Skip all system checks',
+                 :default => false
+      app_option ['--checks-only'], :flag, 'Run only system checks and exit',
                  :default => false
       app_option ['--skip-puppet-version-check'], :flag, 'Skip check for compatible Puppet versions',
                  :default => false, :advanced => true
