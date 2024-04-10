@@ -66,6 +66,24 @@ module Kafo
       end
     end
 
+    describe '--checks-only' do
+      it 'runs only checks and exits' do
+        FileUtils.mkdir_p "#{INSTALLER_HOME}/checks"
+        FileUtils.cp File.expand_path('../../fixtures/checks/pass/pass.sh', __FILE__), "#{INSTALLER_HOME}/checks"
+        code, out, err = run_command '../bin/kafo-configure --checks-only --verbose --no-colors'
+        _(code).must_equal 0, err
+        _(out).must_include "[checks] System checks passed"
+      end
+
+      it 'runs only checks and exits with failure for failing checks' do
+        FileUtils.mkdir_p "#{INSTALLER_HOME}/checks"
+        FileUtils.cp File.expand_path('../../fixtures/checks/fail/fail.sh', __FILE__), "#{INSTALLER_HOME}/checks"
+        code, out, err = run_command '../bin/kafo-configure --checks-only --verbose --no-colors'
+        _(code.exitstatus).must_equal 20, err
+        _(out).must_include "[checks] Your system does not meet configuration criteria"
+      end
+    end
+
     describe 'default args' do
       it 'must create file' do
         code, _, err = run_command '../bin/kafo-configure'
@@ -82,7 +100,7 @@ module Kafo
       end
 
       it 'must fail if system checks fail' do
-        FileUtils.mkdir "#{INSTALLER_HOME}/checks"
+        FileUtils.mkdir_p "#{INSTALLER_HOME}/checks"
         FileUtils.cp File.expand_path('../../fixtures/checks/fail/fail.sh', __FILE__), "#{INSTALLER_HOME}/checks"
         code, _, err = run_command '../bin/kafo-configure'
         _(code.exitstatus).must_equal 20, err
