@@ -12,6 +12,8 @@ else
 end
 
 gem 'puppet-strings', '>= 1.2.1'
+# https://github.com/theforeman/kafo_parsers/pull/49
+gem 'kafo_parsers', github: 'ekohl/kafo_parsers', branch: 'bulk-strings'
 
 # Do not pull in Psych 4 since it's incompatible with Puppet
 gem 'rdoc', '< 6.4' if RUBY_VERSION < '3.1'
