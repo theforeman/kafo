@@ -118,5 +118,43 @@ module Kafo
         end
       end
     end
+
+    describe '.format_command' do
+      describe 'with Puppet AIO' do
+        specify 'with a string' do
+          PuppetCommand.stub(:aio_puppet?, true) do
+            PuppetCommand.stub(:clean_env_vars, {'FOO' => 'bar'}) do
+              expected = [{'FOO' => 'bar'}, 'echo hello world', { :unsetenv_others => true }]
+              assert_equal(expected, PuppetCommand.format_command('echo hello world'))
+            end
+          end
+        end
+
+        specify 'with an array' do
+          PuppetCommand.stub(:aio_puppet?, true) do
+            PuppetCommand.stub(:clean_env_vars, {'FOO' => 'bar'}) do
+              expected = [{'FOO' => 'bar'}, 'echo', 'hello', 'world', { :unsetenv_others => true }]
+              assert_equal(expected, PuppetCommand.format_command(['echo', 'hello', 'world']))
+            end
+          end
+        end
+      end
+
+      describe 'with regular Puppet' do
+        specify 'with a string' do
+          PuppetCommand.stub(:aio_puppet?, false) do
+            expected = [::ENV, 'echo hello world', { :unsetenv_others => false }]
+            assert_equal(expected, PuppetCommand.format_command('echo hello world'))
+          end
+        end
+
+        specify 'with an array' do
+          PuppetCommand.stub(:aio_puppet?, false) do
+            expected = [::ENV, 'echo', 'hello', 'world', { :unsetenv_others => false }]
+            assert_equal(expected, PuppetCommand.format_command(['echo', 'hello', 'world']))
+          end
+        end
+      end
+    end
   end
 end
