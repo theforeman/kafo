@@ -50,11 +50,21 @@ module Kafo
       false
     end
 
+    # Format a command for use in Open3 that properly filters the environment
+    # for use with Puppet
+    #
+    # @param command [String, Array]
+    #   The command to execute. A string implies it'll run with a shell while
+    #   an array runs without. That removes the need to escape input and is
+    #   recommended.
+    # @return [Array]
+    #   A command for use in Open3
     def self.format_command(command)
+      cmd = command.is_a?(Array) ? command : [command]
       if aio_puppet?
-        [clean_env_vars, command, :unsetenv_others => true]
+        [clean_env_vars] + cmd + [:unsetenv_others => true]
       else
-        [::ENV, command, :unsetenv_others => false]
+        [::ENV] + cmd + [:unsetenv_others => false]
       end
     end
 
