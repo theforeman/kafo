@@ -53,7 +53,7 @@ module Kafo
           args << quoted[0..-2]  # store unquoted value
 
         else # bare words, or Type::Name, or Type::Name[args..]
-          type = scanner.scan(/[\w:-]+/) or raise ConfigurationException, "missing argument #{args.count + 1} to data type #{input}"#
+          type = scanner.scan(/[\w:-]+/) or raise ConfigurationException, "missing argument #{args.count + 1} to data type #{input}"
 
           # store inner arguments as a continuation of the type string
           if scanner.peek(1) == '['
