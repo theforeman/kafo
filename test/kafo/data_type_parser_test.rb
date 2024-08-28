@@ -48,6 +48,11 @@ module Kafo
       it { _(parser.types).must_equal({"IP"=>"Variant[IPv4,IPv6,]", "IPProto"=>"Variant[TCP,UDP,]"}) }
     end
 
+    describe "parse multiple multiline aliases with empty lines" do
+      let(:file) { "# We need IP\n  \ntype IP = Variant[\n\n  IPv4, # Legacy IP\n\n  IPv6,\n\n]\n\n# We also need IPProto\n\ntype IPProto = Variant[\n\n  TCP,\n\n  UDP,\n\n]" }
+      it { _(parser.types).must_equal({"IP"=>"Variant[IPv4,IPv6,]", "IPProto"=>"Variant[TCP,UDP,]"}) }
+    end
+
     describe "#register" do
       after { DataType.unregister_type('Test') }
       let(:file) { 'type Test = String' }

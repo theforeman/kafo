@@ -13,7 +13,7 @@ module Kafo
       type_line_without_newlines = +''
       manifest.each_line do |line|
         line = line.force_encoding("UTF-8").strip
-        next if line.start_with?('#')
+        next if line.start_with?('#') || line.empty?
 
         line = line.split(' #').first.strip
         if line =~ TYPE_DEFINITION
