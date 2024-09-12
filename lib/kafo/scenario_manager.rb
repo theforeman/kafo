@@ -220,7 +220,7 @@ module Kafo
     end
 
     def load_configuration(config_file)
-      Configuration.new(config_file)
+      Configuration.new(config_file, logger: @logger)
     end
 
     private

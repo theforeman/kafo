@@ -35,7 +35,7 @@ module Kafo
 
     def execute
       KafoConfigure.logger      = Logger.new(STDERR)
-      c                         = Configuration.new(config, false)
+      c                         = Configuration.new(config, false, logger: KafoConfigure.logger)
       KafoConfigure.config      = c
       if KafoConfigure.config.parser_cache
         KafoConfigure.config.parser_cache.force = true if ARGV.include?('--parser-cache')
