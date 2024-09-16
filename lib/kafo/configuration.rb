@@ -107,8 +107,8 @@ module Kafo
       end
     end
 
-    def get_custom(key)
-      custom_storage[key.to_sym]
+    def get_custom(key, default = nil)
+      custom_storage.fetch(key.to_sym, default)
     end
 
     def set_custom(key, value)
