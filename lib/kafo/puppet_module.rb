@@ -1,8 +1,6 @@
 # encoding: UTF-8
 require 'kafo/param'
 require 'kafo/param_builder'
-require 'kafo/parser_cache_reader'
-require 'kafo_parsers/parsers'
 
 module Kafo
   class PuppetModule
@@ -11,21 +9,7 @@ module Kafo
     attr_reader :name, :identifier, :params, :dir_name, :class_name, :manifest_name, :manifest_path,
                 :groups, :params_path, :params_class_name, :configuration, :raw_data
 
-    def self.find_parser
-      @parser ||= begin
-        logger = KafoConfigure.logger
-        parser = KafoParsers::Parsers.find_available(:logger => logger)
-        if parser
-          logger.debug "Using Puppet module parser #{parser}"
-          parser
-        else
-          logger.debug "No available Puppet module parser found"
-          :none  # prevent continually re-checking
-        end
-      end
-    end
-
-    def initialize(identifier, parser: nil, configuration: KafoConfigure.config)
+    def initialize(identifier, configuration: KafoConfigure.config)
       @identifier        = identifier
       @configuration     = configuration
       @name              = get_name
@@ -40,8 +24,6 @@ module Kafo
           warn("Manifest #{module_manifest_path} was not found in #{@configuration.module_dirs.join(', ')}")
       end
       @manifest_path     = File.join(module_dir, module_manifest_path)
-      @parser            = parser
-      @parser_cache      = @configuration.parser_cache
       @logger            = KafoConfigure.logger
       @groups            = {}
       @params_path       = get_params_path
@@ -63,15 +45,7 @@ module Kafo
     end
 
     def parse(builder_klass = ParamBuilder)
-      @raw_data = @parser_cache.get(identifier, manifest_path) if @parser_cache
-      if @raw_data.nil?
-        @parser = self.class.find_parser if @parser.nil?
-        if @parser.nil? || @parser == :none
-          raise ParserError.new("No Puppet module parser is installed and no cache of the file #{manifest_path} is available. Please check debug logs and install optional dependencies for the parser.")
-        else
-          @raw_data = @parser.parse(manifest_path)
-        end
-      end
+      @raw_data = @configuration.parsed(self)
 
       builder      = builder_klass.new(self, @raw_data)
 
@@ -128,12 +102,12 @@ module Kafo
 
     # custom module directory name
     def get_dir_name
-      mapping[identifier].nil? ? default_dir_name : (mapping[identifier][:dir_name] || default_dir_name)
+      mapping.dig(identifier, :dir_name) || default_dir_name
     end
 
     # custom manifest filename without .pp extension
     def get_manifest_name
-      mapping[identifier].nil? ? default_manifest_name : (mapping[identifier][:manifest_name] || default_manifest_name)
+      mapping.dig(identifier, :manifest_name) || default_manifest_name
     end
 
     def get_class_name
@@ -141,11 +115,11 @@ module Kafo
     end
 
     def get_params_path
-      mapping[identifier].nil? ? default_params_path : (mapping[identifier][:params_path] || default_params_path)
+      mapping.dig(identifier, :params_path) || default_params_path
     end
 
     def get_params_name
-      mapping[identifier].nil? ? default_params_name : (mapping[identifier][:params_name] || default_params_name)
+      mapping.dig(identifier, :params_name) || default_params_name
     end
 
     def get_params_class_name
