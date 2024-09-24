@@ -9,6 +9,7 @@ require 'kafo/parser_cache_writer'
 require 'kafo/string_helper'
 require 'logger'
 require 'yaml'
+require 'cgi'
 
 KafoConfigure = OpenStruct.new
 def KafoConfigure.exit(code)
@@ -76,9 +77,10 @@ module Kafo
 
         @config.modules.sort.each do |mod|
           mod.params.sort.each do |param|
+            html_doc = CGI.escapeHTML(param.doc.join(' '))
             puts '      <tr>'
             puts "        <td style='white-space:nowrap'>#{parametrize(param)}</td>"
-            puts "        <td>#{param.doc.join(' ')}</td>"
+            puts "        <td>#{html_doc}</td>"
             puts '      </tr>'
           end
         end
@@ -129,7 +131,8 @@ module Kafo
         puts "| #{'-'*40} | #{'-' * @max} |"
         @config.modules.sort.each do |mod|
           mod.params.sort.each do |param|
-            puts "| #{parametrize(param).ljust(40)} | #{param.doc.join(' ').ljust(@max)} |"
+            html_doc = CGI.escapeHTML(param.doc.join(' '))
+            puts "| #{parametrize(param).ljust(40)} | #{html_doc.ljust(@max)} |"
           end
         end
       end

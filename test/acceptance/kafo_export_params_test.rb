@@ -43,6 +43,7 @@ module Kafo
         it 'must output markdown' do
           _(command[1]).must_match(/\| Parameter name\s*\| Description\s*\|/)
           _(command[1]).must_match(/\| --testing-db-type\s*\| can be mysql or sqlite\s*\|/)
+          _(command[1]).must_include '&lt;List of IPs&gt;'
         end
       end
 
@@ -52,6 +53,7 @@ module Kafo
           _(command[1]).must_include '<th>Option</th>'
           _(command[1]).must_match %r{<td.*>--testing-db-type</td>}
           _(command[1]).must_include '<td>can be mysql or sqlite</td>'
+          _(command[1]).must_include '&lt;List of IPs&gt;'
         end
       end
 
