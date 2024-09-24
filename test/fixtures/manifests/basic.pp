@@ -11,6 +11,11 @@
 #                    consisting of 3 lines
 # $typed::           something having it's type explicitly set
 # $multivalue::      list of users
+# $complex_variant:: A Variant type that can be:
+#                    String with:
+#                    '' or 'unmanaged' - Host auth control done elsewhere
+#                    'ip <List of IPs>' - Allowed IPs/ranges
+#                    Array of strings with ip or host as above
 # === Advanced parameters
 #
 # $debug::           we have advanced parameter, yay!
@@ -43,6 +48,7 @@ class testing(
   $username = 'root',
   Sensitive[String[1]] $password = Sensitive('supersecret'),
   Integer $pool_size = 10,
+  Optional[Variant[String, Array]] $complex_variant = undef,
   $file = undef,
   $base_dir = undef) {
 
