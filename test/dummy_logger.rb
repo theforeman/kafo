@@ -1,8 +1,12 @@
 class DummyLogger
+
+  attr_accessor :name
+
   LEVELS = %w(fatal error warn info debug)
 
-  def initialize
+  def initialize(name = 'DummyLogger')
     LEVELS.each { |l| instance_variable_set("@#{l}", StringIO.new) }
+    @name = name
   end
 
   LEVELS.each do |level|
@@ -18,9 +22,5 @@ class DummyLogger
 
   def dump_errors
     true
-  end
-
-  def name
-    'DummyLogger'
   end
 end
