@@ -97,6 +97,16 @@ module Kafo
       Hash[params.map { |param| [param.name, param.value] }]
     end
 
+    def default_params_hash
+      Hash[params.map { |param| [param.name, param.default] }]
+    end
+
+    def user_params_hash
+      return false unless enabled?
+      user_params = params.reject { |param| param.user_value.nil? }
+      Hash[user_params.map { |param| [param.name, param.user_value] }]
+    end
+
     def <=>(other)
       @configuration.app[:low_priority_modules].each do |module_name|
         return 1 if self.name.include?(module_name) && !other.name.include?(module_name)
