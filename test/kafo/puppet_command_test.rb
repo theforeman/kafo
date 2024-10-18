@@ -138,20 +138,37 @@ module Kafo
             end
           end
         end
+
+        specify 'with extra env' do
+          PuppetCommand.stub(:aio_puppet?, true) do
+            PuppetCommand.stub(:clean_env_vars, {'FOO' => 'bar'}) do
+              expected = [{'FOO' => 'bar', 'EXTRA' => 'cool'}, 'echo hello world', { :unsetenv_others => true }]
+              assert_equal(expected, PuppetCommand.format_command(['echo hello world'], { 'EXTRA' => 'cool' }))
+            end
+          end
+        end
       end
 
       describe 'with regular Puppet' do
         specify 'with a string' do
           PuppetCommand.stub(:aio_puppet?, false) do
-            expected = [::ENV, 'echo hello world', { :unsetenv_others => false }]
+            expected = [::ENV.to_h, 'echo hello world', { :unsetenv_others => false }]
             assert_equal(expected, PuppetCommand.format_command('echo hello world'))
           end
         end
 
         specify 'with an array' do
           PuppetCommand.stub(:aio_puppet?, false) do
-            expected = [::ENV, 'echo', 'hello', 'world', { :unsetenv_others => false }]
+            expected = [::ENV.to_h, 'echo', 'hello', 'world', { :unsetenv_others => false }]
             assert_equal(expected, PuppetCommand.format_command(['echo', 'hello', 'world']))
+          end
+        end
+
+        specify 'with extra env' do
+          PuppetCommand.stub(:aio_puppet?, false) do
+            expected_env = ::ENV.to_h.merge({ 'EXTRA' => 'cool' })
+            expected = [expected_env, 'echo hello world', { :unsetenv_others => false }]
+            assert_equal(expected, PuppetCommand.format_command('echo hello world', { 'EXTRA' => 'cool' }))
           end
         end
       end
