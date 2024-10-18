@@ -57,7 +57,7 @@ module Kafo
       describe "with 'puppet' in PATH" do
         specify do
           ::ENV.stub(:[], '/usr/bin:/usr/local/bin') do
-            File.stub(:executable?, Proc.new { |path| path == '/usr/local/bin/puppet' }) do
+            File.stub(:executable?, proc { |path| path == '/usr/local/bin/puppet' }) do
               _(pc).must_equal '/usr/local/bin/puppet'
             end
           end
@@ -67,7 +67,7 @@ module Kafo
       describe "with AIO 'puppet' only" do
         specify do
           ::ENV.stub(:[], '/usr/bin:/usr/local/bin') do
-            File.stub(:executable?, Proc.new { |path| path == '/opt/puppetlabs/bin/puppet' }) do
+            File.stub(:executable?, proc { |path| path == '/opt/puppetlabs/bin/puppet' }) do
               _(pc).must_equal '/opt/puppetlabs/bin/puppet'
             end
           end
@@ -90,7 +90,7 @@ module Kafo
         let(:puppet_command) { '/usr/bin/puppet' }
 
         specify 'as a real file' do
-          File.stub(:realpath, ->(path) { path }) do
+          File.stub(:realpath, proc { |path| path }) do
             refute subject
           end
         end
@@ -102,7 +102,7 @@ module Kafo
         end
 
         specify 'as a broken symlink' do
-          File.stub(:realpath, ->(path) { raise Errno::ENOENT, 'No such file or directory' }) do
+          File.stub(:realpath, proc { |_path| raise Errno::ENOENT, 'No such file or directory' }) do
             refute subject
           end
         end
@@ -112,7 +112,7 @@ module Kafo
         let(:puppet_command) { 'puppet' }
 
         specify 'non-existant' do
-          File.stub(:realpath, ->(path) { raise Errno::ENOENT, 'No such file or directory' }) do
+          File.stub(:realpath, proc { |_path| raise Errno::ENOENT, 'No such file or directory' }) do
             refute subject
           end
         end
