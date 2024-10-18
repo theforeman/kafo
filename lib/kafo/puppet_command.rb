@@ -59,12 +59,12 @@ module Kafo
     #   recommended.
     # @return [Array]
     #   A command for use in Open3
-    def self.format_command(command)
+    def self.format_command(command, extra_env = {})
       cmd = command.is_a?(Array) ? command : [command]
       if aio_puppet?
-        [clean_env_vars] + cmd + [:unsetenv_others => true]
+        [clean_env_vars.merge(extra_env)] + cmd + [:unsetenv_others => true]
       else
-        [::ENV] + cmd + [:unsetenv_others => false]
+        [::ENV.to_h.merge(extra_env)] + cmd + [:unsetenv_others => false]
       end
     end
 
