@@ -132,7 +132,8 @@ module Kafo
     # You can load a custom config value that has been saved using store_custom_config
     #
     # @param [Symbol] key
-    def get_custom_config(key)
+    # @param [Object] default
+    def get_custom_config(key, default = nil)
       self.kafo.config.get_custom(key)
     end
 
