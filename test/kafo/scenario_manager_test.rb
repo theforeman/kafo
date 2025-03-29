@@ -241,7 +241,7 @@ module Kafo
 
     describe '#confirm_scenario_change' do
       let(:basic_config_file) { ConfigFileFactory.build('basic', BASIC_CONFIGURATION).path }
-      let(:new_config) { Kafo::Configuration.new(basic_config_file, false) }
+      let(:new_config) { Kafo::Configuration.new(basic_config_file, false, logger: Kafo::KafoConfigure.logger) }
 
       before :all do
         @argv = ARGV
@@ -288,8 +288,8 @@ module Kafo
 
     describe '#print_scenario_diff' do
       let(:basic_config_file) { ConfigFileFactory.build('basic', BASIC_CONFIGURATION).path }
-      let(:new_config) { Kafo::Configuration.new(basic_config_file, false) }
-      let(:old_config) { Kafo::Configuration.new(basic_config_file, false) }
+      let(:new_config) { Kafo::Configuration.new(basic_config_file, false, logger: Kafo::KafoConfigure.logger) }
+      let(:old_config) { Kafo::Configuration.new(basic_config_file, false, logger: Kafo::KafoConfigure.logger) }
 
       let(:p_foo) { fake_param('foo', 1) }
       let(:p_bar) { fake_param('bar', 10) }

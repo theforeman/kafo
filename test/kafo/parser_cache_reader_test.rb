@@ -59,7 +59,7 @@ module Kafo
 
     describe "compatibility with writer" do
       before do
-        KafoConfigure.config = Configuration.new(ConfigFileFactory.build('basic', BASIC_CONFIGURATION).path)
+        KafoConfigure.config = Configuration.new(ConfigFileFactory.build('basic', BASIC_CONFIGURATION).path, logger: Kafo::KafoConfigure.logger)
       end
 
       let(:parser) { TestParser.new(BASIC_MANIFEST) }

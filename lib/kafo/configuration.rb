@@ -49,11 +49,11 @@ module Kafo
       File.basename(filename, '.yaml')
     end
 
-    def initialize(file, persist = true)
+    def initialize(file, persist = true, logger:)
       @config_file = file
-      @persist     = persist
+      @persist = persist
       configure_application
-      @logger = KafoConfigure.logger
+      @logger = logger
 
       @answer_file = app[:answer_file]
       begin
@@ -63,8 +63,7 @@ module Kafo
         KafoConfigure.exit(:no_answer_file)
       end
 
-      @config_dir = File.dirname(@config_file)
-      @scenario_id = Configuration.get_scenario_id(@config_file)
+      @scenario_id = self.class.get_scenario_id(@config_file)
     end
 
     def save_configuration(configuration)
@@ -100,7 +99,7 @@ module Kafo
           configuration = {}
         end
 
-        result            = DEFAULT.merge(configuration || {})
+        result = DEFAULT.merge(configuration || {})
         result[:module_dirs] = result[:modules_dir] || result[:module_dirs]
         result.delete(:modules_dir)
         result
@@ -135,7 +134,7 @@ module Kafo
     end
 
     def module(name)
-      modules.find { |m| m.name == name }
+      modules.find { |m| m.identifier == name }
     end
 
     def root_dir
@@ -242,8 +241,8 @@ EOS
     end
 
     def config_header
-      files          = [app[:config_header_file], File.join(gem_root, '/config/config_header.txt')].compact
-      file           = files.find { |f| File.exist?(f) }
+      files = [app[:config_header_file], File.join(gem_root, '/config/config_header.txt')].compact
+      file = files.find { |f| File.exist?(f) }
       @config_header ||= file.nil? ? '' : File.read(file)
     end
 
