@@ -382,7 +382,6 @@ module Kafo
         This is stdout
         This is stderr
         change from 'notrun' to ['0'] failed: '#{TMPDIR}/failing-command' returned 100 instead of one of [0]
-        Evaluated in 0.01 seconds
         EXPECTED
 
         assert_includes(stderr, "failed: '#{TMPDIR}/failing-command' returned 100")
