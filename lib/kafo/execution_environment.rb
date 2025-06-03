@@ -19,6 +19,10 @@ module Kafo
       end
     end
 
+    def libdir
+      @libdir ||= File.join(directory, 'lib')
+    end
+
     def reportdir
       @reportdir ||= File.join(directory, 'reports')
     end
@@ -46,8 +50,9 @@ module Kafo
         'environmentpath' => environmentpath,
         'factpath'        => factpath,
         'hiera_config'    => hiera_config,
-        'reports'         => 'store',
+        'libdir'          => libdir,
         'reportdir'       => reportdir,
+        'reports'         => 'store',
       }.merge(settings)
 
       PuppetConfigurer.new(puppet_conf, settings)
