@@ -77,12 +77,12 @@ module Kafo
 
       def use_colors?
         if config
-          colors = config.app[:colors]
-        else
-          colors = ARGV.include?('--no-colors') ? false : nil
-          colors = ARGV.include?('--colors') ? true : nil if colors.nil?
+          config.app[:colors]
+        elsif ARGV.include?('--no-colors')
+          false
+        elsif ARGV.include?('--colors')
+          true
         end
-        colors
       end
 
       def preset_color_scheme
