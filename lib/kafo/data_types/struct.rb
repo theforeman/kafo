@@ -5,10 +5,12 @@ module Kafo
         @spec = ::Hash[spec.map do |k,v|
           begin
             k = DataType.new_from_string(k)
-          rescue ConfigurationException; end
+          rescue ConfigurationException
+          end
           begin
             v = DataType.new_from_string(v)
-          rescue ConfigurationException; end
+          rescue ConfigurationException
+          end
           [k, v]
         end]
       end
