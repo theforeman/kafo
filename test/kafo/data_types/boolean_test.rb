@@ -5,6 +5,7 @@ module Kafo
     describe Boolean do
       describe "registered" do
         it { _(DataType.new_from_string('Boolean')).must_be_instance_of Boolean }
+        it { _(DataType.new_from_string('Boolean[false]')).must_be_instance_of Boolean }
       end
 
       describe "#typecast" do
@@ -21,6 +22,8 @@ module Kafo
         it { _(Boolean.new.valid?(true)).must_equal true }
         it { _(Boolean.new.valid?(false)).must_equal true }
         it { _(Boolean.new.valid?('foo')).must_equal false }
+        it { _(Boolean.new(false).valid?(true)).must_equal false }
+        it { _(Boolean.new(false).valid?(false)).must_equal true }
       end
     end
   end
