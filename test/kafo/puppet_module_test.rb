@@ -2,12 +2,15 @@ require 'test_helper'
 
 module Kafo
   describe PuppetModule do
-    before do
-      KafoConfigure.config = Configuration.new(ConfigFileFactory.build('basic', BASIC_CONFIGURATION).path)
-    end
+    let(:config) { Configuration.new(ConfigFileFactory.build('basic', BASIC_CONFIGURATION).path) }
+    let(:module_name) { 'testing' }
+    let(:manifest) { BASIC_MANIFEST }
+    let(:parser) { TestParser.new(manifest) }
+    let(:mod) { PuppetModule.new(module_name, configuration: config) }
 
-    let(:parser) { TestParser.new(BASIC_MANIFEST) }
-    let(:mod) { PuppetModule.new 'puppet', parser: parser }
+    before do
+      config.instance_variable_set(:@parser, parser)
+    end
 
     describe "#enabled?" do
       specify { _(mod.enabled?).must_equal true }
@@ -24,21 +27,21 @@ module Kafo
     end
 
     # Uses default Puppet autoloader locations
-    let(:plugin1_mod) { PuppetModule.new 'foreman::plugin::default_hostgroup', parser: parser }
+    let(:plugin1_mod) { PuppetModule.new('foreman::plugin::default_hostgroup', configuration: config) }
     # BASIC_CONFIGURATION has mapping configured for this module
-    let(:plugin2_mod) { PuppetModule.new 'foreman::plugin::chef', parser: parser }
+    let(:plugin2_mod) { PuppetModule.new('foreman::plugin::chef', configuration: config) }
     # BASIC_CONFIGURATION has mapping configured for this module
-    let(:certs_mod) { PuppetModule.new 'certs', parser: parser }
+    let(:certs_mod) { PuppetModule.new('certs', configuration: config) }
 
     describe "#name" do
-      specify { _(mod.name).must_equal 'puppet' }
+      specify { _(mod.name).must_equal 'testing' }
       specify { _(plugin1_mod.name).must_equal 'foreman_plugin_default_hostgroup' }
       specify { _(plugin2_mod.name).must_equal 'foreman_plugin_chef' }
       specify { _(certs_mod.name).must_equal 'certs' }
     end
 
     describe "#dir_name" do
-      specify { _(mod.dir_name).must_equal 'puppet' }
+      specify { _(mod.dir_name).must_equal 'testing' }
       specify { _(plugin1_mod.dir_name).must_equal 'foreman' }
       specify { _(plugin2_mod.dir_name).must_equal 'custom' }
       specify { _(certs_mod.dir_name).must_equal 'certificates' }
@@ -52,21 +55,21 @@ module Kafo
     end
 
     describe "#class_name" do
-      specify { _(mod.class_name).must_equal 'puppet' }
+      specify { _(mod.class_name).must_equal 'testing' }
       specify { _(plugin1_mod.class_name).must_equal 'foreman::plugin::default_hostgroup' }
       specify { _(plugin2_mod.class_name).must_equal 'custom::plugin::custom_chef' }
       specify { _(certs_mod.class_name).must_equal 'certificates::foreman' }
     end
 
     describe "#manifest_path" do
-      specify { _(mod.manifest_path).must_match %r"test/fixtures/modules/puppet/manifests/init\.pp$" }
+      specify { _(mod.manifest_path).must_match %r"test/fixtures/modules/testing/manifests/init\.pp$" }
       specify { _(plugin1_mod.manifest_path).must_match %r"test/fixtures/modules/foreman/manifests/plugin/default_hostgroup\.pp$" }
       specify { _(plugin2_mod.manifest_path).must_match %r"test/fixtures/modules/custom/manifests/plugin/custom_chef\.pp$" }
       specify { _(certs_mod.manifest_path).must_match %r"test/fixtures/modules/certificates/manifests/foreman\.pp$" }
     end
 
     describe "#params_path" do
-      specify { _(mod.params_path).must_equal 'puppet/manifests/params.pp' }
+      specify { _(mod.params_path).must_equal 'testing/manifests/params.pp' }
       specify { _(plugin1_mod.params_path).must_equal 'foreman/manifests/plugin/default_hostgroup/params.pp' }
       specify { _(plugin2_mod.params_path).must_equal 'custom/plugin/chef/params.pp' }
       specify { _(certs_mod.params_path).must_equal 'certificates/manifests/foreman/params.pp' }
@@ -80,166 +83,137 @@ module Kafo
     end
 
     describe "#raw_data" do
+      before { mod.parse }
+      subject { mod.raw_data }
+
       it "returns data from parser" do
-        mod.parse
-        _(mod.raw_data).must_equal parser.parse(mod.manifest_path)
+        _(subject).must_equal parser.parse(mod.manifest_path)
       end
     end
 
-    let(:parsed) { mod.parse }
+    describe "#parse" do
+      subject { mod.parse }
 
-    describe "#parse(builder)" do
       describe "without documentation" do
+        let(:manifest) { NO_DOC_MANIFEST }
         before do
-          KafoConfigure.config.app[:ignore_undocumented] = true
+          config.app[:ignore_undocumented] = true
         end
 
-        let(:mod) { PuppetModule.new 'puppet', parser: TestParser.new(NO_DOC_MANIFEST) }
-        let(:docs) { parsed.params.map(&:doc) }
-        specify { docs.each { |doc| _(doc).must_be_nil } }
+        specify { subject.params.map(&:doc).each { |doc| _(doc).must_be_nil } }
       end
 
       describe "with not ignoring docs inconsitency" do
         before do
-          KafoConfigure.config.app[:ignore_undocumented] = false
+          config.app[:ignore_undocumented] = false
         end
 
         describe "undocumented params" do
           it "does throw an error" do
             KafoConfigure.stub(:exit, 'expected to exit') do
-              _(mod.parse).must_equal 'expected to exit'
+              _(subject).must_equal 'expected to exit'
             end
           end
         end
       end
+    end
 
-      describe "with parser cache" do
-        before do
-          KafoConfigure.config.app[:parser_cache_path] = ParserCacheFactory.build(
-            {:files => {"puppet" => {:data => {:parameters => [], :groups => []}}}}
-          ).path
-          @@parsed_cache_with_cache ||= parsed
-        end
+    describe '#groups' do
+      before { mod.parse }
+      subject { mod.groups }
 
-        specify { _(@@parsed_cache_with_cache.raw_data[:parameters]).must_equal [] }
-        specify { _(@@parsed_cache_with_cache.raw_data[:groups]).must_equal [] }
-      end
-
-      describe "with nil parser and no cache" do
-        let(:parser) { nil }
-
-        it do
-          PuppetModule.stub(:find_parser, nil) do
-            _(Proc.new { parsed }).must_raise ParserError
-          end
-        end
-      end
-
-      describe "without :none parser and no cache" do
-        let(:parser) { :none }
-        specify { _(Proc.new { parsed }).must_raise ParserError }
-      end
-
-      describe "with groups" do
-        before { @@parsed_cache_with_groups ||= parsed }
-        let(:groups) { @@parsed_cache_with_groups.groups.map(&:name) }
-        specify { _(groups).must_include('Parameters') }
-        specify { _(groups).must_include('Advanced parameters') }
-        specify { _(groups).must_include('Extra parameters') }
-        specify { _(groups).wont_include('MySQL') }
-        specify { _(groups).wont_include('Sqlite') }
-      end
-
-      describe "parses parameter names" do
-        before { @@parsed_cache_parameter_names ||= parsed }
-        let(:param_names) { @@parsed_cache_parameter_names.params.map(&:name) }
-        specify { _(param_names).must_include('version') }
-        specify { _(param_names).must_include('debug') }
-        specify { _(param_names).must_include('remote') }
-        specify { _(param_names).must_include('file') }
-        specify { _(param_names).must_include('m_i_a') }
+      specify 'names' do
+        _(subject.map(&:name)).must_equal(['Parameters', 'Advanced parameters', 'Extra parameters'])
       end
     end
 
     describe "#primary_parameter_group" do
-      before { @@parsed_cache_primary ||= parsed }
-      let(:primary_params) { @@parsed_cache_primary.primary_parameter_group.params.map(&:name) }
-      specify { _(primary_params).must_include('version') }
-      specify { _(primary_params).must_include('undef') }
-      specify { _(primary_params).must_include('multiline') }
-      specify { _(primary_params).must_include('typed') }
-      specify { _(primary_params).wont_include('documented') }
-      specify { _(primary_params).wont_include('debug') }
-      specify { _(primary_params).wont_include('remote') }
+      before { mod.parse }
+      subject { mod.primary_parameter_group }
 
-      let(:other_groups) { parsed.other_parameter_groups }
-      let(:other_groups_names) { other_groups.map(&:name) }
-      specify { _(other_groups_names).must_include('Advanced parameters') }
-      specify { _(other_groups_names).must_include('Extra parameters') }
+      specify 'params' do
+        _(subject.params.map(&:name)).must_equal(['version', 'undef', 'multiline', 'typed', 'multivalue'])
+      end
 
-      let(:advanced_group) { other_groups.detect { |g| g.name == 'Advanced parameters' } }
-      specify { _(advanced_group.children).must_be_empty }
-      let(:advanced_params) { advanced_group.params.map(&:name) }
-      specify { _(advanced_params).must_include('debug') }
-      specify { _(advanced_params).must_include('db_type') }
-      specify { _(advanced_params).must_include('remote') }
-      specify { _(advanced_params).must_include('file') }
-      specify { _(advanced_params).wont_include('log_level') }
+      specify 'children' do
+        _(subject.children).must_be_empty
+      end
 
       describe "manifest without primary group" do
-        let(:mod_wo_prim) { @@mod_wo_prim ||= PuppetModule.new('puppet', parser: TestParser.new(MANIFEST_WITHOUT_PRIMARY_GROUP)).parse }
-        let(:primary_group) { mod_wo_prim.primary_parameter_group }
-        specify { _(primary_group.params).must_be_empty }
-        let(:children_group_names) { primary_group.children.map(&:name) }
-        specify { _(children_group_names).must_include 'Basic parameters:' }
-        specify { _(children_group_names).must_include 'Advanced parameters:' }
+        let(:module_name) { 'testing2' }
+        let(:manifest) { MANIFEST_WITHOUT_PRIMARY_GROUP }
+
+        specify 'params' do
+          _(subject.params).must_be_empty
+        end
+
+        specify 'children' do
+          _(subject.children.map(&:name)).must_equal(['Basic parameters:', 'Advanced parameters:'])
+        end
       end
 
       describe "manifest without any group" do
-        let(:mod_wo_any) { @@mod_wo_any ||= PuppetModule.new('puppet', parser: TestParser.new(MANIFEST_WITHOUT_ANY_GROUP)).parse }
-        let(:primary_group) { mod_wo_any.primary_parameter_group }
-        let(:primary_params) { primary_group.params }
-        specify { _(primary_params).wont_be_empty }
-        let(:primary_param_names) { primary_params.map(&:name) }
-        specify { _(primary_param_names).must_include 'version' }
-        specify { _(primary_param_names).must_include 'documented' }
-        specify { _(primary_group.children).must_be_empty }
+        let(:module_name) { 'testing3' }
+        let(:manifest) { MANIFEST_WITHOUT_ANY_GROUP }
+
+        specify 'params' do
+          _(subject.params.map(&:name)).must_equal(['version', 'documented'])
+        end
+
+        specify 'children' do
+          _(subject.children).must_be_empty
+        end
+      end
+    end
+
+    describe '#other_parameter_groups' do
+      before { mod.parse }
+      subject { mod.other_parameter_groups }
+
+      specify 'names' do
+        _(subject.map(&:name)).must_equal(['Advanced parameters', 'Extra parameters'])
+      end
+
+      describe 'advanced group' do
+        subject { mod.other_parameter_groups.detect { |g| g.name == 'Advanced parameters' } }
+
+        specify { _(subject.children).must_be_empty }
+        it 'param names' do
+          _(subject.params.map(&:name)).must_equal(['debug', 'db_type', 'remote', 'server', 'username', 'pool_size', 'file'])
+        end
+      end
+    end
+
+    describe "#params" do
+      before { mod.parse }
+      subject { mod.params }
+
+      specify 'names' do
+        _(subject.map(&:name)).must_equal(['version', 'undocumented', 'undef', 'multiline', 'typed', 'multivalue', 'debug', 'db_type', 'remote', 'server', 'username', 'pool_size', 'file', 'm_i_a'])
       end
     end
 
     describe "#params_hash" do
-      before { @@parsed_cache_params_hash ||= parsed }
-      let(:params_hash) { @@parsed_cache_params_hash.params_hash }
-      let(:keys) { params_hash.keys }
-      specify { _(keys).must_include 'version' }
-      specify { _(keys).must_include 'undocumented' }
-      specify { _(keys).must_include 'undef' }
-      specify { _(keys).must_include 'multiline' }
-      specify { _(keys).must_include 'typed' }
-      specify { _(keys).must_include 'debug' }
-      specify { _(keys).must_include 'db_type' }
-      specify { _(keys).must_include 'remote' }
-      specify { _(keys).must_include 'file' }
-      specify { _(keys).must_include 'm_i_a' }
-      specify { _(keys).wont_include 'documented' }
+      before { mod.parse }
+      subject { mod.params_hash }
 
-      specify { _(params_hash['version']).must_equal '1.0' }
-      specify { _(params_hash['undef']).must_be_nil }
+      specify 'keys' do
+        _(subject.keys).must_equal(['version', 'undocumented', 'undef', 'multiline', 'typed', 'multivalue', 'debug', 'db_type', 'remote', 'server', 'username', 'pool_size', 'file', 'm_i_a'])
+      end
+      specify { _(subject['version']).must_equal '1.0' }
+      specify { _(subject['undef']).must_be_nil }
     end
 
     describe "#<=>" do
-      let(:a) { PuppetModule.new('a') }
-      let(:b) { PuppetModule.new('b') }
-      let(:c) { PuppetModule.new('c') }
-      let(:d) { PuppetModule.new('d') }
+      let(:a) { PuppetModule.new('a', configuration: config) }
+      let(:b) { PuppetModule.new('b', configuration: config) }
+      let(:c) { PuppetModule.new('c', configuration: config) }
+      let(:d) { PuppetModule.new('d', configuration: config) }
       let(:sorted) { [a, b, c, d] }
-      let(:unsorted_1) { [a, c, b, d] }
-      let(:unsorted_2) { [d, b, c, a] }
-      let(:unsorted_3) { [a, b, d, c] }
 
-      specify { _(unsorted_1.sort).must_equal sorted }
-      specify { _(unsorted_2.sort).must_equal sorted }
-      specify { _(unsorted_3.sort).must_equal sorted }
+      specify { _([a, c, b, d].sort).must_equal sorted }
+      specify { _([d, b, c, a].sort).must_equal sorted }
+      specify { _([a, b, d, c].sort).must_equal sorted }
     end
 
   end

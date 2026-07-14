@@ -1,6 +1,8 @@
 # encoding: UTF-8
 require 'yaml'
 require 'tmpdir'
+require 'kafo/parser_cache_reader'
+require 'kafo_parsers/parsers'
 require 'kafo/puppet_module'
 require 'kafo/color_scheme'
 require 'kafo/data_type_parser'
@@ -159,6 +161,7 @@ module Kafo
     end
 
     def add_module(name)
+      # TOOD: invalidate parser?
       mod = PuppetModule.new(name, configuration: self).parse
       unless modules.map(&:name).include?(mod.name)
         mod.enable
@@ -343,6 +346,14 @@ EOS
       end
     end
 
+    # Parsed data for a PuppetModule
+    # @param [Kafo::PuppetModule] mod
+    #   The module to parse. It's retrieved from the cache if available
+    # @return [Hash] The raw data returned from KafoParsers
+    def parsed(mod)
+      parser_cache&.get(mod.identifier, mod.manifest_path) || parser.by_name(mod.class_name)
+    end
+
     private
 
     def custom_storage
@@ -398,6 +409,33 @@ EOS
           DataTypeParser.new(File.read(type_file)).register
         end
       end
+    end
+
+    def paths_to_parse
+      types = module_dirs.map { |module_dir| File.join(module_dir, '*', 'types', '**', '*.pp') }
+      # TODO: limit to @data.keys after mapping it
+      manifests = module_dirs.map { |module_dir| File.join(module_dir, '*', 'manifests', '**', '*.pp') }
+
+      manifests + types
+    end
+
+    def parser
+      @parser ||= begin
+        parser = KafoParsers::Parsers.find_available(:logger => @logger)
+        if parser
+          @logger.debug "Using Puppet module parser #{parser}"
+          parser.new(paths_to_parse)
+        else
+          @logger.debug "No available Puppet module parser found"
+          :none  # prevent continually re-checking
+        end
+      end
+
+      if @parser == :none
+        raise ParserError.new("No Puppet module parser is installed and no cache of the file #{manifest_path} is available. Please check debug logs and install optional dependencies for the parser.")
+      end
+
+      @parser
     end
   end
 end
