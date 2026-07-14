@@ -43,7 +43,8 @@ module Kafo
     #
     # @param [Symbol, String] option
     def app_option?(option)
-      self.kafo.config.app.key?(option.to_sym)
+      raise "Invalid input: #{option} : app_option?() expects Symbol argument" unless option.is_a?(Symbol)
+      self.kafo.config.app.key?(option)
     end
 
     # @param [Symbol, String] option
@@ -53,7 +54,8 @@ module Kafo
     #
     # note the dash to underscore convention
     def app_value(option)
-      self.kafo.config.app[option.to_sym]
+      raise "Invalid input: #{option} : app_value() expects Symbol argument" unless option.is_a?(Symbol)
+      self.kafo.config.app[option]
     end
 
     # Return the parameter of a module. Note that the module may not actually
