@@ -2,7 +2,7 @@ require 'test_helper'
 
 module Kafo
   describe MigrationContext do
-    let(:context) { MigrationContext.new({}, {}) }
+    let(:context) { MigrationContext.new("DummyMigration", {}, {}) }
 
     before(:each) { MigrationContext.clear_caches }
 
@@ -10,6 +10,7 @@ module Kafo
       specify { context.respond_to?(:logger) }
       specify { context.respond_to?(:scenario) }
       specify { context.respond_to?(:answers) }
+      specify { context.respond_to?(:migration_name) }
       specify { context.respond_to?(:facts) }
     end
 
