@@ -541,6 +541,7 @@ Style/NumericLiteralPrefix:
   Exclude:
     - 'bin/kafofy'
     - 'lib/kafo/configuration.rb'
+    - 'lib/kafo/kafo_configure.rb'
     - 'lib/kafo/logging.rb'
 
 # Offense count: 2

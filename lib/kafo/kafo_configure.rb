@@ -9,6 +9,7 @@ end
 
 require 'pty'
 require 'clamp'
+require 'fileutils'
 require 'kafo/color_scheme'
 require 'kafo_parsers/exceptions'
 require 'kafo/exceptions'
@@ -110,32 +111,35 @@ module Kafo
 
       # Handle --list-scenarios before we need them
       scenario_manager.list_available_scenarios if ARGV.include?('--list-scenarios')
-      scenario_manager.check_enable_scenario
-      scenario_manager.check_disable_scenario
-      setup_config(config_file)
 
-      self.class.hooking.execute(:pre_migrations)
-      reload_config
-      applied_total = self.class.config.run_migrations
-      request_config_reload if applied_total > 0
+      with_scenario_state_lock do
+        scenario_manager.check_enable_scenario
+        scenario_manager.check_disable_scenario
+        setup_config(config_file)
 
-      if ARGV.include?('--migrations-only')
-        verbose = ARGV.include?('--verbose') || ARGV.include?('-v')
-        Logging.setup(verbose: verbose)
-        self.class.logger.notice('Log buffers flushed')
-        self.class.exit(0)
-      end
+        self.class.hooking.execute(:pre_migrations)
+        reload_config
+        applied_total = self.class.config.run_migrations
+        request_config_reload if applied_total > 0
 
-      reload_config
+        if ARGV.include?('--migrations-only')
+          verbose = ARGV.include?('--verbose') || ARGV.include?('-v')
+          Logging.setup(verbose: verbose)
+          self.class.logger.notice('Log buffers flushed')
+          self.class.exit(0)
+        end
 
-      if scenario_manager.configured?
-        scenario_manager.check_scenario_change(self.class.config_file)
-        if scenario_manager.scenario_changed?(self.class.config_file) && !self.class.in_help_mode?
-          prev_config = scenario_manager.load_configuration(scenario_manager.previous_scenario)
-          prev_config.run_migrations
-          self.class.config.migrate_configuration(prev_config, :skip => [:log_name])
-          setup_config(self.class.config_file)
-          self.class.logger.notice("Due to scenario change the configuration (#{self.class.config_file}) was updated with #{scenario_manager.previous_scenario} and reloaded.")
+        reload_config
+
+        if scenario_manager.configured?
+          scenario_manager.check_scenario_change(self.class.config_file)
+          if scenario_manager.scenario_changed?(self.class.config_file) && !self.class.in_help_mode?
+            prev_config = scenario_manager.load_configuration(scenario_manager.previous_scenario)
+            prev_config.run_migrations
+            self.class.config.migrate_configuration(prev_config, :skip => [:log_name])
+            setup_config(self.class.config_file)
+            self.class.logger.notice("Due to scenario change the configuration (#{self.class.config_file}) was updated with #{scenario_manager.previous_scenario} and reloaded.")
+          end
         end
       end
 
@@ -148,10 +152,12 @@ module Kafo
       parse clamp_app_arguments
       parse_app_arguments # set values from ARGS to config.app
 
-      if ARGV.any? { |option| ['--help', '--full-help'].include? option }
-        Logging.setup_verbose(level: :error)
-      else
-        Logging.setup(verbose: config.app[:verbose])
+      with_scenario_state_lock do
+        if ARGV.any? { |option| ['--help', '--full-help'].include? option }
+          Logging.setup_verbose(level: :error)
+        else
+          Logging.setup(verbose: config.app[:verbose])
+        end
       end
 
       logger.notice("Loading installer configuration. This will take some time.")
@@ -218,9 +224,11 @@ module Kafo
 
       self.class.hooking.execute(:pre_commit)
       unless dont_save_answers? || noop?
-        config.configure_application
-        store_params
-        self.class.scenario_manager.link_last_scenario(self.class.config_file) if self.class.scenario_manager.configured?
+        with_scenario_state_lock do
+          config.configure_application
+          store_params
+          self.class.scenario_manager.link_last_scenario(self.class.config_file) if self.class.scenario_manager.configured?
+        end
       end
       run_installation
       return self
@@ -478,6 +486,17 @@ module Kafo
     def store_params(file = nil)
       data = Hash[config.modules.map { |mod| [mod.identifier, mod.enabled? ? mod.params_hash : false] }]
       config.store(data, file)
+    end
+
+    def with_scenario_state_lock
+      lock_dir = self.class.scenario_manager.config_dir
+      lock_path = File.join(lock_dir, '.kafo-configure.lock')
+      FileUtils.mkdir_p(lock_dir, :mode => 0750)
+
+      File.open(lock_path, File::RDWR | File::CREAT, 0600) do |lock_file|
+        lock_file.flock(File::LOCK_EX)
+        yield
+      end
     end
 
     def validate_all(logging = true)
