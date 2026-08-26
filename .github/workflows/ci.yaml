@@ -31,6 +31,10 @@ jobs:
             puppet: '7'
           - ruby: '3.2'
             puppet: '8'
+          - ruby: '3.3'
+            puppet: '8'
+          - ruby: '3.4'
+            puppet: '8'
     env:
       PUPPET_VERSION: ${{ matrix.puppet }}
 
